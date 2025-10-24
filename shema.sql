@@ -13,6 +13,20 @@ CREATE DATABASE fitness_centar;
 USE fitness_centar;
 
 /*
+  Relacija: mjesto
+  Opis: popis mjesta
+*/
+
+CREATE TABLE mjesto (
+    id INT AUTO_INCREMENT,
+    naziv VARCHAR(100) NOT NULL,
+    postanski_broj CHAR(5) NOT NULL,
+    drzava VARCHAR(100) DEFAULT 'Hrvatska',
+    CONSTRAINT pk_mjesto PRIMARY KEY(id),
+    CONSTRAINT uq_mjesto_naziv_postanski UNIQUE(naziv, postanski_broj)
+);
+
+/*
 	Relacija: clan
     Opis: osnovni podaci o članovima fitness centra.
     Veze: povezan s clanarina, placanje, rezervacija, trening_clan
@@ -27,9 +41,8 @@ CREATE TABLE clan (
   oib CHAR(11) NOT NULL,
   spol ENUM('M', 'Ž', 'Drugo'),
   datum_rodenja DATE,
+  id_mjesto INT NOT NULL,
   adresa VARCHAR(150) NOT NULL,
-  grad VARCHAR(100) NOT NULL,
-  postanski_broj CHAR(5) NOT NULL,
   email VARCHAR(100) NOT NULL,
   telefon VARCHAR(20) NOT NULL,
   datum_uclanjenja DATE NOT NULL,
@@ -39,7 +52,11 @@ CREATE TABLE clan (
   CONSTRAINT pk_clan PRIMARY KEY (id),
   CONSTRAINT uq_clan_oib UNIQUE(oib),
   CONSTRAINT uq_clan_email UNIQUE(email),
-  CONSTRAINT uq_clan_telefon UNIQUE(telefon)
+  CONSTRAINT uq_clan_telefon UNIQUE(telefon),
+  CONSTRAINT fk_clan_mjesto FOREIGN KEY (id_mjesto)
+    REFERENCES mjesto(id)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
 );
 
 /*
