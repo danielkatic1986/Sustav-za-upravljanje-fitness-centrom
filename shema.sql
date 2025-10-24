@@ -2,6 +2,12 @@
 U ovom dokumentu definiramo shemu baze podataka
 */
 
+/*
+=================================================
+			      DANIEL KATIĆ
+=================================================
+*/
+
 DROP DATABASE IF EXISTS fitness_centar;
 CREATE DATABASE fitness_centar;
 USE fitness_centar;
