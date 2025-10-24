@@ -28,10 +28,15 @@ Svrha je omogućiti praćenje statusa članova, vrsta članarina i njihovog traj
 | `id` | INT | PK | Jedinstveni identifikator člana |
 | `ime` | VARCHAR(50) |  | Ime člana |
 | `prezime` | VARCHAR(50) |  | Prezime člana |
+| `oib` | CHAR(11) |  | OIB člana |
+| `spol` | ENUM('M', 'Ž', 'Drugo') |  | Spol člana |
 | `datum_rodenja` | DATE |  | Datum rođenja |
+| `adresa` | VARCHAR(150) |  | Adresa člana |
+| `grad` | VARCHAR(100) |  | Grad člana |
 | `email` | VARCHAR(100) | UQ | Kontakt e-mail |
 | `telefon` | VARCHAR(20) |  | Broj telefona |
 | `datum_uclanjenja` | DATE |  | Datum kada je član upisan |
+| `datum_posljednje_aktivnosti` | DATE |  | Datum posljednje aktivnosti |
 | `aktivan` | BOOLEAN |  | Označava je li član trenutno aktivan |
 
 > **Napomena:** Polje `aktivan` planirano je automatizirati **triggerom** koji deaktivira člana kad istekne članarina.
