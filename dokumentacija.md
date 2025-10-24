@@ -7,21 +7,16 @@
 <h4>Sveučilište Jurja Dobrile u Puli<br/>Fakultet informatike u Puli</h4>
 
 <br/>
-<hr/>
 
-<h2>Dokumentacija projektnog zadatka</h2>
-<h2>SUSTAV ZA UPRAVLJANJE FITNESS CENTROM – TIM 1</h4>
+<h2>Dokumentacija projektnog zadatka<br/><br/>SUSTAV ZA UPRAVLJANJE FITNESS CENTROM – TIM 1</h2>
 
-<hr/>
-</div>
-
-<br/><br/>
+</div><br/>
 
 **O kolegiju:**
 - Smjer: Informatika – online studij
-- Kolegij: Baze podataka I 
+- Kolegij: Baze podataka II
 - Nositelj: izv. prof. dr. sc. Goran Oreški
-- Asistent: Romeo Šajina, mag. inf.
+- Asistent: dr. sc. Romeo Šajina
 
 
 **Članovi:**
@@ -77,5 +72,6 @@
 # AUTENTIFIKACIJA I AUTORIZACIJA
 
 # TRANSAKCIJE
+
 
 # ZAKLJUČAK
