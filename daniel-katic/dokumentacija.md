@@ -1,4 +1,4 @@
-# 🧩 Dokumentacija – Modul članarina (Daniel Katić)
+# 🧩 Daniel Katić, dokumentacija – članovi i članarine
 
 ## 1. Opis modula
 Ovaj modul pokriva **vođenje članova i članarina fitness centra**.  
