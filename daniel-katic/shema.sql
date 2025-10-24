@@ -38,7 +38,8 @@ CREATE TABLE clan (
     
     CONSTRAINT pk_clan PRIMARY KEY (id),
     CONSTRAINT uq_clan_oib UNIQUE(oib),
-    CONSTRAINT uq_clan_email UNIQUE(email)
+    CONSTRAINT uq_clan_email UNIQUE(email),
+    CONSTRAINT uq_clan_telefon UNIQUE(telefon)
 );
 
 /*
