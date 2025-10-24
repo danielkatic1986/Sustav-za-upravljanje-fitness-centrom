@@ -22,22 +22,23 @@ USE fitness_centar;
 */
 CREATE TABLE clan (
 	id INT AUTO_INCREMENT,
-  ime VARCHAR(50) NOT NULL,
-  prezime VARCHAR(50) NOT NULL,
-  oib CHAR(11) NOT NULL,
-  spol ENUM('M', 'Ž', 'Drugo'),
-  datum_rodenja DATE,
-  adresa VARCHAR(150),
-  grad VARCHAR(100),
-  email VARCHAR(100),
-  telefon VARCHAR(20),
-  datum_uclanjenja DATE NOT NULL,
-  datum_posljednje_aktivnosti DATE,
-  aktivan BOOLEAN DEFAULT TRUE,
-  
-  CONSTRAINT pk_clan PRIMARY KEY (id),
-  CONSTRAINT uq_clan_oid UNIQUE(oib),
-  CONSTRAINT uq_clan_email UNIQUE(email)
+    ime VARCHAR(50) NOT NULL,
+    prezime VARCHAR(50) NOT NULL,
+    oib CHAR(11) NOT NULL,
+    spol ENUM('M', 'Ž', 'Drugo'),
+    datum_rodenja DATE,
+    adresa VARCHAR(150) NOT NULL,
+    grad VARCHAR(100) NOT NULL,
+    postanski_broj CHAR(5) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    telefon VARCHAR(20) NOT NULL,
+    datum_uclanjenja DATE NOT NULL,
+    datum_posljednje_aktivnosti DATE,
+    aktivan BOOLEAN DEFAULT TRUE,
+    
+    CONSTRAINT pk_clan PRIMARY KEY (id),
+    CONSTRAINT uq_clan_oib UNIQUE(oib),
+    CONSTRAINT uq_clan_email UNIQUE(email)
 );
 
 /*
