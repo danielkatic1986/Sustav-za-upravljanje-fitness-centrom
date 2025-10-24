@@ -1,0 +1,1 @@
+-- podaci za tablice
