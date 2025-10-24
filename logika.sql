@@ -1,0 +1,3 @@
+/*
+    Definicija logike
+*/
