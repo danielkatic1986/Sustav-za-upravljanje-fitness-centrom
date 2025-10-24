@@ -22,24 +22,24 @@ USE fitness_centar;
 */
 CREATE TABLE clan (
 	id INT AUTO_INCREMENT,
-    ime VARCHAR(50) NOT NULL,
-    prezime VARCHAR(50) NOT NULL,
-    oib CHAR(11) NOT NULL,
-    spol ENUM('M', 'Ž', 'Drugo'),
-    datum_rodenja DATE,
-    adresa VARCHAR(150) NOT NULL,
-    grad VARCHAR(100) NOT NULL,
-    postanski_broj CHAR(5) NOT NULL,
-    email VARCHAR(100) NOT NULL,
-    telefon VARCHAR(20) NOT NULL,
-    datum_uclanjenja DATE NOT NULL,
-    datum_posljednje_aktivnosti DATE,
-    aktivan BOOLEAN DEFAULT TRUE,
-    
-    CONSTRAINT pk_clan PRIMARY KEY (id),
-    CONSTRAINT uq_clan_oib UNIQUE(oib),
-    CONSTRAINT uq_clan_email UNIQUE(email),
-    CONSTRAINT uq_clan_telefon UNIQUE(telefon)
+  ime VARCHAR(50) NOT NULL,
+  prezime VARCHAR(50) NOT NULL,
+  oib CHAR(11) NOT NULL,
+  spol ENUM('M', 'Ž', 'Drugo'),
+  datum_rodenja DATE,
+  adresa VARCHAR(150) NOT NULL,
+  grad VARCHAR(100) NOT NULL,
+  postanski_broj CHAR(5) NOT NULL,
+  email VARCHAR(100) NOT NULL,
+  telefon VARCHAR(20) NOT NULL,
+  datum_uclanjenja DATE NOT NULL,
+  datum_posljednje_aktivnosti DATE,
+  aktivan BOOLEAN DEFAULT TRUE,
+  
+  CONSTRAINT pk_clan PRIMARY KEY (id),
+  CONSTRAINT uq_clan_oib UNIQUE(oib),
+  CONSTRAINT uq_clan_email UNIQUE(email),
+  CONSTRAINT uq_clan_telefon UNIQUE(telefon)
 );
 
 /*
@@ -56,13 +56,13 @@ CREATE TABLE clan (
 
 CREATE TABLE tip_clanarine (
 	id INT AUTO_INCREMENT,
-    naziv VARCHAR(50) NOT NULL,
-    trajanje_mjeseci INT NOT NULL,
-    cijena DECIMAL(8, 2) NOT NULL,
-    opis VARCHAR(255),
-    
-    CONSTRAINT pk_tip_clanarine 
-		PRIMARY KEY(id)
+  naziv VARCHAR(50) NOT NULL,
+  trajanje_mjeseci INT NOT NULL,
+  cijena DECIMAL(8, 2) NOT NULL,
+  opis VARCHAR(255),
+  
+  CONSTRAINT pk_tip_clanarine 
+  PRIMARY KEY(id)
 );
 
 /*
@@ -79,11 +79,11 @@ CREATE TABLE tip_clanarine (
 
 CREATE TABLE status_clanarine (
 	id INT AUTO_INCREMENT,
-    naziv VARCHAR(50) NOT NULL,
-    opis VARCHAR(255),
-    
-    CONSTRAINT pk_status_clanarine 
-		PRIMARY KEY(id)
+  naziv VARCHAR(50) NOT NULL,
+  opis VARCHAR(255),
+  
+  CONSTRAINT pk_status_clanarine 
+  PRIMARY KEY(id)
 );
 
 /*
@@ -94,21 +94,21 @@ CREATE TABLE status_clanarine (
 
 CREATE TABLE clanarina (
 	id INT AUTO_INCREMENT,
-    id_clan INT NOT NULL,
-    id_tip INT NOT NULL,
-    id_status INT NOT NULL,
-    datum_pocetka DATE NOT NULL,
-    datum_zavrsetka DATE NOT NULL,
-    
-    CONSTRAINT pk_clanarina 
-		PRIMARY KEY(id),
-    
-    CONSTRAINT fk_clanarina_clan 
-		FOREIGN KEY (id_clan) REFERENCES clan(id),
-    
-    CONSTRAINT fk_clanarina_tip_clanarine 
-		FOREIGN KEY (id_tip) REFERENCES tip_clanarine(id),
-    
-    CONSTRAINT fk_clanarina_status_clanarine 
-		FOREIGN KEY (id_status) REFERENCES status_clanarine(id)
+  id_clan INT NOT NULL,
+  id_tip INT NOT NULL,
+  id_status INT NOT NULL,
+  datum_pocetka DATE NOT NULL,
+  datum_zavrsetka DATE NOT NULL,
+  
+  CONSTRAINT pk_clanarina 
+  PRIMARY KEY(id),
+  
+  CONSTRAINT fk_clanarina_clan 
+  FOREIGN KEY (id_clan) REFERENCES clan(id),
+  
+  CONSTRAINT fk_clanarina_tip_clanarine 
+  FOREIGN KEY (id_tip) REFERENCES tip_clanarine(id),
+  
+  CONSTRAINT fk_clanarina_status_clanarine 
+  FOREIGN KEY (id_status) REFERENCES status_clanarine(id)
 );
