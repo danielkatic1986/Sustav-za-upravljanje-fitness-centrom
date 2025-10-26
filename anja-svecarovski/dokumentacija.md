@@ -6,14 +6,10 @@
 | trener_program — program (Maja) | N:1 | Program ima jednog odgovornog trenera. |
 | zaposlenik — odrzavanje (Vladan) | 1:N | Zaposlenik (npr. tehničar) može obaviti više održavanja. |
 | trener — raspored (Mikel) | 1:N | Trener ima više termina u rasporedu. |
-| zaposlenik - radno_mjesto | 1:N | Jedno radno mjesto može imati više zaposlenika, ali svaki zaposlenik pripada samo
-jednom radnom mjestu.|
-| odjel - radno_mjesto | 1:N | Jedan odjel može imati više radnih mjesta, ali svako radno mjesto pripada samo
-jednom odjelu.|
-| podruznica - zaposlenik | 1:N | Jedna podruznica može imati više zaposlenih, ali svaki zaposlenik pripada samo
-jednoj podruznici.|
-| mjesto - podružnica| 1:N | Jedno mjesto može imati više podružnica, ali svaka podružnica pripada samo
-jednom mjestu.|
+| zaposlenik - radno_mjesto | 1:N | Jedno radno mjesto može imati više zaposlenika, ali svaki zaposlenik pripada samo jednom radnom mjestu.|
+| odjel - radno_mjesto | 1:N | Jedan odjel može imati više radnih mjesta, ali svako radno mjesto pripada samo jednom odjelu.|
+| podruznica - zaposlenik | 1:N | Jedna podruznica može imati više zaposlenih, ali svaki zaposlenik pripada samo jednoj podruznici.|
+| mjesto - podružnica| 1:N | Jedno mjesto može imati više podružnica, ali svaka podružnica pripada samo jednom mjestu.|
 
 # SHEME RELACIJSKOG MODELA
 
