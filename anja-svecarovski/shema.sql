@@ -82,5 +82,5 @@ CREATE TABLE trener_program (
     
     CONSTRAINT trener_program_pk PRIMARY KEY (id), # definicija primarnog kljuca
     CONSTRAINT trener_fk FOREIGN KEY (trener_id) REFERENCES zaposlenik(id), # definicija stranog kljuca za trenera
-    CONSTRAINT program_fk FOREIGN KEY (program_id) REFERENCES odjel(id) # definicija stranog kljuca za program
+    CONSTRAINT program_fk FOREIGN KEY (program_id) REFERENCES program(id) # definicija stranog kljuca za program
 );
