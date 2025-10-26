@@ -12,7 +12,7 @@
 `mjesto`, `clan`, `clanarina`, `tip_clanarine`, `status_clanarine`, `placanje`, `racun`, `popust`, `podruznica`, `zaposlenik`, `radno_mjesto`, `odjel`, `trener_program`, `program`, `trening`, `trening_clan`, `termin_treninga`, `rezervacija`, `prostorija`, `oprema`, `odrzavanje`, `dobavljac`
 
 **Svaki član samostalno izrađuje svoj dio baze podataka.**  
-To uključuje tablice, ER dijagram, procedure, funkcije, poglede, okidače te pripadajuće podatke za unos.
+To uključuje tablice, procedure, funkcije, poglede, okidače te pripadajuće podatke za unos.
 
 ---
 
