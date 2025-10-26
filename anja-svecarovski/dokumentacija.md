@@ -13,11 +13,11 @@
 
 # SHEME RELACIJSKOG MODELA
 
-odjel (id, naziv, aktivno, opis, broj_zaposlenika)
-radno_mjesto (id, naziv, aktivno, opis, id_odjel)
-podruznica (id, naziv, adresa, id_mjesto)
-zaposlenik (id, ime, prezime, oib, datum_rodenja, spol, adresa, grad, telefon, email, datum_zaposlenja, datum_prestanka, status_zaposlenika, placa, id_radno_mjesto, id_podruznica)
-trener_program (id, trener_id, program_id)
+- odjel (id, naziv, aktivno, opis, broj_zaposlenika)
+- radno_mjesto (id, naziv, aktivno, opis, id_odjel)
+- podruznica (id, naziv, adresa, id_mjesto)
+- zaposlenik (id, ime, prezime, oib, datum_rodenja, spol, adresa, grad, telefon, email, datum_zaposlenja, datum_prestanka, status_zaposlenika, placa, id_radno_mjesto, id_podruznica)
+- trener_program (id, trener_id, program_id)
 
 # EER DIJAGRAM (MySQL Workbench)
 
