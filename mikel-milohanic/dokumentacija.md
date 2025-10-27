@@ -1,48 +1,55 @@
+# TABLICE
+
 ## TABLICA tip_prostorije
 
-Tablica ***tip\_prostorije*** služi za evidentiranje tipova prostorija koje se nalaze u fitness centru. Sastoji se od atributa `id`, `naziv` i `opis`.
+- tablica ***tip\_prostorije*** služi za evidentiranje tipova prostorija koje se nalaze u fitness centru
+- sastoji se od atributa `id`, `naziv` i `opis`.
 
-Atribut `id` je tipa **INTEGER** te nam predstavlja **PRIMARY KEY** iz razloga jer jedinstveno određuje svaki redak (n-torku) naše tablice koristeći jedinstvene cjelobrojne vrijednosti, također korištenjem ključne riječi **AUTO INCREMENT** omogućuje se automatsko generiranje nove vrijednosti primarnog ključa prilikom svakog novog unosa u tablicu.
-
-Atribut `naziv` je tipa **VARCHAR** iz razloga jer duljina unosa može varirati pa se alokacija memorije vrši dinamički ovisno o unosu. Prilikom definiranja tipa **VARCHAR** potrebno je unijeti dozvoljenu gornju granicu unosa pa je tako za navedeni atribut postavljena gornja granica od **50** znakova. Također postavljeno je ograničenje **NOT NULL** koje ne dozvoljava izostavljanje vrijednosti za atribut nad kojim je definirano, bilo prilikom novog unosa ili prilikom izmjene postojećih n-torki. Osim ograničenja **NOT NULL** postavljeno je i ograničenje **UNIQUE** iz razloga jer ne želimo da nam se u tablici isti tip ponavlja. Zbog ograničenja **UNIQUE** možemo reći da je atribut `naziv` kandidat ključ ove tablice.
-
-Atribut `opis` je tipa **TEXT** i kao takav ima ograničenje od 65,535 znakova što bi trebalo biti dovoljno za opis pojednih prostorija, atribut nema ograničenja jer unos opisa nije obavezan i ne očekuje se da bude jedinstven.
-
+| Atribut | Tip | Ograničenja |  Opis |
+|---------|-----|-------------|-------|
+| `id` | INTEGER | PRIMARY_KEY | Jedinstveno određuje svaki redak (n-torku) tablice koristeći jedinstvene cjelobrojne vrijednosti. Korištenjem svojstva AUTO INCREMENT osiguravamo da se vrijednost atributa automatski generira prilikom svakog novog unosa ukoliko ista nije definirana samim unosom. |
+| `tip` | VARCHAR(50) | NOT_NULL UNIQUE | Sadrži naziv tipa prostorije stoga je tip podatka VARCHAR pošto duljina unosa može varirati pa se alokacija memorije vrši dinamički ovisno o unosu. Zbog ograničenja UNIQUE možemo reći da je ovaj atribut kandidat ključ ove tablice. |
+| `opis` | TEXT || Sadrži opis prostorije stoga tip podatka TEXT koji podržava unos do 65535 znakova, a nad istim nisu postavljena nikakva ograničenja iz razloga jer unos atributa nije obavezan i ne očekuje se da bude jedinstven. |
 
 ## TABLICA prostorija
 
-Tablica ***prostorija*** služi za evidenciju prostorija u fitness centru. Sastoji se od atributa `id`, `oznaka`, `kapacitet` i `lokacija`.
+- tablica ***prostorija*** služi za evidenciju prostorija u fitness centru
+- sastoji se od atributa `id`, `oznaka`, `lokacija`, `kapacitet`, `tip_prostorije_id` i `podruznica_id`.
 
-Atribut `id` je tipa **INTEGER** te nam predstavlja **PRIMARY KEY** iz razloga jer jedinstveno određuje svaki redak (n-torku) naše tablice koristeći jedinstvene cjelobrojne vrijednosti, također korištenjem ključne riječi **AUTO INCREMENT** omogućuje se automatsko generiranje nove vrijednosti primarnog ključa prilikom svakog novog unosa u tablicu.
-
-Atributi `oznaka` i `lokacija` su tipa **VARCHAR** iz razloga jer duljina unosa može varirati pa se alokacija memorije vrši dinamički ovisno o unosu. Prilikom definiranja tipa **VARCHAR** potrebno je unijeti dozvoljenu gornju granicu unosa pa je tako za navedene atribute postavljena gornja granica od **20** znakova. Također nad navedenim atributima postavljeno je i ograničenje **NOT NULL** koje ne dozvoljava izostavljanje vrijednosti za atribut nad kojim je definirano, bilo prilikom novog unosa ili prilikom izmjene postojećih n-torki. Nad atributom `oznaka` također je postavljeno i ograničenje **UNIQUE** pošto će svaka prostorija imati svoju jedinstvenu oznaku po kojoj će ih se razlikovati. Zbog ograničenja **UNIQUE** možemo reći da je atribut `oznaka` kandidat ključ ove tablice.
-
-Atributi `kapacitet` i `tip_prostorije_id` su tipa **INTEGER** te kao takvi dozvoljavaju unos isključivo cijelobrojnih vrijednosti. Atribut `kapacitet` predstavlja najveći dozvoljeni broj članova koji se mogu istovremeno nalaziti u prostoriji te mu je kao takvom dodjeljeno ograničenje **NOT NULL** jer je to informacija koja mora biti definirana za svaku prostoriju zbog sigurnosti svih sudionika i ograničavanja rezervacija. Atribut `tip_prostorije_id` predstavlja strani ključ koji referencira atribut `id` tablice `tip_prostorije` te mu je kao takvom dodjeljeno ograničenje **FOREIGN KEY** koje osigurava očuvanje referencijalnog integriteta među povezanim tablicama, a također je nad njime postavljeno i ograničenje **NOT NULL** jer svaka prostorija mora imati evidentirano kojeg je tipa kako bi se znalo za koje je vrste treninga pogodna.
-
+| Atribut | Tip | Ograničenja | Opis |
+|---------|-----|-------------|------|
+| `id` | INTEGER | PRIMARY_KEY | Jedinstveno određuje svaki redak (n-torku) tablice koristeći jedinstvene cjelobrojne vrijednosti. Korištenjem svojstva AUTO INCREMENT osiguravamo da se vrijednost atributa automatski generira prilikom svakog novog unosa ukoliko ista nije definirana samim unosom. |
+| `oznaka` | VARCHAR(20) | NOT_NULL UNIQUE | Sadrži oznaku prostorije stoga je tip podatka VARCHAR pošto duljina unosa može varirati pa se alokacija memorije vrši dinamički ovisno o unosu. Zbog ograničenja UNIQUE možemo reći da je ovaj atribut kandidat ključ ove tablice. |
+| `lokacija` | VARCHAR(20) | NOT_NULL | Sadrži lokaciju prostorije unutar centra stoga je tip podatka VARCHAR pošto duljina unosa može varirati pa se alokacija memorije vrši dinamički ovisno o unosu. |
+| `kapacitet` | INTEGER | NOT_NULL | Sadrži najveći dozvoljeni broj članova koji se mogu istovremeno nalaziti u prostoriji stoga je tip podatka INTEGER. Atribut mora biti definiran za svaku prostoriju zbog sigurnosti svih sudionika i ograničavanja broja rezervacija. |
+| `tip_prostorije_id` | INTEGER | NOT_NULL FOREIGN_KEY | Sadrži vrijednost stranog ključa tablice ***tip_prostorije*** te korištenjem ograničenja FOREIGN KEY osigurava očuvanje referencijalnog integriteta među povezanim tablicama. Unos je obavezan pošto moramo imati evidentirano čemu je prostorija namijenjena. |
+| `podruznica_id` | INTEGER | NOT_NULL FOREIGN_KEY | Sadrži vrijednost stranog ključa tablice ***podruznica*** te korištenjem ograničenja FOREIGN KEY osigurava očuvanje referencijalnog integriteta među povezanim tablicama. Unos je obavezan pošto moramo imati evidentirano u kojoj podružnici se prostorija nalazi. Nad ograničenjem stranog ključa također je definirano i referencijalno pravilo ON DELETE CASCADE koje osigurava da se prilikom brisanja primarnog ključa unutar tablice ***podruznica*** obišu i svi retci kojima je vrijednost ovog atributa jednaka vrijednosti obrisanog primarnog ključa referencirane tablice pošto nam nema smisla imati evidentiranu prostoriju za podružnicu koja ne postoji. |
 
 ## TABLICA termin_treninga
 
-Tablica ***termin_treninga*** služi za evidenciju termina pojedinog treninga. Sastoji se od atributa `id`, `trening_id`, `prostorija_id`, `trener_id`, `vrijeme_pocetka`, `vrijeme_zavrsetka`, `napomena` i `otkazan`.
+- tablica ***termin_treninga*** služi za evidenciju termina pojedinog treninga
+- sastoji se od atributa `id`, `trening_id`, `prostorija_id`, `trener_id`, `vrijeme_pocetka`, `vrijeme_zavrsetka`, `napomena` i `otkazan`.
 
-Atribut `id` je tipa **INTEGER** te nam predstavlja **PRIMARY KEY** iz razloga jer jedinstveno određuje svaki redak (n-torku) naše tablice koristeći jedinstvene cjelobrojne vrijednosti, također korištenjem ključne riječi **AUTO INCREMENT** omogućuje se automatsko generiranje nove vrijednosti primarnog ključa prilikom svakog novog unosa u tablicu.
-
-Atributi `trening_id`, `prostorija_id` i `trener_id` su tipa **INTEGER** te kao takvi dozvoljavaju samo unos cijelobrojnih vrijednosti. Navedenim atributima dodjeljeno je ograničenje **FOREIGN KEY** koje osigurava očuvanje referencijalnog integriteta među povezanim tablicama. Pa tako atribut `trening_id` referencira atribut `id` tablice `trening` te je nad njime postavljeno ograničenje **NOT NULL** jer svaki termin treninga mora imati evidentiran trening koji se izvodi u tom terminu. Nadalje, atribut `prostorija_id` referencira atribut `id` tablice `prostorija` te je nad njime postavljeno ograničenje **NOT NULL** jer svaki termin treninga mora imati evidentiranu prostoriju u kojoj se isti izvodi. Atribut `trener_id` referencira atribut `id` tablice `zaposlenik` te je nad njime postavljeno ograničenje **NOT NULL** jer svaki termin treninga mora imati evidentiranog trenera koji će voditi trening.
-
-Atributi `vrijeme_pocetka` i `vrijeme_zavrsetka` su tipa **DATETIME** te nam kao takvi dozvoljavaju unos vremena u formatu u kojem se može zabilježiti datum, sate, minute i sekunde, a sam tip podatka nam omogućuje lakšu manipulaciju tim podacima toko daljnjeg rada. Nad navedenim atributima postavljeno je ograničenje **NOT NULL** koje ne dozvoljava izostavljanje vrijednosti za atribut nad kojim je definirano, bilo prilikom novog unosa ili prilikom izmjene postojećih n-torki.
-
-Atribut `napomena` je tipa **TEXT** i kao takav ima ograničenje od 65,535 znakova što bi trebalo biti dovoljno za unos i ponekih duljih komentara ako za to bude bilo potrebe. Korištenjem ključne riječi **DEFAULT** omogućujemo upis zadane vrijednosti za navedeni atribut ukoliko je ista izostavljena prilikom unosa.
-
-Atribut `otkazan` je tipa **BOOLEAN** te kao takav dozvoljava unos logičkih vrijednosti true i false korištenjem brojčanih vrijednosti 0 i 1. Navedeni atribut omogućava evidenciju otkazanih termina treninga te korištenjem ključne riječi **DEFAULT** postavljamo zadanu vrijednost atributa koja je u ovom slučaju 0, a ukoliko dođe do otkazivanja termina treninga vrijednost atributa se mijenja na 1.
-
+| Atribut | Tip | Ograničenja | Opis |
+|---------|-----|-------------|------|
+| `id` | INTEGER | PRIMARY_KEY | Jedinstveno određuje svaki redak (n-torku) tablice koristeći jedinstvene cjelobrojne vrijednosti. Korištenjem svojstva AUTO INCREMENT osiguravamo da se vrijednost atributa automatski generira prilikom svakog novog unosa ukoliko ista nije definirana samim unosom. |
+| `trening_id` | INTEGER | NOT_NULL FOREIGN_KEY | Sadrži vrijednost stranog ključa tablice ***trening*** te korištenjem ograničenja FOREIGN KEY osigurava očuvanje referencijalnog integriteta među povezanim tablicama. Unos je obavezan pošto svaki termin treninga mora imati evidentiran trening koji se izvodi u tom terminu. |
+| `prostorija_id` | INTEGER | NOT_NULL FOREIGN_KEY | Sadrži vrijednost stranog ključa tablice ***prostorija*** te korištenjem ograničenja FOREIGN KEY osigurava očuvanje referencijalnog integriteta među povezanim tablicama. Unos je obavezan pošto svaki termin treninga mora imati evidentiranu prostoriju u kojoj se isti izvodi. |
+| `trener_id` | INTEGER | NOT_NULL FOREIGN_KEY | Sadrži vrijednost stranog ključa tablice ***trener*** te korištenjem ograničenja FOREIGN KEY osigurava očuvanje referencijalnog integriteta među povezanim tablicama. Unos je obavezan pošto svaki termin treninga mora imati evidentiranog trenera koji će voditi trening. |
+| `vrijeme_pocetka` | DATETIME | NOT_NULL | Sadrži vrijeme početka termina treninga stoga je tip podatka DATETIME koji dozvoljava unos vremena u formatu u kojem se može zabilježiti datum, sate, minute i sekunde, te omogućuje lakšu manipulaciju tim podacima tokom daljnjeg rada. Unos je obavezan pošto svaki termin treninga mora imati evidentirano vrijeme početka izvođenja. |
+| `vrijeme_zavrsetka` | DATETIME | NOT_NULL | Sadrži vrijeme završetka termina treninga stoga je tip podatka DATETIME koji dozvoljava unos vremena u formatu u kojem se može zabilježiti datum, sate, minute i sekunde, te omogućuje lakšu manipulaciju tim podacima tokom daljnjeg rada. Unos je obavezan pošto svaki termin treninga mora imati evidentirano vrijeme završetka izvođenja. |
+| `napomena` | TEXT | DEFAULT | Sadrži napomenu za pojedini termin treninga stoga je tip podatka TEXT koji podržava unos do 65535 znakova, a ukoliko se prilikom unosa ne unese vrijednost za ovaj atribut isti će biti postavljen na vrijednost *"Nema napomena."* definiranu ograničenjem DEFAULT. |
+| `otkazan` | BOOLEAN | NOT_NULL | Sadrži informaciju je li pojedini termin treninga naposljetku otkazan stoga je tip podatka BOOLEAN. Atribut mora biti definiran za svaki termin radi lakše evidencije održanih i otkazanih termina. |
 
 ## TABLICA rezervacija
 
-Tablica ***rezervacija*** služi za rezervaciju termina treninga. Sastoji se od atributa `id`, `clan_id`, `termin_treninga_id`, `vrijeme_rezervacije` i `nacin_rezervacije`.
+- tablica ***rezervacija*** služi za rezervaciju termina treninga
+- sastoji se od atributa `id`, `clan_id`, `termin_treninga_id`, `vrijeme_rezervacije` i `nacin_rezervacije`
 
-Atribut `id` je tipa **INTEGER** te nam predstavlja **PRIMARY KEY** iz razloga jer jedinstveno određuje svaki redak (n-torku) naše tablice koristeći jedinstvene cjelobrojne vrijednosti, također korištenjem ključne riječi **AUTO INCREMENT** omogućuje se automatsko generiranje nove vrijednosti primarnog ključa prilikom svakog novog unosa u tablicu.
-
-Atributi `clan_id` i `termin_treninga_id` su tipa **INTEGER** te kao takvi dozvoljavaju samo unos cijelobrojnih vrijednosti. Navedenim atributima dodjeljeno je ograničenje **FOREIGN KEY** koje osigurava očuvanje referencijalnog integriteta među povezanim tablicama. Atribut `clan_id` referencira atribut `id` tablice `clan` te je nad njime postavljeno ograničenje **NOT NULL** jer svaka rezervacija treninga mora imati evidentiranog člana koji ju je zakazao. Nadalje, atribut `termin_treninga_id` referencira atribut `id` tablice `termin_treninga` te je nad njime postavljeno ograničenje **NOT NULL** jer svaka rezervacija mora imati evidentiran termin na koji se ista odnosi. Nad referencama atributa `clan_id` i `termin_treninga_id` također je definirano i referencijalno pravilo **ON DELETE CASCADE** koje pri brisanju člana iz tablice `clan` ili pri brisanju termina treninga iz tablice `termin_treninga` briše sve rezervacije povezane s tim clanom/terminom u tablici ***rezervacija*** pošto nam rezervacija ne koristi ako za istu nemamo evidentiranog člana koji ju je podnio ili termin na koji se ona odnosi.
-
-Atribut `vrijeme_rezervacije` je tipa **DATETIME** te nam kao takav dozvoljava unos vremena u formatu u kojem se može zabilježiti datum, sate, minute i sekunde, a sam tip podatka nam omogućuje lakšu manipulaciju tim podacima toko daljnjeg rada. Nad navedenim atributom postavljeno je ograničenje **NOT NULL** koje ne dozvoljava izostavljanje vrijednosti za atribut nad kojim je definirano.
-
-Atribut `nacin_rezervacije` je tipa **ENUM** koji nam omogućuje unos unaprijed definiranih vrijednosti, u ovom slučaju te vrijednosti su: 'Online' i 'Recepcija'. Nad atributom status_narudzbe postavljeno je ograničenje **NOT NULL**.
+| Atribut | Tip | Ograničenja | Opis |
+|---------|-----|-------------|------|
+| `id` | INTEGER | PRIMARY_KEY | Jedinstveno određuje svaki redak (n-torku) tablice koristeći jedinstvene cjelobrojne vrijednosti. Korištenjem svojstva AUTO INCREMENT osiguravamo da se vrijednost atributa automatski generira prilikom svakog novog unosa ukoliko ista nije definirana samim unosom. |
+| `clan_id` | INTEGER | NOT_NULL FOREIGN_KEY | Sadrži vrijednost stranog ključa tablice ***clan*** te korištenjem ograničenja FOREIGN KEY osigurava očuvanje referencijalnog integriteta među povezanim tablicama. Unos je obavezan pošto svaka rezervacija treninga mora imati evidentiranog člana koji ju je zakazao. Nad ograničenjem stranog ključa također je definirano i referencijalno pravilo ON DELETE CASCADE koje osigurava da se prilikom brisanja primarnog ključa unutar tablice ***clan*** obišu i svi retci kojima je vrijednost ovog atributa jednaka vrijednosti obrisanog primarnog ključa referencirane tablice pošto nam rezervacija ne koristi ako za istu nemamo evidentiranog člana koji ju je podnio. |
+| `termin_treninga_id` | INTEGER | NOT_NULL FOREIGN_KEY | Sadrži vrijednost stranog ključa tablice ***termin_treninga*** te korištenjem ograničenja FOREIGN KEY osigurava očuvanje referencijalnog integriteta među povezanim tablicama. Unos je obavezan pošto svaka rezervacija mora imati evidentiran termin na koji se ista odnosi. Nad ograničenjem stranog ključa također je definirano i referencijalno pravilo ON DELETE CASCADE koje osigurava da se prilikom brisanja primarnog ključa unutar tablice ***termin_treninga*** obišu i svi retci kojima je vrijednost ovog atributa jednaka vrijednosti obrisanog primarnog ključa referencirane tablice pošto nam rezervacija ne koristi ako za istu nemamo evidentiran termin na koji se ona odnosi. |
+| `vrijeme_rezervacije` | DATETIME | NOT_NULL | Sadrži vrijeme podnošenja rezervacije stoga je tip podatka DATETIME koji dozvoljava unos vremena u formatu u kojem se može zabilježiti datum, sate, minute i sekunde, te omogućuje lakšu manipulaciju tim podacima tokom daljnjeg rada. Unos je obavezan pošto želimo voditi evidenciju kad je tko napravio rezervaciju za slučaj da dođe do nekakvih problema. |
+| `nacin_rezervacije` | ENUM | NOT_NULL | Sadrži vrijednost koja opisuje način na koji je podnijeta rezervacija stoga je tip podatka ENUM koji nam omogućuje unos unaprijed definiranih vrijednosti, u ovom slučaju te vrijednosti su: *"Online"* i *"Recepcija"*. Unos je obavezan pošto želimo voditi evidenciju na koji način naši korisnici vrše rezervacije. |
