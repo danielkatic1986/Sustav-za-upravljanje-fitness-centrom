@@ -1,22 +1,27 @@
 CREATE TABLE tip_prostorije (
 	id INTEGER AUTO_INCREMENT,
-    naziv VARCHAR(50) NOT NULL UNIQUE,
+    naziv VARCHAR(50) NOT NULL,
 	opis TEXT,
     
-    PRIMARY KEY (id)
+    CONSTRAINT uq_tip_prostorije_naziv UNIQUE (naziv),
+    
+    CONSTRAINT pk_tip_prostorije PRIMARY KEY (id)
 );
 
 CREATE TABLE prostorija (
 	id INTEGER AUTO_INCREMENT,
-    oznaka VARCHAR(20) NOT NULL UNIQUE,
+    oznaka VARCHAR(20) NOT NULL,
     lokacija VARCHAR(20) NOT NULL,
     kapacitet INTEGER NOT NULL,
     tip_prostorije_id INTEGER NOT NULL,
 	podruznica_id INTEGER NOT NULL,
     
-    PRIMARY KEY (id),
-    FOREIGN KEY (tip_prostorije_id) REFERENCES tip_prostorije (id),
-	FOREIGN KEY (podruznica_id) REFERENCES podruznica (id)  ON DELETE CASCADE
+    CONSTRAINT uq_prostorija_oznaka UNIQUE (oznaka),
+    CONSTRAINT ck_prostorija_kapacitet CHECK (kapacitet > 0),
+    
+    CONSTRAINT pk_prostorija PRIMARY KEY (id),
+    CONSTRAINT fk_prostorija_tip_prostorije FOREIGN KEY (tip_prostorije_id) REFERENCES tip_prostorije (id),
+	CONSTRAINT fk_prostorija_podruznica FOREIGN KEY (podruznica_id) REFERENCES podruznica (id)  ON DELETE CASCADE
 );
 
 CREATE TABLE termin_treninga (
@@ -24,27 +29,29 @@ CREATE TABLE termin_treninga (
     trening_id INTEGER NOT NULL,
     prostorija_id INTEGER NOT NULL,
     trener_id INTEGER NOT NULL,
-    vrijeme_pocetka DATETIME NOT NULL,
-    vrijeme_zavrsetka DATETIME NOT NULL,
+    vrijeme_pocetka TIMESTAMP NOT NULL,
+    vrijeme_zavrsetka TIMESTAMP NOT NULL,
     napomena TEXT DEFAULT "Nema napomena.",
-    otkazan BOOLEAN DEFAULT 0,
+    otkazan BOOLEAN NOT NULL DEFAULT 0,
     
-    PRIMARY KEY (id),
-    FOREIGN KEY (trening_id) REFERENCES trening (id),
-    FOREIGN KEY (prostorija_id) REFERENCES trening (id),
-    FOREIGN KEY (trener_id) REFERENCES zaposlenik (id)
+    CONSTRAINT ck_termin_treninga_vrijeme_pocetka_vrijeme_zavrsetka CHECK (vrijeme_zavrsetka > vrijeme_pocetka ),
+    
+    CONSTRAINT pk_termin_treninga PRIMARY KEY (id),
+    CONSTRAINT fk_termin_treninga_trening FOREIGN KEY (trening_id) REFERENCES trening (id),
+    CONSTRAINT fk_termin_treninga_prostorija FOREIGN KEY (prostorija_id) REFERENCES prostorija (id),
+    CONSTRAINT fk_termin_treninga_zaposlenik FOREIGN KEY (trener_id) REFERENCES zaposlenik (id)
 );
 
 CREATE TABLE rezervacija (
 	id INTEGER AUTO_INCREMENT,
     clan_id INTEGER NOT NULL,
     termin_treninga_id INTEGER NOT NULL,
-    vrijeme_rezervacije DATETIME NOT NULL,
+    vrijeme_rezervacije TIMESTAMP NOT NULL,
     nacin_rezervacije ENUM("Online", "Recepcija") NOT NULL,
     
-    UNIQUE (clan_id, termin_treninga_id),
+    CONSTRAINT uq_rezervacija_clan_id_termin_treninga_id UNIQUE (clan_id, termin_treninga_id),
     
-    PRIMARY KEY (id),
-    FOREIGN KEY (clan_id) REFERENCES clan (id) ON DELETE CASCADE,
-    FOREIGN KEY (termin_treninga_id) REFERENCES termin_treninga (id) ON DELETE CASCADE
+    CONSTRAINT pk_rezervacija PRIMARY KEY (id),
+    CONSTRAINT fk_rezervacija_clan FOREIGN KEY (clan_id) REFERENCES clan (id) ON DELETE CASCADE,
+    CONSTRAINT fk_rezervacija_termin_treninga FOREIGN KEY (termin_treninga_id) REFERENCES termin_treninga (id) ON DELETE CASCADE
 );
