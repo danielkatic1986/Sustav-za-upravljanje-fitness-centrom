@@ -75,11 +75,17 @@ CREATE TABLE tip_clanarine (
 	id INT AUTO_INCREMENT,
   naziv VARCHAR(50) NOT NULL,
   trajanje_mjeseci INT NOT NULL,
-  cijena DECIMAL(8, 2) NOT NULL,
+  cijena DECIMAL(10, 2) NOT NULL,
   opis VARCHAR(255),
   
   CONSTRAINT pk_tip_clanarine 
-  PRIMARY KEY(id)
+  PRIMARY KEY(id),
+
+  CONSTRAINT ck_tip_clanarine_trajanje_mjeseci
+  CHECK (trajanje_mjeseci > 0),
+
+  CONSTRAINT ck_tip_clanarine_cijena
+  CHECK (cijena > 0)
 );
 
 /*
@@ -121,11 +127,20 @@ CREATE TABLE clanarina (
   PRIMARY KEY(id),
   
   CONSTRAINT fk_clanarina_clan 
-  FOREIGN KEY (id_clan) REFERENCES clan(id),
+  FOREIGN KEY (id_clan) REFERENCES clan(id)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE,
   
   CONSTRAINT fk_clanarina_tip_clanarine 
-  FOREIGN KEY (id_tip) REFERENCES tip_clanarine(id),
+  FOREIGN KEY (id_tip) REFERENCES tip_clanarine(id)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE,
   
   CONSTRAINT fk_clanarina_status_clanarine 
   FOREIGN KEY (id_status) REFERENCES status_clanarine(id)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE,
+
+  CONSTRAINT ck_clanarina_datumi
+  CHECK (datum_zavrsetka > datum_pocetka)
 );
