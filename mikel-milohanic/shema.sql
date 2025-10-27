@@ -9,12 +9,14 @@ CREATE TABLE tip_prostorije (
 CREATE TABLE prostorija (
 	id INTEGER AUTO_INCREMENT,
     oznaka VARCHAR(20) NOT NULL UNIQUE,
-    lokacija VARCHAR(20) NOT NULL, -- ovo možda izbaciti? (primjeri - prizemlje, 1./2./3. kat, lijevo/desno krilo itd.)
+    lokacija VARCHAR(20) NOT NULL,
     kapacitet INTEGER NOT NULL,
     tip_prostorije_id INTEGER NOT NULL,
+	podruznica_id INTEGER NOT NULL,
     
     PRIMARY KEY (id),
-    FOREIGN KEY (tip_prostorije_id) REFERENCES tip_prostorije (id)
+    FOREIGN KEY (tip_prostorije_id) REFERENCES tip_prostorije (id),
+	FOREIGN KEY (podruznica_id) REFERENCES podruznica (id)  ON DELETE CASCADE
 );
 
 CREATE TABLE termin_treninga (
@@ -25,7 +27,7 @@ CREATE TABLE termin_treninga (
     vrijeme_pocetka DATETIME NOT NULL,
     vrijeme_zavrsetka DATETIME NOT NULL,
     napomena TEXT DEFAULT "Nema napomena.",
-    otkazan BOOLEAN DEFAULT 0,  -- ovo možda izbaciti?
+    otkazan BOOLEAN DEFAULT 0,
     
     PRIMARY KEY (id),
     FOREIGN KEY (trening_id) REFERENCES trening (id),
