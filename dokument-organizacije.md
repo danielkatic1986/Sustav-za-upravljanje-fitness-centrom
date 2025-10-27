@@ -1,7 +1,10 @@
 # 🏋️‍♀️ DOKUMENT ORGANIZACIJE
 
 **Trenutni zadatak:**
-- Svaki član napraviti svoj direktorij sa datotekama na Githubu, rok do nedjelje 26.10.2025.
+- Do 02.11.2025: Svaki član napraviti shemu i umetnuti smislene zapise u svoje tablice.
+
+**Prijašnji zadaci:**
+- Do 26.10.2025: Svaki član napraviti svoj direktorij sa datotekama na Githubu.
 
 ---
 
