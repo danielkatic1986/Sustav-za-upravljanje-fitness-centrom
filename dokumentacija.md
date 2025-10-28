@@ -47,6 +47,8 @@
 
 # UVOD
 
+Cilj ovog projekta je izrada baze podataka u sklopu kolegija Baze podataka 2 primjenom znanja stečenog tokom semestra izvođenja kolegija. Tema samog projekta je "Sustav za upravljanje fitness centrom", a kroz bazu podataka obrađeni su dijelovi koji su važni za poslovanje jednog sustava fitness centara kao što su evidencija članova i zaposlenika, evidencija članarina i treninga, evidencija opreme, dobavljača, itd. Valja napomenuti kako je ova baza podataka samo studentski projekt te kao takva odstupa od baza podataka kakve se koriste u stvarnom poslovanju stoga možemo reći kako ova baza podataka obuhvaća samo neke od glavnijih dijelova s kojima se možemo susresti u poslovanju fitness centra. Kroz ovaj dokument prikazani su svi obrađeni dijelovi projekta pri čemu su neki od njih i dodatno opisani kako bi se dobio bolji dojam problema koji se rješava i cilja koji se želi postići. Podaci za tablice nasumično su generirani uz pomoć ChatGPT-a i samostalno izrađenih skripti u Python-u, a jedan dio podataka dobiven je pretraživanjem stranica kao što su Wikipedija te su isti ručno ubačeni u samu bazu. U sljedećim poglavljima predstavit ćemo i opisati sve komponente koje smo napravili u sklopu ovog projekta, od samog poslovnog procesa i konceptualnog dijagrama, pa sve do tablica, upita, procedura itd.
+
 # OPIS POSLOVNOG PROCESA
 
 # ENTITY RELATIONSHIP (ER) DIJAGRAM
