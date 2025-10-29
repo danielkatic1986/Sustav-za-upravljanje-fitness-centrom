@@ -1,0 +1,16 @@
+INSERT INTO tip_prostorije (naziv, opis) VALUES
+('Kardio', 'Opremljena s trakama, orbitrecima i biciklima za razvoj izdržljivosti.'),
+('Teretana', 'Opremljena utezima i spravama za snagu, pogodna za powerlifting i bodybuilding.'),
+('Funkcionalna', 'Pogodna za CrossFit, TRX i treninge visokog intenziteta.'),
+('Aerobik/ples', 'Prilagođena za aerobik, zumbu i ostale programe s glazbom.'),
+('Mind&Body', 'Sesije usmjerene na držanje, disanje i kontrolu pokreta npr. yoga, pilates, meditacija.'),
+('Mobilnost i istezanje', 'Zona pogodna za istezanje i mobilnost.'),
+('Borilačka', 'Boks, kickboxing, tatami zone i ring.'),
+('Individualna', 'Prostor predviđen za individualni rad s trenerom.'),
+('Bazen', 'Zatvoreni bazen i prostor za aqua aerobik.'),
+('Višenamjenska', 'Rekreacijska dvorana za različite sportove i radionice.'),
+('Outdoor trening', 'Vanjski prostor za trening na otvorenom.'),
+('Dječja', 'Prostorija predviđena za rekreaciju djece i mladih.'),
+('Bodyweight', 'Zona namijenjena kalistenici, street workoutu i gimnastičkim vježbama.'),
+('Sportska dvorana', 'Dvorana prilagođena za sportske aktivnosti poput košarke, badmintona ili nogometa.'),
+('Penjačka', 'Prostorija opremljena umjetnom stijenom i sigurnosnom opremom za trening penjanja i razvoja snage gornjeg dijela tijela.');
