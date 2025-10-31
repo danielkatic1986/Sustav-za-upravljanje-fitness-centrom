@@ -51,7 +51,7 @@ CREATE TABLE zaposlenik (
     datum_rodenja DATE, # datum rodenja zaposlenika
     spol ENUM('M', 'Ž', 'Drugo'), # spol zaposlenika, unaprijed definirane opcije
     adresa VARCHAR(100), # adresa stanovanja zaposlenika
-    grad VARCHAR(50), # grad stanovanja zaposlenika
+    id_mjesto INT NOT NULL, # strani kljuc koji povezuje podružnicu s mjestom
     telefon VARCHAR(20), # kontakt telefon zaposlenika
     email VARCHAR(100), # email adresa zaposlenika
     datum_zaposlenja DATE NOT NULL, # datum zaposlenja, obavezno polje
@@ -63,7 +63,11 @@ CREATE TABLE zaposlenik (
     id_podruznica INT NOT NULL, # strani kljuc koji povezuje zaposlenika s podružnicom
    
     CONSTRAINT zaposlenik_pk PRIMARY KEY (id), # definicija primarnog kljuca
-    CONSTRAINT zaposlenik_mjesto_fk FOREIGN KEY (id_radno_mjesto) 
+	CONSTRAINT podruznica_mjesto_fk FOREIGN KEY (id_mjesto) 
+        REFERENCES mjesto(id) # definicija stranog kljuca
+        ON DELETE RESTRICT # zabrana brisanja mjesta ako postoje povezane podružnice
+        ON UPDATE CASCADE # automatska promjena id_mjesta u podružnici ako se promijeni id mjesta
+    CONSTRAINT zaposlenik_radno_mjesto_fk FOREIGN KEY (id_radno_mjesto) 
         REFERENCES radno_mjesto(id) # definicija stranog kljuca
         ON DELETE RESTRICT # zabrana brisanja radnog mjesta ako postoje povezani zaposlenici
         ON UPDATE CASCADE, # automatska promjena id_radno_mjesto u zaposleniku ako se promijeni id radnog mjesta
