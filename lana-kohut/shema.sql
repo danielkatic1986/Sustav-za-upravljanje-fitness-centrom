@@ -21,7 +21,8 @@ vrijeme_izdavanja TIMESTAMP,
 iznos INT,
 popust_check VARCHAR(1),
 ukupan_iznos INT,
-FOREIGN KEY (id_popusta) REFERENCES popust (id)
+FOREIGN KEY (id_popusta) REFERENCES popust (id),
+CHECK (popust_check IN ("D", "N"))
 
 );
 
