@@ -10,13 +10,12 @@ CREATE TABLE tip_prostorije (
 
 CREATE TABLE prostorija (
 	id INTEGER AUTO_INCREMENT,
-    oznaka VARCHAR(20) NOT NULL,
-    lokacija VARCHAR(20) NOT NULL,
+    oznaka VARCHAR(10) NOT NULL,
+    lokacija VARCHAR(50) NOT NULL,
     kapacitet INTEGER NOT NULL,
     tip_prostorije_id INTEGER NOT NULL,
 	podruznica_id INTEGER NOT NULL,
     
-    CONSTRAINT uq_prostorija_oznaka UNIQUE (oznaka),
     CONSTRAINT ck_prostorija_kapacitet CHECK (kapacitet > 0),
     
     CONSTRAINT pk_prostorija PRIMARY KEY (id),
@@ -32,7 +31,6 @@ CREATE TABLE termin_treninga (
     vrijeme_pocetka TIMESTAMP NOT NULL,
     vrijeme_zavrsetka TIMESTAMP NOT NULL,
     napomena TEXT DEFAULT "Nema napomena.",
-    otkazan BOOLEAN NOT NULL DEFAULT 0,
     
     CONSTRAINT ck_termin_treninga_vrijeme_pocetka_vrijeme_zavrsetka CHECK (vrijeme_zavrsetka > vrijeme_pocetka ),
     
