@@ -16,7 +16,7 @@ INSERT INTO tip_prostorije (naziv, opis) VALUES
 INSERT INTO prostorija (oznaka, lokacija, kapacitet, tip_prostorije_id, podruznica_id) VALUES
 ('K-1', 'Prizemlje, lijevi blok', 20, 1, 1),
 ('K-2', 'Prizemlje, lijevi blok', 30, 1, 1),
-('T-1', 'Suteren', 80, 2, 1),
+('T-1', 'Suteren', 100, 2, 1),
 ('F-1', '1. kat', 20, 3, 1),
 ('A-1', 'Prizemlje, desni blok', 30, 4, 1),
 ('A-2', 'Prizemlje, desni blok', 30, 4, 1),
@@ -75,7 +75,7 @@ INSERT INTO prostorija (oznaka, lokacija, kapacitet, tip_prostorije_id, podruzni
 ('BW-1', 'Prizemlje, desni blok', 35, 11, 4),
 ('SD-1', 'Prizemlje, lijevi blok', 30, 12, 4),
 ('P-1', 'Prizemlje, lijevi blok', 30, 13, 4),
--- -------------------------------------------------------
+
 ('K-1', 'Prizemlje', 30, 1, 5),
 ('T-1', 'Prizemlje', 50, 2, 5),
 ('F-1', '1. kat', 20, 3, 5),
@@ -142,3 +142,7 @@ INSERT INTO prostorija (oznaka, lokacija, kapacitet, tip_prostorije_id, podruzni
 ('V-1', 'Prizemlje', 30, 9, 10),
 ('O-1', 'Vani', 30, 10, 10),
 ('SD-1', 'Suteren', 30, 12, 10);
+
+-- Podaci za sljedeće dvije tablice biti će napravljeni kada budu napravljeni podaci za tablicu 'trening' pošto ovise o istoj
+INSERT INTO termin_treninga (trening_id, prostorija_id, trener_id, vrijeme_pocetka, vrijeme_zavrsetka, napomena) VALUES ();
+INSERT INTO rezervacija (clan_id, termin_treninga_id, vrijeme_rezervacije, nacin_rezervacije) VALUES ();

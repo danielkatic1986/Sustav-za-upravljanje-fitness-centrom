@@ -1,3 +1,7 @@
+DROP DATABASE IF EXISTS fitness_centar;
+CREATE DATABASE fitness_centar;
+USE fitness_centar;
+
 CREATE TABLE tip_prostorije (
 	id INTEGER AUTO_INCREMENT,
     naziv VARCHAR(50) NOT NULL,
@@ -19,8 +23,18 @@ CREATE TABLE prostorija (
     CONSTRAINT ck_prostorija_kapacitet CHECK (kapacitet > 0),
     
     CONSTRAINT pk_prostorija PRIMARY KEY (id),
-    CONSTRAINT fk_prostorija_tip_prostorije FOREIGN KEY (tip_prostorije_id) REFERENCES tip_prostorije (id),
-	CONSTRAINT fk_prostorija_podruznica FOREIGN KEY (podruznica_id) REFERENCES podruznica (id)  ON DELETE CASCADE
+    
+    CONSTRAINT fk_prostorija_tip_prostorije
+		FOREIGN KEY (tip_prostorije_id)
+        REFERENCES tip_prostorije (id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+    
+	CONSTRAINT fk_prostorija_podruznica
+		FOREIGN KEY (podruznica_id)
+        REFERENCES podruznica (id) 
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 
 CREATE TABLE termin_treninga (
@@ -32,12 +46,28 @@ CREATE TABLE termin_treninga (
     vrijeme_zavrsetka TIMESTAMP NOT NULL,
     napomena TEXT DEFAULT "Nema napomena.",
     
-    CONSTRAINT ck_termin_treninga_vrijeme_pocetka_vrijeme_zavrsetka CHECK (vrijeme_zavrsetka > vrijeme_pocetka ),
+    CONSTRAINT ck_termin_treninga_vrijeme_pocetka_vrijeme_zavrsetka
+		CHECK (vrijeme_zavrsetka > vrijeme_pocetka ),
     
     CONSTRAINT pk_termin_treninga PRIMARY KEY (id),
-    CONSTRAINT fk_termin_treninga_trening FOREIGN KEY (trening_id) REFERENCES trening (id),
-    CONSTRAINT fk_termin_treninga_prostorija FOREIGN KEY (prostorija_id) REFERENCES prostorija (id),
-    CONSTRAINT fk_termin_treninga_zaposlenik FOREIGN KEY (trener_id) REFERENCES zaposlenik (id)
+    
+    CONSTRAINT fk_termin_treninga_trening
+		FOREIGN KEY (trening_id)
+        REFERENCES trening (id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+    
+    CONSTRAINT fk_termin_treninga_prostorija
+		FOREIGN KEY (prostorija_id)
+        REFERENCES prostorija (id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+    
+    CONSTRAINT fk_termin_treninga_zaposlenik
+		FOREIGN KEY (trener_id)
+        REFERENCES zaposlenik (id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE
 );
 
 CREATE TABLE rezervacija (
@@ -50,6 +80,16 @@ CREATE TABLE rezervacija (
     CONSTRAINT uq_rezervacija_clan_id_termin_treninga_id UNIQUE (clan_id, termin_treninga_id),
     
     CONSTRAINT pk_rezervacija PRIMARY KEY (id),
-    CONSTRAINT fk_rezervacija_clan FOREIGN KEY (clan_id) REFERENCES clan (id) ON DELETE CASCADE,
-    CONSTRAINT fk_rezervacija_termin_treninga FOREIGN KEY (termin_treninga_id) REFERENCES termin_treninga (id) ON DELETE CASCADE
+    
+    CONSTRAINT fk_rezervacija_clan
+		FOREIGN KEY (clan_id)
+        REFERENCES clan (id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+        
+    CONSTRAINT fk_rezervacija_termin_treninga
+		FOREIGN KEY (termin_treninga_id)
+        REFERENCES termin_treninga (id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
