@@ -143,6 +143,47 @@ INSERT INTO prostorija (oznaka, lokacija, kapacitet, tip_prostorije_id, podruzni
 ('O-1', 'Vani', 30, 10, 10),
 ('SD-1', 'Suteren', 30, 12, 10);
 
--- Podaci za sljedeće dvije tablice biti će napravljeni kada budu napravljeni podaci za tablicu 'trening' pošto ovise o istoj
-INSERT INTO termin_treninga (trening_id, prostorija_id, trener_id, vrijeme_pocetka, vrijeme_zavrsetka, napomena) VALUES ();
-INSERT INTO rezervacija (clan_id, termin_treninga_id, vrijeme_rezervacije, nacin_rezervacije) VALUES ();
+INSERT INTO termin_treninga (trening_id, prostorija_id, trener_id, vrijeme_pocetka, vrijeme_zavrsetka, napomena) VALUES
+(3, 7, 3, STR_TO_DATE('01.10.2025. 18:00:00', '%d.%m.%Y. %H:%i:%s'), NULL), -- 1
+(5, 93, 35, STR_TO_DATE('01.10.2025. 18:15:00', '%d.%m.%Y. %H:%i:%s'), NULL), -- 2
+(3, 93, 15, STR_TO_DATE('01.10.2025. 19:30:00', '%d.%m.%Y. %H:%i:%s'), NULL), -- 3
+(3, 63, 11, STR_TO_DATE('02.10.2025. 18:00:00', '%d.%m.%Y. %H:%i:%s'), NULL), -- 4
+(2, 48, 30, STR_TO_DATE('02.10.2025. 19:15:00', '%d.%m.%Y. %H:%i:%s'), NULL), -- 5
+(1, 4, 24, STR_TO_DATE('03.10.2025. 15:30:00', '%d.%m.%Y. %H:%i:%s'), NULL), -- 6
+(5, 74, 33, STR_TO_DATE('03.10.2025. 18:00:00', '%d.%m.%Y. %H:%i:%s'), NULL), -- 7
+(3, 93, 36, STR_TO_DATE('03.10.2025. 18:15:00', '%d.%m.%Y. %H:%i:%s'), NULL), -- 8
+(2, 113, trener_karlovac, STR_TO_DATE('04.10.2025. 17:15:00', '%d.%m.%Y. %H:%i:%s'), NULL), -- 9
+(2, 4, 22, STR_TO_DATE('04.10.2025. 18:00:00', '%d.%m.%Y. %H:%i:%s'), NULL), -- 10
+(6, 18, 25, STR_TO_DATE('04.10.2025. 18:15:00', '%d.%m.%Y. %H:%i:%s'), NULL), -- 11
+(1, 101, 37, STR_TO_DATE('05.10.2025. 18:10:00', '%d.%m.%Y. %H:%i:%s'), NULL), -- 12
+(4, 4, 2, STR_TO_DATE('05.10.2025. 16:00:00', '%d.%m.%Y. %H:%i:%s'), NULL), -- 13
+(6, 46, 30, STR_TO_DATE('06.10.2025. 18:15:00', '%d.%m.%Y. %H:%i:%s'), NULL), -- 14
+(1, 81, 20, STR_TO_DATE('07.10.2025. 18:10:00', '%d.%m.%Y. %H:%i:%s'), NULL), -- 15
+(4, 35, 7, STR_TO_DATE('07.10.2025. 18:15:00', '%d.%m.%Y. %H:%i:%s'), NULL), -- 16
+(3, 7, 1, STR_TO_DATE('08.10.2025. 18:10:00', '%d.%m.%Y. %H:%i:%s'), NULL), -- 17
+(3, 85, 41, STR_TO_DATE('08.10.2025. 18:15:00', '%d.%m.%Y. %H:%i:%s'), NULL), -- 18
+(2, 21, 4, STR_TO_DATE('09.10.2025. 16:30:00', '%d.%m.%Y. %H:%i:%s'), NULL), -- 19
+(5, 37, 28, STR_TO_DATE('09.10.2025. 18:15:00', '%d.%m.%Y. %H:%i:%s'), NULL); -- 20
+
+INSERT INTO rezervacija (clan_id, termin_treninga_id, vrijeme_rezervacije, nacin_rezervacije) VALUES
+(1, 1, STR_TO_DATE('27.09.2025. 11:13:07', '%d.%m.%Y. %H:%i:%s'), 'Online'),
+(2, 1, STR_TO_DATE('24.09.2025. 09:21:11', '%d.%m.%Y. %H:%i:%s'), 'Online'),
+(3, 2, STR_TO_DATE('23.09.2025. 20:09:16', '%d.%m.%Y. %H:%i:%s'), 'Online'),
+(4, 3, STR_TO_DATE('25.09.2025. 20:00:19', '%d.%m.%Y. %H:%i:%s'), 'Online'),
+(5, 4, STR_TO_DATE('28.09.2025. 12:54:56', '%d.%m.%Y. %H:%i:%s'), 'Recepcija'),
+(6, 5, STR_TO_DATE('01.10.2025. 17:51:22', '%d.%m.%Y. %H:%i:%s'), 'Online'),
+(7, 6, STR_TO_DATE('30.09.2025. 15:48:44', '%d.%m.%Y. %H:%i:%s'), 'Online'),
+(8, 7, STR_TO_DATE('29.09.2025. 11:03:33', '%d.%m.%Y. %H:%i:%s'), 'Online'),
+(9, 8, STR_TO_DATE('01.10.2025. 16:54:40', '%d.%m.%Y. %H:%i:%s'), 'Online'),
+(10, 9, STR_TO_DATE('28.09.2025. 18:42:07', '%d.%m.%Y. %H:%i:%s'), 'Recepcija'),
+(11, 10, STR_TO_DATE('01.10.2025. 14:28:02', '%d.%m.%Y. %H:%i:%s'), 'Online'),
+(12, 11, STR_TO_DATE('02.10.2025. 10:56:38', '%d.%m.%Y. %H:%i:%s'), 'Online'),
+(13, 12, STR_TO_DATE('30.09.2025. 09:52:36', '%d.%m.%Y. %H:%i:%s'), 'Recepcija'),
+(14, 13, STR_TO_DATE('03.10.2025. 21:48:13', '%d.%m.%Y. %H:%i:%s'), 'Recepcija'),
+(15, 14, STR_TO_DATE('01.10.2025. 08:34:42', '%d.%m.%Y. %H:%i:%s'), 'Online'),
+(16, 15, STR_TO_DATE('04.10.2025. 20:55:38', '%d.%m.%Y. %H:%i:%s'), 'Online'),
+(17, 16, STR_TO_DATE('02.10.2025. 16:03:03', '%d.%m.%Y. %H:%i:%s'), 'Online'),
+(18, 17, STR_TO_DATE('01.10.2025. 16:38:42', '%d.%m.%Y. %H:%i:%s'), 'Online'),
+(19, 18, STR_TO_DATE('03.10.2025. 19:49:00', '%d.%m.%Y. %H:%i:%s'), 'Online'),
+(20, 19, STR_TO_DATE('06.10.2025. 19:59:31', '%d.%m.%Y. %H:%i:%s'), 'Online'),
+(21, 20, STR_TO_DATE('02.10.2025. 10:16:08', '%d.%m.%Y. %H:%i:%s'), 'Online');
