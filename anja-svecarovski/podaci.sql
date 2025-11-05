@@ -94,7 +94,7 @@ VALUES
 ('Sandra', 'Knežević', '40234567899', STR_TO_DATE('19.05.1989.', '%d.%m.%Y.'), 'Ž', 'Masarykov put 10, Dubrovnik', 12, '0988901234', 'sandra.knezevic@gmail.com', STR_TO_DATE('15.03.2021.', '%d.%m.%Y.'), NULL, 'aktivan', 1520.00, 1, 9),
 ('Dino', 'Horvat', '41234567890', STR_TO_DATE('28.08.1987.', '%d.%m.%Y.'), 'M', 'Lapadska obala 20, Dubrovnik', 12, '0919012345', 'dino.horvat@gmail.com', STR_TO_DATE('01.01.2020.', '%d.%m.%Y.'), NULL, 'aktivan', 1500.00, 1, 9),
 ('Ivana', 'Šimić', '42234567891', STR_TO_DATE('06.06.1992.', '%d.%m.%Y.'), 'Ž', 'Ulica Hrvatskih branitelja 6, Karlovac', 7, '0980123456', 'ivana.simic@gmail.com', STR_TO_DATE('10.09.2020.', '%d.%m.%Y.'), NULL, 'aktivan', 1510.00, 1, 10),
-('Mario', 'Grgić', '43234567892', STR_TO_DATE('15.10.1985.', '%d.%m.%Y.'), 'M', 'Trg kralja Tomislava 10, Karlovac', 7, '0911234567', 'mario.grgic@gmail.com', STR_TO_DATE('01.06.2019.', '%d.%m.%Y.'), STR_TO_DATE('01.06.2020.', '%d.%m.%Y.'), 'neaktivan', 1500.00, 1, 10);
+('Mario', 'Grgić', '43234567892', STR_TO_DATE('15.10.1985.', '%d.%m.%Y.'), 'M', 'Trg kralja Tomislava 10, Karlovac', 7, '0911234567', 'mario.grgic@gmail.com', STR_TO_DATE('01.06.2019.', '%d.%m.%Y.'), STR_TO_DATE('01.06.2020.', '%d.%m.%Y.'), 'neaktivan', 1500.00, 1, 10),
 
 -- Instruktori (10, po 1 u svakoj podružnici)
 ('Luka', 'Šarić', '44234567893', STR_TO_DATE('05.03.1991.', '%d.%m.%Y.'), 'M', 'Ulica sportaša 1, Zagreb', 1, '0911112233', 'luka.saric@gmail.com', STR_TO_DATE('01.01.2020.', '%d.%m.%Y.'), NULL, 'aktivan', 1200.00, 2, 1),
@@ -106,7 +106,7 @@ VALUES
 ('Dino', 'Barić', '50234567899', STR_TO_DATE('09.09.1986.', '%d.%m.%Y.'), 'M', 'Via Lungomare 3, Pula', 8, '0917778899', 'dino.baric@gmail.com', STR_TO_DATE('15.02.2019.', '%d.%m.%Y.'), NULL, 'aktivan', 1200.00, 2, 7),
 ('Tihana', 'Novosel', '51234567890', STR_TO_DATE('23.12.1991.', '%d.%m.%Y.'), 'Ž', 'Ulica kralja Zvonimira 8, Šibenik', 9, '0988889900', 'tihana.novosel@gmail.com', STR_TO_DATE('01.03.2020.', '%d.%m.%Y.'), NULL, 'aktivan', 1200.00, 2, 8),
 ('Filip', 'Knežević', '52234567891', STR_TO_DATE('30.06.1989.', '%d.%m.%Y.'), 'M', 'Masarykov put 7, Dubrovnik', 12, '0919990011', 'filip.knezevic@gmail.com', STR_TO_DATE('10.06.2018.', '%d.%m.%Y.'), NULL, 'aktivan', 1200.00, 2, 9),
-('Maja', 'Božić', '53234567892', STR_TO_DATE('18.05.1990.', '%d.%m.%Y.'), 'Ž', 'Trg kralja Tomislava 5, Karlovac', 7, '0980001122', 'maja.bozic@gmail.com', STR_TO_DATE('01.02.2021.', '%d.%m.%Y.'), NULL, 'aktivan', 1200.00, 2, 10);
+('Maja', 'Božić', '53234567892', STR_TO_DATE('18.05.1990.', '%d.%m.%Y.'), 'Ž', 'Trg kralja Tomislava 5, Karlovac', 7, '0980001122', 'maja.bozic@gmail.com', STR_TO_DATE('01.02.2021.', '%d.%m.%Y.'), NULL, 'aktivan', 1200.00, 2, 10),
 
 -- Asistenti trenera (10, po 1 u svakoj podružnici)
 ('Petar', 'Vuković', '54234567893', STR_TO_DATE('15.01.1992.', '%d.%m.%Y.'), 'M', 'Ulica sportaša 2, Zagreb', 1, '0911112234', 'petar.vukovic@gmail.com', STR_TO_DATE('01.03.2019.', '%d.%m.%Y.'), NULL, 'aktivan', 1000.00, 3, 1),
@@ -118,7 +118,7 @@ VALUES
 ('Dino', 'Novosel', '60234567899', STR_TO_DATE('05.11.1986.', '%d.%m.%Y.'), 'M', 'Via Lungomare 8, Pula', 8, '0917778890', 'dino.novosel@gmail.com', STR_TO_DATE('10.06.2018.', '%d.%m.%Y.'), NULL, 'aktivan', 1000.00, 3, 7),
 ('Tihana', 'Knežević', '61234567890', STR_TO_DATE('15.09.1991.', '%d.%m.%Y.'), 'Ž', 'Ulica kralja Zvonimira 12, Šibenik', 9, '0988889901', 'tihana.knezevic@gmail.com', STR_TO_DATE('01.02.2020.', '%d.%m.%Y.'), NULL, 'aktivan', 1000.00, 3, 8),
 ('Marko', 'Radić', '62234567891', STR_TO_DATE('18.05.1988.', '%d.%m.%Y.'), 'M', 'Masarykov put 12, Dubrovnik', 12, '0919990012', 'marko.radic@gmail.com', STR_TO_DATE('10.03.2019.', '%d.%m.%Y.'), NULL, 'aktivan', 1000.00, 3, 9),
-('Lucija', 'Božić', '63234567892', STR_TO_DATE('28.08.1990.', '%d.%m.%Y.'), 'Ž', 'Trg kralja Tomislava 8, Karlovac', 7, '0980001123', 'lucija.bozic@gmail.com', STR_TO_DATE('01.04.2021.', '%d.%m.%Y.'), NULL, 'aktivan', 1000.00, 3, 10);
+('Lucija', 'Božić', '63234567892', STR_TO_DATE('28.08.1990.', '%d.%m.%Y.'), 'Ž', 'Trg kralja Tomislava 8, Karlovac', 7, '0980001123', 'lucija.bozic@gmail.com', STR_TO_DATE('01.04.2021.', '%d.%m.%Y.'), NULL, 'aktivan', 1000.00, 3, 10),
 
 -- Ostali radnici fitness centra
 ('Maja', 'Kralj', '64234567893', STR_TO_DATE('05.05.1987.', '%d.%m.%Y.'), 'Ž', 'Ulica Zdravlja 1, Zagreb', 1, '0911112235', 'maja.kralj@gmail.com', STR_TO_DATE('01.02.2019.', '%d.%m.%Y.'), NULL, 'aktivan', 1800.00, 4, 1),
@@ -157,8 +157,8 @@ VALUES
 ('Lucija', 'Horvat', '97234567896', STR_TO_DATE('05.03.1990.', '%d.%m.%Y.'), 'Ž', 'Ulica Odjela 3, Osijek', 4, '0984445571', 'lucija.horvat@gmail.com', STR_TO_DATE('01.09.2021.', '%d.%m.%Y.'), NULL, 'aktivan', 2500.00, 20, 4),
 ('Filip', 'Radić', '98234567897', STR_TO_DATE('12.12.1989.', '%d.%m.%Y.'), 'M', 'Menadžer 5, Zadar', 5, '0915556682', 'filip.radic@gmail.com', STR_TO_DATE('15.02.2020.', '%d.%m.%Y.'), NULL, 'aktivan', 2800.00, 21, 5),
 ('Ana', 'Barić', '99234567898', STR_TO_DATE('22.07.1991.', '%d.%m.%Y.'), 'Ž', 'Menadžer 7, Varaždin', 6, '0986667793', 'ana.baric@gmail.com', STR_TO_DATE('01.03.2021.', '%d.%m.%Y.'), NULL, 'aktivan', 2800.00, 21, 6),
-('Ivan', 'Novosel', '100234567899', STR_TO_DATE('05.11.1988.', '%d.%m.%Y.'), 'M', 'Računovodstvo 9, Pula', 8, '0917778894', 'ivan.novosel@gmail.com', STR_TO_DATE('10.06.2019.', '%d.%m.%Y.'), NULL, 'aktivan', 2000.00, 22, 7),
-('Maja', 'Knežević', '101234567890', STR_TO_DATE('15.09.1990.', '%d.%m.%Y.'), 'Ž', 'Blagajna 2, Šibenik', 9, '0988889905', 'maja.knezevic@gmail.com', STR_TO_DATE('01.02.2020.', '%d.%m.%Y.'), NULL, 'aktivan', 2000.00, 23, 8);
+('Ivan', 'Novosel', '10234567899', STR_TO_DATE('05.11.1988.', '%d.%m.%Y.'), 'M', 'Računovodstvo 9, Pula', 8, '0917778894', 'ivan.novosel@gmail.com', STR_TO_DATE('10.06.2019.', '%d.%m.%Y.'), NULL, 'aktivan', 2000.00, 22, 7),
+('Maja', 'Knežević', '11234567899', STR_TO_DATE('15.09.1990.', '%d.%m.%Y.'), 'Ž', 'Blagajna 2, Šibenik', 9, '0988889905', 'maja.knezevic@gmail.com', STR_TO_DATE('01.02.2020.', '%d.%m.%Y.'), NULL, 'aktivan', 2000.00, 23, 8);
 
 INSERT INTO trener_program (trener_id, program_id)
 VALUES
