@@ -66,7 +66,7 @@ CREATE TABLE zaposlenik (
 	CONSTRAINT podruznica_mjesto_fk FOREIGN KEY (id_mjesto) 
         REFERENCES mjesto(id) # definicija stranog kljuca
         ON DELETE RESTRICT # zabrana brisanja mjesta ako postoje povezane podružnice
-        ON UPDATE CASCADE # automatska promjena id_mjesta u podružnici ako se promijeni id mjesta
+        ON UPDATE CASCADE, # automatska promjena id_mjesta u podružnici ako se promijeni id mjesta
     CONSTRAINT zaposlenik_radno_mjesto_fk FOREIGN KEY (id_radno_mjesto) 
         REFERENCES radno_mjesto(id) # definicija stranog kljuca
         ON DELETE RESTRICT # zabrana brisanja radnog mjesta ako postoje povezani zaposlenici
