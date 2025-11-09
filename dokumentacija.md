@@ -53,7 +53,35 @@ Cilj ovog projekta je izrada baze podataka u sklopu kolegija Baze podataka 2 pri
 
 # ENTITY RELATIONSHIP (ER) DIJAGRAM
 
+[ER_dijagram](./slike/Sustav_za_upravljanje_fitness_centrom_-_ER_dijagram.png)
+
 # VEZE ENTITETA PREMA ER DIJAGRAMU
+
+| Veza | Kardinalnost | Opis |
+|:----:|:------------:|------|
+| `clan` ⬅️ `clanarina`              | N:1 | • Jedan član može imati više članarina <br/> • Jedna članarina pripada samo jednom članu |
+| `tip_clanarine` ⬅️ `clanarina`     | N:1 | • Jedan tip članarine može definirati više članarina <br/> • Jedna članarina definirana je točno jednim tipom članarine |
+| `status_clanarine` ⬅️ `clanarina`  | N:1 | • Jedna status članarine može biti dodijeljen na više članarina <br/> • Jedna članarina može imati dodijeljen samo jedan status članarine |
+| `clan` ⬅️ `placanje`               | N:1 | • Jedan član može izvšiti više plaćanja <br/> • Jedno plaćanje vrši točno jedan član |
+| `placanje` ↔️ `racun`              | 1:1 | • Jedno plaćanje vezuje se s jednim računom <br/> • Jedan račun odnosi se na točno jedno plaćanje |
+| `popust` ⬅️ `racun`                | N:1 | • Jedan popust može biti dodijeljen na više računa <br/> • Jedan račun može imati samo jedan popust |
+| `clan` ⬅️ `rezervacija`            | N:1 | • Jedan član može izvšiti više rezervacija <br/> • Jednu rezervaciju podnosi točno jedan član |
+| `clan` ↔️ `trening`                | M:N | • Jedan član može sudjelovati na više treninga <br/> • Na jednom treningu može sudjelovati više članova |
+| `mjesto` ⬅️ `clan`                 | N:1 | • Iz jednog mjesta može dolaziti više članova <br/> • Jedan član dolazi iz točno jednog mjesta |
+| `mjesto` ⬅️ `podruznica`           | N:1 | • U jednom mjestu može se nalaziti više podružnica <br/> • Jedna podružnica nalazi se u jednom mjestu |
+| `podruznica` ⬅️ `zaposlenik`       | N:1 | • Jedna podružnica može imati više zaposlenika <br/> • Jedan zaposlenik zaposlen je u točno jednoj podružnici |
+| `radno_mjesto` ⬅️ `zaposlenik`     | N:1 | • Jedno radno mjesto može imati više zaposlenika <br/> • Jedan zaposlenik ima jedno radno mjesto |
+| `odjel` ⬅️ `radno_mjesto`          | N:1 | • Jedan odjel može imati više radnih mjesta <br/> • Jedno radno mjesto pripada jednom odjelu |
+| `zaposlenik` ↔️ `program`          | M:N | • Jedan zaposlenik može izvoditi više programa <br/> • Jedan program može izvoditi više zaposlenika |
+| `program` ⬅️ `trening`             | N:1 | • Jedan program može definirati više treninga <br/> • Jedan trening definira točno jedan program |
+| `trening` ⬅️ `termin_treninga`     | N:1 | • Jedan trening može se izvoditi na više različitih termina treninga <br/> • Na jednom terminu treninga može se izvoditi samo jedan trening |
+| `termin_treninga` ⬅️ `rezervacija` | N:1 | • Jedan termin treninga može imati više rezervacija <br/> • Jedna rezervacija se veže na točno jedan termin treninga |
+| `prostorija` ⬅️ `termin_treninga`  | N:1 | • U jednoj prostoriji može se održavati više termina treninga <br/> • Jedan termin treninga održava se u samo jednoj prostoriji |
+| `tip_prostorije` ⬅️ `prostorija`   | N:1 | • Jedan tip prostorije može opisivati više prostorije <br/> • Jedna prostorije ima definiran točno jedan tip prostorije |
+| `prostorija` ⬅️ `oprema`           | N:1 | • U jednoj prostoriji može se nalaziti više komada opreme <br/> • Jedan komad opreme nalazi se u samo jednoj prostoriji |
+| `dobavljac` ⬅️ `oprema`            | N:1 | • Jedan dobavljač može isporučivati više različite opreme <br/> • Jedan artikl opreme dobavlja se od točno jednog dobavljača |
+| `oprema` ⬅️ `odrzavanje`           | N:1 | • Jedna oprema može imati više odrađenih održavanja <br/> • Jedno održavanje odnosi se na točno jedan komad opreme |
+| `zaposlenik` ⬅️ `odrzavanje`       | N:1 | • Jedan zaposlenik može obaviti više različitih održavanja <br/> • Za jedno održavanje odgovoran je samo jedan zaposlenik |
 
 # SHEME RELACIJSKOG MODELA
 
