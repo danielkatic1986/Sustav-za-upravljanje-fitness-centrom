@@ -1,5 +1,7 @@
 /*
 U ovom dokumentu definiramo shemu baze podataka
+
+TODO: autentifikacija i autorizacija, dodati korisnika koji ima pristup nekim tablicama
 */
 
 /*
