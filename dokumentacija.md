@@ -53,7 +53,7 @@ Cilj ovog projekta je izrada baze podataka u sklopu kolegija Baze podataka 2 pri
 
 # ENTITY RELATIONSHIP (ER) DIJAGRAM
 
-[ER_dijagram](./slike/Sustav_za_upravljanje_fitness_centrom_-_ER_dijagram.png)
+![ER_dijagram](./slike/Sustav_za_upravljanje_fitness_centrom_-_ER_dijagram.png)
 
 # VEZE ENTITETA PREMA ER DIJAGRAMU
 
@@ -105,3 +105,4 @@ Cilj ovog projekta je izrada baze podataka u sklopu kolegija Baze podataka 2 pri
 
 
 # ZAKLJUČAK
+
