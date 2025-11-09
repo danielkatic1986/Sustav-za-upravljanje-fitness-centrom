@@ -39,6 +39,7 @@
 | `vrijeme_pocetka` | TIMESTAMP | NOT_NULL | Sadrži vrijeme početka termina treninga stoga je tip podatka TIMESTAMP koji dozvoljava unos vremena u formatu u kojem se može zabilježiti datum, sate, minute i sekunde, te omogućuje lakšu manipulaciju tim podacima tokom daljnjeg rada. Unos je obavezan pošto svaki termin treninga mora imati evidentirano vrijeme početka izvođenja. |
 | `vrijeme_zavrsetka` | TIMESTAMP | NOT_NULL | Sadrži vrijeme završetka termina treninga stoga je tip podatka TIMESTAMP koji dozvoljava unos vremena u formatu u kojem se može zabilježiti datum, sate, minute i sekunde, te omogućuje lakšu manipulaciju tim podacima tokom daljnjeg rada. Unos je obavezan pošto svaki termin treninga mora imati evidentirano vrijeme završetka izvođenja. |
 | `napomena` | TEXT | DEFAULT | Sadrži napomenu za pojedini termin treninga stoga je tip podatka TEXT koji podržava unos do 65535 znakova, a ukoliko se prilikom unosa ne unese vrijednost za ovaj atribut isti će biti postavljen na vrijednost *"Nema napomena."* definiranu ograničenjem DEFAULT. |
+| `otkazan` | BOOLEAN | NOT_NULL DEFAULT | Sadrži informaciju je li pojedini termin treninga naposljetku otkazan stoga je tip podatka BOOLEAN. Atribut mora biti definiran za svaki termin radi lakše evidencije održanih i otkazanih termina, a ukoliko se prilikom unosa ne unese vrijednost za ovaj atribut isti će biti postavljen na vrijednost '0' definiranu ograničenjem DEFAULT. |
 
 ## TABLICA rezervacija
 

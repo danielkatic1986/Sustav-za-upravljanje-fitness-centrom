@@ -63,10 +63,10 @@ CREATE TABLE zaposlenik (
     id_podruznica INT NOT NULL, # strani kljuc koji povezuje zaposlenika s podružnicom
    
     CONSTRAINT zaposlenik_pk PRIMARY KEY (id), # definicija primarnog kljuca
-	CONSTRAINT podruznica_mjesto_fk FOREIGN KEY (id_mjesto) 
+	CONSTRAINT podruznica_mj_fk FOREIGN KEY (id_mjesto) 
         REFERENCES mjesto(id) # definicija stranog kljuca
         ON DELETE RESTRICT # zabrana brisanja mjesta ako postoje povezane podružnice
-        ON UPDATE CASCADE # automatska promjena id_mjesta u podružnici ako se promijeni id mjesta
+        ON UPDATE CASCADE, # automatska promjena id_mjesta u podružnici ako se promijeni id mjesta
     CONSTRAINT zaposlenik_radno_mjesto_fk FOREIGN KEY (id_radno_mjesto) 
         REFERENCES radno_mjesto(id) # definicija stranog kljuca
         ON DELETE RESTRICT # zabrana brisanja radnog mjesta ako postoje povezani zaposlenici
@@ -81,8 +81,8 @@ CREATE TABLE zaposlenik (
 
 CREATE TABLE trener_program (
 	id INT AUTO_INCREMENT, # iznos se automatski sam povecava
-    trener_id VARCHAR(50) NOT NULL, # strani kljuc koji povezuje trenera sa zaposlenikom, obavezno polje
-    program_id VARCHAR(50) NOT NULL, # strani kljuc koji povezuje program sa odjelom, obavezno polje
+    trener_id INT NOT NULL, # strani kljuc koji povezuje trenera sa zaposlenikom, obavezno polje
+    program_id INT NOT NULL, # strani kljuc koji povezuje program sa odjelom, obavezno polje
     
     CONSTRAINT trener_program_pk PRIMARY KEY (id), # definicija primarnog kljuca
     CONSTRAINT trener_fk FOREIGN KEY (trener_id) REFERENCES zaposlenik(id), # definicija stranog kljuca za trenera
