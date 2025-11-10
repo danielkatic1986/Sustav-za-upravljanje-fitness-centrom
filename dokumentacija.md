@@ -85,6 +85,32 @@ Cilj ovog projekta je izrada baze podataka u sklopu kolegija Baze podataka 2 pri
 
 # SHEME RELACIJSKOG MODELA
 
+| Tablica | Atributi |
+|---------|----------|
+| `clan`           	 | `id`, `ime`, `prezime`, `oib`, `spol`, `datum_rodenja`, `id_mjesto`, `adresa`, `email`, `telefon`, `datum_uclanjenja`, `datum_posljednje_aktivnosti`, `aktivan` |
+| `clanarina`      	 | `id`, `id_clan`, `id_tip`, `id_status`, `datum_pocetka`, `datum_zavrsetka` |
+| `tip_clanarine`  	 | `id`, `naziv`, `trajanje_mjeseci`, `cijena`, `opis` |
+| `status_clanarine` | `id`, `naziv`, `opis` |
+| `placanje`       	 | `id`, `id_clan`, `id_racun`, `opis_placanja`, `status_placanja` |
+| `racun`          	 | `id`, `id_popusta`, `nacin_placanja`, `datum_izdavanja`, `vrijeme_izdavanja`, `iznos_prije_popusta`, `popust_check`, `ukupan_iznos` |
+| `popust`         	 | `id`, `naziv_popusta`, `iznos_popusta` |
+| `rezervacija`    	 | `id`, `clan_id`, `termin_treninga_id`, `vrijeme_rezervacije`, `nacin_rezervacije` |
+| `trening_clan`   	 | `id`, `termin_treninga_id`, `clan_id`, `status_prisustva`, `vrijeme_checkina`, `napomena` |
+| `trening`        	 | `id`, `program_id`, `razina`, `planirano_trajanje_min`, `max_polaznika`, `aktivan` |
+| `mjesto`         	 | `id`, `naziv`, `postanski_broj`, `drzava` |
+| `podruznica`     	 | `id`, `naziv`, `adresa`, `id_mjesto` |
+| `zaposlenik`     	 | `id`, `ime`, `prezime`, `oib`, `datum_rodenja`, `spol`, `adresa`, `id_mjesto`, `telefon`, `email`, `datum_zaposlenja`, `datum_prestanka`, `status_zaposlenika`, `placa`, `id_radno_mjesto`, `id_podruznica` |
+| `radno_mjesto`   	 | `id`, `naziv`, `aktivno`, `opis`, `id_odjel` |
+| `odjel`          	 | `id`, `naziv`, `aktivno`, `opis`, `broj_zaposlenika` |
+| `trener_program` 	 | `id`, `trener_id`, `program_id` |
+| `program`        	 | `id`, `naziv`, `opis`, `intenzitet` |
+| `termin_treninga`	 | `id`, `trening_id`, `prostorija_id`, `trener_id`, `vrijeme_pocetka`, `vrijeme_zavrsetka`, `napomena`, `otkazan` |
+| `prostorija`     	 | `id`, `oznaka`, `lokacija`, `kapacitet`, `tip_prostorije_id`, `podruznica_id` |
+| `tip_prostorije` 	 | `id`, `naziv`, `opis` |
+| `oprema`         	 | `id`, `naziv`, `prostorija_id`, `dobavljac_id`, `datum_nabave`, `stanje` |
+| `dobavljac`      	 | `id`, `naziv`, `oib`, `kontakt`, `adresa` |
+| `odrzavanje`     	 | `id`, `oprema_id`, `zaposlenik_id`, `datum`, `opis` |
+
 # EER DIJAGRAM (MySQL Workbench)
 
 # SQL TABLICE
@@ -105,4 +131,5 @@ Cilj ovog projekta je izrada baze podataka u sklopu kolegija Baze podataka 2 pri
 
 
 # ZAKLJUČAK
+
 
