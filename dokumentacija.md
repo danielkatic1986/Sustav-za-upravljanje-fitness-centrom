@@ -61,7 +61,8 @@ Cilj ovog projekta je izrada baze podataka u sklopu kolegija Baze podataka 2 pri
 |:----:|:------------:|------|
 | `clan` ⬅️ `clanarina`              | N:1 | • Jedan član može imati više članarina <br/> • Jedna članarina pripada samo jednom članu |
 | `tip_clanarine` ⬅️ `clanarina`     | N:1 | • Jedan tip članarine može definirati više članarina <br/> • Jedna članarina definirana je točno jednim tipom članarine |
-| `status_clanarine` ⬅️ `clanarina`  | N:1 | • Jedna status članarine može biti dodijeljen na više članarina <br/> • Jedna članarina može imati dodijeljen samo jedan status članarine |
+| `status_clanarine` ⬅️ `clanarina`  | N:1 | • Jedan status članarine može biti dodijeljen na više članarina <br/> • Jedna članarina može imati dodijeljen samo jedan status članarine |
+| `statistika_potrosnje` ⬅️ `clan`  | N:1 | • Više statistika za jednog člana <br/> • Jedan član ima više statistika |
 | `clan` ⬅️ `placanje`               | N:1 | • Jedan član može izvšiti više plaćanja <br/> • Jedno plaćanje vrši točno jedan član |
 | `placanje` ↔️ `racun`              | 1:1 | • Jedno plaćanje vezuje se s jednim računom <br/> • Jedan račun odnosi se na točno jedno plaćanje |
 | `popust` ⬅️ `racun`                | N:1 | • Jedan popust može biti dodijeljen na više računa <br/> • Jedan račun može imati samo jedan popust |
@@ -91,6 +92,8 @@ Cilj ovog projekta je izrada baze podataka u sklopu kolegija Baze podataka 2 pri
 | `clanarina`      	 | `id`, `id_clan`, `id_tip`, `id_status`, `datum_pocetka`, `datum_zavrsetka` |
 | `tip_clanarine`  	 | `id`, `naziv`, `trajanje_mjeseci`, `cijena`, `opis` |
 | `status_clanarine` | `id`, `naziv`, `opis` |
+| `statistika_potrosnje` | `id`, `id_clan`, `ukupno_u_periodu`, `godina`, `kvartal` |
+| `mjesto` | `id`, `naziv`, `postanski_broj`, `drzava` |
 | `placanje`       	 | `id`, `id_clan`, `id_racun`, `opis_placanja`, `status_placanja` |
 | `racun`          	 | `id`, `id_popusta`, `nacin_placanja`, `datum_izdavanja`, `vrijeme_izdavanja`, `iznos_prije_popusta`, `popust_check`, `ukupan_iznos` |
 | `popust`         	 | `id`, `naziv_popusta`, `iznos_popusta` |

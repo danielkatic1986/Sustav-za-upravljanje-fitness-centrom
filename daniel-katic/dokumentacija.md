@@ -103,9 +103,28 @@ Svrha je omogućiti praćenje statusa članova, vrsta članarina i njihovog traj
 
 ---
 
+### 2.5 `statistika_potrosnje`
+**Opis:** pohrana kvartalne statistike potrošnje svakog člana. 
+
+Svaki zapis predstavlja ukupni iznos koji je član potrošio na članarine unutar određenog kvartala i godine. 
+Tablica je automatski popunjena pomoću procedure `statistika_potrosnje()` i event `event_statistika_potrosnje` azurira podatke prvog dana novog kvartala.
+
+**Veza:** N:1 s `clan` (svaki član ima više kvartalnih zapisa) 
+
+| Atribut | Tip | Ključ | Opis |
+|---------|-----|-------|------|
+| `id` | INT | PK | Jedinstveni identifikator zapisa |
+| `id_clan` | INT | FK | Poveznica na člana |
+| `ukupno_u_periodu` | DECIMAL(10,2) || Ukupan iznos potrošen u kvartalu |
+| `godina` | YEAR || Godina na koju se statistika odnosi |
+| `kvartal` | INT || Kvartal (1–4) |  
+
+---
+
 ## 3. Logičke veze (ER shema – opisno)
-- **clan (1)** — *(N)* **clanarina**  
-- **tip_clanarine (1)** — *(N)* **clanarina**  
-- **status_clanarine (1)** — *(N)* **clanarina**
+- **clan** `1—N` **clanarina**  
+- **tip_clanarine** `1—N` **clanarina**  
+- **status_clanarine** `1—N` **clanarina**
+- **clan** `1—N` **statistika_potrosnje**
 
 Ovim odnosima moguće je pratiti svaku članarinu pojedinog člana, njezin tip i trenutačni status.
