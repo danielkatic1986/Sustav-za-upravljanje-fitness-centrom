@@ -37,7 +37,7 @@ CREATE TABLE mjesto (
 		- TODO: automatizirati triggerom
 */
 CREATE TABLE clan (
-	id INT AUTO_INCREMENT,
+  id INT AUTO_INCREMENT,
   ime VARCHAR(50) NOT NULL,
   prezime VARCHAR(50) NOT NULL,
   oib CHAR(11) NOT NULL,
@@ -74,7 +74,7 @@ CREATE TABLE clan (
 */
 
 CREATE TABLE tip_clanarine (
-	id INT AUTO_INCREMENT,
+  id INT AUTO_INCREMENT,
   naziv VARCHAR(50) NOT NULL,
   trajanje_mjeseci INT NOT NULL,
   cijena DECIMAL(10, 2) NOT NULL,
@@ -103,7 +103,7 @@ CREATE TABLE tip_clanarine (
 */
 
 CREATE TABLE status_clanarine (
-	id INT AUTO_INCREMENT,
+  id INT AUTO_INCREMENT,
   naziv VARCHAR(50) NOT NULL,
   opis VARCHAR(255),
   
@@ -118,7 +118,7 @@ CREATE TABLE status_clanarine (
 */
 
 CREATE TABLE clanarina (
-	id INT AUTO_INCREMENT,
+  id INT AUTO_INCREMENT,
   id_clan INT NOT NULL,
   id_tip INT NOT NULL,
   id_status INT NOT NULL,
@@ -145,4 +145,24 @@ CREATE TABLE clanarina (
 
   CONSTRAINT ck_clanarina_datumi
   CHECK (datum_zavrsetka > datum_pocetka)
+);
+
+/*
+	Relacija: statistika_potrosnje
+    Opis: statistika potrošnje svakog člana po tromjesečju
+    Veze: 1:N, jedan član ima N statističkih zapisa
+*/
+CREATE TABLE statistika_potrosnje (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  id_clan INT NOT NULL,
+  ukupno_u_periodu DECIMAL(10,2) NOT NULL DEFAULT 0,
+  godina YEAR NOT NULL,
+  kvartal INT NOT NULL,
+  
+  CONSTRAINT fk_statistika_potrosnje_clan
+  FOREIGN KEY (id_clan) REFERENCES clan(id)
+  ON UPDATE CASCADE,
+  
+  CONSTRAINT uq_statistika_potrosnje_id_godina_kvartal
+  UNIQUE(id_clan, godina, kvartal)
 );
