@@ -44,8 +44,8 @@ CREATE TABLE termin_treninga (
     trener_id INTEGER NOT NULL,
     vrijeme_pocetka TIMESTAMP NOT NULL,
     vrijeme_zavrsetka TIMESTAMP NOT NULL,
-    napomena TEXT DEFAULT "Nema napomena.",
-    otkazan BOOLEAN NOT NULL DEFAULT 0,
+    napomena TEXT,
+    otkazan BOOLEAN NOT NULL DEFAULT FALSE,
     
     CONSTRAINT ck_termin_treninga_vrijeme_pocetka_vrijeme_zavrsetka
 		CHECK (vrijeme_zavrsetka > vrijeme_pocetka ),
