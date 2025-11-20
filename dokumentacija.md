@@ -62,7 +62,7 @@ Cilj ovog projekta je izrada baze podataka u sklopu kolegija Baze podataka 2 pri
 | `clan` ⬅️ `clanarina`              | N:1 | • Jedan član može imati više članarina <br/> • Jedna članarina pripada samo jednom članu |
 | `tip_clanarine` ⬅️ `clanarina`     | N:1 | • Jedan tip članarine može definirati više članarina <br/> • Jedna članarina definirana je točno jednim tipom članarine |
 | `status_clanarine` ⬅️ `clanarina`  | N:1 | • Jedan status članarine može biti dodijeljen na više članarina <br/> • Jedna članarina može imati dodijeljen samo jedan status članarine |
-| `statistika_potrosnje` ⬅️ `clan`  | N:1 | • Više statistika za jednog člana <br/> • Jedan član ima više statistika |
+| `statistika_potrosnje` ⬅️ `clan`   | N:1 | • Za jednog člana može se voditi više zapisa statististike potrošnje <br/> • Jedan zapis statistike potrošnje vodi se za točno jednog člana |
 | `clan` ⬅️ `placanje`               | N:1 | • Jedan član može izvšiti više plaćanja <br/> • Jedno plaćanje vrši točno jedan član |
 | `placanje` ↔️ `racun`              | 1:1 | • Jedno plaćanje vezuje se s jednim računom <br/> • Jedan račun odnosi se na točno jedno plaćanje |
 | `popust` ⬅️ `racun`                | N:1 | • Jedan popust može biti dodijeljen na više računa <br/> • Jedan račun može imati samo jedan popust |
@@ -88,31 +88,31 @@ Cilj ovog projekta je izrada baze podataka u sklopu kolegija Baze podataka 2 pri
 
 | Tablica | Atributi |
 |---------|----------|
-| `clan`           	 | `id`, `ime`, `prezime`, `oib`, `spol`, `datum_rodenja`, `id_mjesto`, `adresa`, `email`, `telefon`, `datum_uclanjenja`, `datum_posljednje_aktivnosti`, `aktivan` |
-| `clanarina`      	 | `id`, `id_clan`, `id_tip`, `id_status`, `datum_pocetka`, `datum_zavrsetka` |
-| `tip_clanarine`  	 | `id`, `naziv`, `trajanje_mjeseci`, `cijena`, `opis` |
-| `status_clanarine` | `id`, `naziv`, `opis` |
+| `clan`           	     | `id`, `ime`, `prezime`, `oib`, `spol`, `datum_rodenja`, `id_mjesto`, `adresa`, `email`, `telefon`, `datum_uclanjenja`, `datum_posljednje_aktivnosti`, `aktivan` |
+| `clanarina`      	     | `id`, `id_clan`, `id_tip`, `id_status`, `datum_pocetka`, `datum_zavrsetka` |
+| `tip_clanarine`  	     | `id`, `naziv`, `trajanje_mjeseci`, `cijena`, `opis` |
+| `status_clanarine`     | `id`, `naziv`, `opis` |
 | `statistika_potrosnje` | `id`, `id_clan`, `ukupno_u_periodu`, `godina`, `kvartal` |
-| `mjesto` | `id`, `naziv`, `postanski_broj`, `drzava` |
-| `placanje`       	 | `id`, `id_clan`, `id_racun`, `opis_placanja`, `status_placanja` |
-| `racun`          	 | `id`, `id_popusta`, `nacin_placanja`, `datum_izdavanja`, `vrijeme_izdavanja`, `iznos_prije_popusta`, `popust_check`, `ukupan_iznos` |
-| `popust`         	 | `id`, `naziv_popusta`, `iznos_popusta` |
-| `rezervacija`    	 | `id`, `clan_id`, `termin_treninga_id`, `vrijeme_rezervacije`, `nacin_rezervacije` |
-| `trening_clan`   	 | `id`, `termin_treninga_id`, `clan_id`, `status_prisustva`, `vrijeme_checkina`, `napomena` |
-| `trening`        	 | `id`, `program_id`, `razina`, `planirano_trajanje_min`, `max_polaznika`, `aktivan` |
-| `mjesto`         	 | `id`, `naziv`, `postanski_broj`, `drzava` |
-| `podruznica`     	 | `id`, `naziv`, `adresa`, `id_mjesto` |
-| `zaposlenik`     	 | `id`, `ime`, `prezime`, `oib`, `datum_rodenja`, `spol`, `adresa`, `id_mjesto`, `telefon`, `email`, `datum_zaposlenja`, `datum_prestanka`, `status_zaposlenika`, `placa`, `id_radno_mjesto`, `id_podruznica` |
-| `radno_mjesto`   	 | `id`, `naziv`, `aktivno`, `opis`, `id_odjel` |
-| `odjel`          	 | `id`, `naziv`, `aktivno`, `opis`, `broj_zaposlenika` |
-| `trener_program` 	 | `id`, `trener_id`, `program_id` |
-| `program`        	 | `id`, `naziv`, `opis`, `intenzitet` |
-| `termin_treninga`	 | `id`, `trening_id`, `prostorija_id`, `trener_id`, `vrijeme_pocetka`, `vrijeme_zavrsetka`, `napomena`, `otkazan` |
-| `prostorija`     	 | `id`, `oznaka`, `lokacija`, `kapacitet`, `tip_prostorije_id`, `podruznica_id` |
-| `tip_prostorije` 	 | `id`, `naziv`, `opis` |
-| `oprema`         	 | `id`, `naziv`, `prostorija_id`, `dobavljac_id`, `datum_nabave`, `stanje` |
-| `dobavljac`      	 | `id`, `naziv`, `oib`, `kontakt`, `adresa` |
-| `odrzavanje`     	 | `id`, `oprema_id`, `zaposlenik_id`, `datum`, `opis` |
+| `mjesto`               | `id`, `naziv`, `postanski_broj`, `drzava` |
+| `placanje`       	     | `id`, `id_clan`, `id_racun`, `opis_placanja`, `status_placanja` |
+| `racun`          	     | `id`, `id_popusta`, `nacin_placanja`, `datum_izdavanja`, `vrijeme_izdavanja`, `iznos_prije_popusta`, `popust_check`, `ukupan_iznos` |
+| `popust`         	     | `id`, `naziv_popusta`, `iznos_popusta` |
+| `rezervacija`    	     | `id`, `clan_id`, `termin_treninga_id`, `vrijeme_rezervacije`, `nacin_rezervacije` |
+| `trening_clan`   	     | `id`, `termin_treninga_id`, `clan_id`, `status_prisustva`, `vrijeme_checkina`, `napomena` |
+| `trening`        	     | `id`, `program_id`, `razina`, `planirano_trajanje_min`, `max_polaznika`, `aktivan` |
+| `mjesto`         	     | `id`, `naziv`, `postanski_broj`, `drzava` |
+| `podruznica`     	     | `id`, `naziv`, `adresa`, `id_mjesto` |
+| `zaposlenik`     	     | `id`, `ime`, `prezime`, `oib`, `datum_rodenja`, `spol`, `adresa`, `id_mjesto`, `telefon`, `email`, `datum_zaposlenja`, `datum_prestanka`, `status_zaposlenika`, `placa`, `id_radno_mjesto`, `id_podruznica` |
+| `radno_mjesto`   	     | `id`, `naziv`, `aktivno`, `opis`, `id_odjel` |
+| `odjel`          	     | `id`, `naziv`, `aktivno`, `opis`, `broj_zaposlenika` |
+| `trener_program` 	     | `id`, `trener_id`, `program_id` |
+| `program`        	     | `id`, `naziv`, `opis`, `intenzitet` |
+| `termin_treninga`	     | `id`, `trening_id`, `prostorija_id`, `trener_id`, `vrijeme_pocetka`, `vrijeme_zavrsetka`, `napomena`, `otkazan` |
+| `prostorija`     	     | `id`, `oznaka`, `lokacija`, `kapacitet`, `tip_prostorije_id`, `podruznica_id` |
+| `tip_prostorije` 	     | `id`, `naziv`, `opis` |
+| `oprema`         	     | `id`, `naziv`, `prostorija_id`, `dobavljac_id`, `datum_nabave`, `stanje` |
+| `dobavljac`      	     | `id`, `naziv`, `oib`, `kontakt`, `adresa` |
+| `odrzavanje`     	     | `id`, `oprema_id`, `zaposlenik_id`, `datum`, `opis` |
 
 # EER DIJAGRAM (MySQL Workbench)
 
