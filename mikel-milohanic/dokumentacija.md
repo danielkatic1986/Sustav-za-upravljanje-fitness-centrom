@@ -28,7 +28,7 @@
 ## TABLICA termin_treninga
 
 - tablica ***termin_treninga*** služi za evidenciju termina pojedinog treninga
-- sastoji se od atributa `id`, `trening_id`, `prostorija_id`, `trener_id`, `vrijeme_pocetka`, `vrijeme_zavrsetka`, `napomena` i `otkazan`.
+- sastoji se od atributa `id`, `trening_id`, `prostorija_id`, `trener_id`, `vrijeme_pocetka`, `vrijeme_zavrsetka`, `rezervirano`, `napomena` i `otkazan`.
 
 | Atribut | Tip | Ograničenja | Opis |
 |---------|-----|-------------|------|
@@ -40,6 +40,7 @@
 | `vrijeme_zavrsetka` | TIMESTAMP | NOT_NULL | Sadrži vrijeme završetka termina treninga stoga je tip podatka TIMESTAMP koji dozvoljava unos vremena u formatu u kojem se može zabilježiti datum, sate, minute i sekunde, te omogućuje lakšu manipulaciju tim podacima tokom daljnjeg rada. Unos je obavezan pošto svaki termin treninga mora imati evidentirano vrijeme završetka izvođenja. |
 | `napomena` | TEXT | | Sadrži napomenu za pojedini termin treninga stoga je tip podatka TEXT koji podržava unos do 65535 znakova, a unos nije obavezan. |
 | `otkazan` | BOOLEAN | NOT_NULL DEFAULT | Sadrži informaciju je li pojedini termin treninga naposljetku otkazan stoga je tip podatka BOOLEAN. Atribut mora biti definiran za svaki termin radi lakše evidencije održanih i otkazanih termina, a ukoliko se prilikom unosa ne unese vrijednost za ovaj atribut isti će biti postavljen na vrijednost FALSE definiranu ograničenjem DEFAULT. |
+| `rezervirano` | INTEGER | NOT_NULL DEFAULT | Sadrži informaciju o popunjenosti termina rezervacijama stoga je tip podatka INTEGER. Atribut mora biti definiran za svaki termin kako nebi bilo više rezervacija nego što je kapacitet prostorije, a ukoliko se prilikom unosa ne unese vrijednost za ovaj atribut isti će biti postavljen na vrijednost 0 definiranu ograničenjem DEFAULT. |
 
 ## TABLICA rezervacija
 

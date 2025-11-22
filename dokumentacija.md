@@ -107,7 +107,7 @@ Cilj ovog projekta je izrada baze podataka u sklopu kolegija Baze podataka 2 pri
 | `odjel`          	     | `id`, `naziv`, `aktivno`, `opis`, `broj_zaposlenika` |
 | `trener_program` 	     | `id`, `trener_id`, `program_id` |
 | `program`        	     | `id`, `naziv`, `opis`, `intenzitet` |
-| `termin_treninga`	     | `id`, `trening_id`, `prostorija_id`, `trener_id`, `vrijeme_pocetka`, `vrijeme_zavrsetka`, `napomena`, `otkazan` |
+| `termin_treninga`	     | `id`, `trening_id`, `prostorija_id`, `trener_id`, `vrijeme_pocetka`, `vrijeme_zavrsetka`, `napomena`, `otkazan`, `rezervirano` |
 | `prostorija`     	     | `id`, `oznaka`, `lokacija`, `kapacitet`, `tip_prostorije_id`, `podruznica_id` |
 | `tip_prostorije` 	     | `id`, `naziv`, `opis` |
 | `oprema`         	     | `id`, `naziv`, `prostorija_id`, `dobavljac_id`, `datum_nabave`, `stanje` |

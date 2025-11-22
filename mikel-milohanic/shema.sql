@@ -46,9 +46,13 @@ CREATE TABLE termin_treninga (
     vrijeme_zavrsetka TIMESTAMP NOT NULL,
     napomena TEXT,
     otkazan BOOLEAN NOT NULL DEFAULT FALSE,
+    rezervirano INTEGER NOT NULL DEFAULT 0,
     
     CONSTRAINT ck_termin_treninga_vrijeme_pocetka_vrijeme_zavrsetka
 		CHECK (vrijeme_zavrsetka > vrijeme_pocetka ),
+	
+    CONSTRAINT ck_termin_treninga_rezervirano_prostorija_kapacitet
+		CHECK (rezervirano <= (SELECT kapacitet FROM prostorija WHERE id = prostorija_id)),
     
     CONSTRAINT pk_termin_treninga PRIMARY KEY (id),
     
