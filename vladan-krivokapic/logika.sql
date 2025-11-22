@@ -1,3 +1,8 @@
+/*________________________
+  PREGLEDI
+  ________________________               */
+
+
 /* 1. Pregled sve opreme s dobavljačem, prostorijom, 
       brojem održavanja i datumom zadnjeg održavanja */
 SELECT 
@@ -51,6 +56,9 @@ GROUP BY
 HAVING dana_bez_servisa > 180
 ORDER BY dana_bez_servisa DESC;
 
+/*________________________________________________________________________
+  POGLEDI
+  ________________________________________________________________________               */
 /* VIEW 1: v_oprema_zadnje_odrzavanje
    – sve informacije o opremi + zadnji datum održavanja + broj održavanja */
 CREATE OR REPLACE VIEW v_oprema_zadnje_odrzavanje AS
@@ -110,6 +118,11 @@ WHERE o.stanje IN ('neispravno', 'u servisu', 'otpisano');
 
 DELIMITER //
 
+
+/*___________________________________________________________
+  FUNCKIJE
+  ___________________________________________________________               */
+      
 /* FUNKCIJA 1: fn_zadnje_odrzavanje(oprema_id)
    – vraća zadnji datum održavanja, ili NULL ako nije održavano */
 CREATE FUNCTION fn_zadnje_odrzavanje (p_oprema_id INT)
@@ -159,6 +172,11 @@ DELIMITER ;
 
 DELIMITER //
 
+ /*_______________________________________________________
+  PROCEDURE
+  ________________________________________________________               */
+
+      
 /* PROCEDURA 1: sp_evidentiraj_odrzavanje
    – ubacuje novi zapis u odrzavanje
    – opcionalno odmah mijenja stanje opreme (default 'ispravno') */
@@ -208,6 +226,12 @@ DELIMITER ;
 
 DELIMITER //
 
+
+/*________________________________________________________
+  TRIGGERI
+  ________________________________________________________               */
+
+      
 /* TRIGGER 1: prije INSERT u odrzavanje
    – zabrani unos ako je datum manji od datuma nabave opreme */
 CREATE TRIGGER trg_odrzavanje_bi_datum_kontrola
