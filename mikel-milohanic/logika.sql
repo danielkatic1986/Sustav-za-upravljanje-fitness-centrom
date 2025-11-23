@@ -168,9 +168,28 @@ END//
 DROP PROCEDURE IF EXISTS evidencija_rezervacija_termina //
 CREATE PROCEDURE evidencija_rezervacija_termina(IN p_termin_treninga_id INTEGER, IN p_promjena INTEGER)
 BEGIN
-	UPDATE termin_treninga
-	SET    rezervirano = trenutni_broj_rezervacija + p_promjena
-	WHERE  id = p_termin_treninga_id;
+	DECLARE trenutno_rezervacija, max_kapacitet INTEGER;
+    
+    SELECT	 COUNT(r.id),
+			 p.kapacitet
+	INTO	 trenutno_rezervacija,
+			 max_kapacitet
+    FROM	 (SELECT *
+			  FROM termin_treninga
+			  WHERE id = p_termin_treninga_id) AS tt
+    JOIN	 prostorija p ON tt.prostorija_id = p.id
+    JOIN	 rezervacija r ON tt.id = r.termin_treninga_id
+    GROUP BY tt.id;
+    
+    
+    IF trenutno_rezervacija + p_promjena > max_kapacitet THEN
+		SIGNAL SQLSTATE '41000'
+        SET MESSAGE_TEXT = 'Nije moguće unijeti novu rezervaciju: kapacitet termina je popunjen.';
+	ELSE
+		UPDATE termin_treninga
+		SET    rezervirano = trenutno_rezervacija + p_promjena
+		WHERE  id = p_termin_treninga_id;
+	END IF;
 END//
 
 -- ---------------- --
@@ -211,9 +230,9 @@ BEGIN
 END //
 
 -- Okidač koji povećava popunjenost termina treninga kada se napravi rezervacija
-DROP TRIGGER IF EXISTS ai_rezervacija //
-CREATE TRIGGER ai_rezervacija
-AFTER INSERT ON rezervacija
+DROP TRIGGER IF EXISTS bi_rezervacija //
+CREATE TRIGGER bi_rezervacija
+BEFORE INSERT ON rezervacija
 FOR EACH ROW
 BEGIN
 	CALL evidencija_rezervacija_termina(NEW.termin_treninga_id, 1);
@@ -228,6 +247,35 @@ BEGIN
 	CALL evidencija_rezervacija_termina(OLD.termin_treninga_id, -1);
 END //
 
+-- Okidač koji ne dozvoljava da se kapacitet prostorije postavi na manje od najvećeg
+-- broja rezervacija za tu prostoriju na nekom od nadolazećih termina
+-- te kroz grašku javlja koliko ima takvih termina
+DROP TRIGGER IF EXISTS bu_prostorija //
+CREATE TRIGGER bu_prostorija
+BEFORE UPDATE ON prostorija
+FOR EACH ROW
+BEGIN
+	DECLARE broj_termina INTEGER;
+	DECLARE msg TEXT;
+
+	IF NEW.kapacitet < OLD.kapacitet THEN
+		SELECT COUNT(*)
+		INTO   broj_termina
+		FROM   (SELECT   tt.id, COUNT(r.id) AS broj_rezervacija
+				FROM     termin_treninga tt
+				JOIN	 rezervacija r ON tt.id = r.termin_treninga_id
+				WHERE    tt.prostorija_id = NEW.id
+				AND		 tt.vrijeme_pocetka > CURRENT_TIMESTAMP()
+				GROUP BY tt.id
+				HAVING   broj_rezervacija > NEW.kapacitet) AS podupit;
+		
+		IF broj_termina THEN
+			SET msg = CONCAT('Uneseni kapacitet je manji od broja rezevacija na ', broj_termina, ' nadolazećih termina treninga.');
+			SIGNAL SQLSTATE '50000' SET MESSAGE_TEXT = msg;
+		END IF;
+	END IF;
+END //
+
 DELIMITER ;
 
 -- ------- --
@@ -235,6 +283,7 @@ DELIMITER ;
 -- ------- --
 
 -- Pregled poslovnica s najviše odrađenih treninga u proteklih mjesec dana
+CREATE VIEW protekli_mjesec_treninga_po_podruznicama AS
 SELECT 	 po.naziv, COUNT(*) AS odradeno_treninga
 FROM 	 termin_treninga tt
 JOIN 	 prostorija pr ON tt.prostorija_id = pr.id
@@ -246,6 +295,7 @@ GROUP BY po.id, po.naziv
 ORDER BY odradeno_treninga DESC;
 
 -- 10 trenera s najviše otkazanih termina
+CREATE VIEW treneri_s_najvise_otkazivanja AS
 SELECT 	  z.id,
 		  z.ime,
           z.prezime,
@@ -261,6 +311,7 @@ ORDER BY  broj_otkazanih DESC
 LIMIT 	  10;
 
 -- Centri koji nude sve tipove prostorija
+CREATE VIEW podruznice_s_svim_sadrzajima AS
 SELECT	 po.naziv,
 		 po.adresa,
          m.postanski_broj
@@ -271,6 +322,7 @@ GROUP BY po.id
 HAVING	 COUNT(DISTINCT tip_prostorije_id) = (SELECT COUNT(*) FROM tip_prostorije);
 
 -- Pregled broja rezervacija po treningu za nadolazećih mjesec dana
+CREATE VIEW nadolazece_rezervacije_po_treningu AS
 SELECT	  prg.naziv AS tip_programa,
           tr.razina AS razina_treninga,
           CONCAT(z.ime, ' ', z.prezime) AS trener,
