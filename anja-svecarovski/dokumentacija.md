@@ -117,7 +117,9 @@ SELECT o.naziv AS odjel, o.aktivno, COUNT(z.id) AS broj_zaposlenika
     ORDER BY broj_zaposlenika DESC;
 ```
 Svrha/info: Ovaj upit daje pregled broja zaposlenika u svakom odjelu, uz informaciju je li odjel aktivan. Koristi se za analizu strukture organizacije i raspodjele radne snage.
-Referentne tablice: odjel, radno_mjesto, zaposlenik
+
+Referentne tablice: `odjel`, `radno_mjesto`, `zaposlenik`
+
 Objašnjenje: Upit koristi LEFT JOIN kako bi prikazao sve odjele, uključujući i one koji možda trenutno nemaju zaposlenike. Preko veze odjel → radno mjesto → zaposlenik broji se ukupan broj zaposlenika po odjelu. Rezultat se sortira silazno prema broju zaposlenika.
 
 ## Broj zaposlenika po radnom mjestu
@@ -130,7 +132,9 @@ SELECT rm.naziv AS radno_mjesto, COUNT(z.id) AS broj_zaposlenika
     ORDER BY broj_zaposlenika DESC;
 ```
 Svrha/info: Upit prikazuje koliko zaposlenika radi na svakom radnom mjestu. Koristan je za praćenje popunjenosti pozicija i detekciju eventualnih radnih mjesta bez zaposlenika.
-Referentne tablice: radno_mjesto, zaposlenik
+
+Referentne tablice: `radno_mjesto`, `zaposlenik`
+
 Objašnjenje: LEFT JOIN osigurava da se prikažu i radna mjesta bez zaposlenika. COUNT(z.id) izračunava broj zaposlenika vezanih za svako radno mjesto. Rezultat se grupira po ID-u radnog mjesta i sortira prema broju zaposlenika.
 
 ## Zaposlenici kojima ugovor uskoro istječe (30 dana)
@@ -144,7 +148,9 @@ SELECT z.ime, z.prezime, z.datum_prestanka, DATEDIFF(z.datum_prestanka, CURDATE(
 
 ```
 Svrha/info: Upit identificira zaposlenike kojima datum prestanka radnog odnosa dolazi u sljedećih 30 dana. Koristi se za planiranje ljudskih resursa i pravodobno reagiranje na isteke ugovora.
-Referentne tablice: zaposlenik
+
+Referentne tablice: `zaposlenik`
+
 Objašnjenje: Filtriraju se zaposlenici čiji datum prestanka nije NULL. Funkcija DATEDIFF izračunava broj dana do isteka ugovora, a rezultat uključuje samo one između 0 i 30 dana. Podaci se sortiraju po datumu prestanka radi preglednosti.
 
 ## Broj zaposlenika po spolu i odjelu
@@ -158,7 +164,9 @@ SELECT o.naziv AS odjel, SUM(CASE WHEN z.spol = 'M' THEN 1 ELSE 0 END) AS musko,
 
 ```
 Svrha/info: Upit prikazuje rodnu strukturu zaposlenika po odjelima — broj muškaraca i žena u svakom odjelu. Koristi se u HR analitikama za praćenje demografske raspodjele.
-Referentne tablice: odjel, radno_mjesto, zaposlenik
+
+Referentne tablice: `odjel`, `radno_mjesto`, `zaposlenik`
+
 Objašnjenje: Kombinira se odjel → radno mjesto → zaposlenik. Pomoću CASE WHEN broje se zaposlenici prema spolu ('M' ili 'Ž'). LEFT JOIN omogućuje prikaz odjela čak i ako su trenutno prazni. Rezultati se grupiraju po odjelu.
 
 ## Prosječna dob zaposlenika po odjelu
@@ -172,7 +180,9 @@ SELECT o.naziv AS odjel, ROUND(AVG(TIMESTAMPDIFF(YEAR, z.datum_rodenja, CURDATE(
 
 ```
 Svrha/info: Upit izračunava prosječnu dob zaposlenika u svakom odjelu. Koristi se za analizu dobne strukture, planiranje sukcesije i razumijevanje demografskih obrazaca.
-Referentne tablice: odjel, radno_mjesto, zaposlenik
+
+Referentne tablice: `odjel`, r`adno_mjesto`, `zaposlenik`
+
 Objašnjenje: Upit računa dob svakog zaposlenika pomoću TIMESTAMPDIFF(YEAR, datum_rodenja, CURDATE()) i zatim izračunava prosjek za svaki odjel. Korišten je LEFT JOIN kako bi se prikazali i odjeli bez zaposlenika (gdje će prosjek biti NULL). Rezultat je zaokružen na jednu decimalu.
 
 # POGLEDI
@@ -191,8 +201,11 @@ CREATE VIEW view_neaktivni_zaposlenici AS
 ```
 
 Pogled naziv: `view_neaktivni_zaposlenici`
+
 Svrha/info: prikaz informacija o zaposlenicima koji su trenutno neaktivni i koliko dugo su bili zaposleni
+
 Referentne tablice: `zaposlenik`
+
 Objašnjenje:
 - Ovaj je pogled osmišljen kako bi odjelu ljudskih resursa pružio jasan pregled neaktivnih zaposlenika i trajanja njihovog zaposlenja.
 - Funkcija FLOOR nam omogućava da skratimo decimalne vrijednosti na cijeli broj bez zaokruživanja.
@@ -214,8 +227,11 @@ CREATE VIEW view_zaposlenici_treneri AS
 ```
 
 Pogled naziv: `view_zaposlenici_treneri`
+
 Svrha/info: prikaz informacija o zaposlenicima koji su trenutno zaposleni kao treneri
+
 Referentne tablice: `zaposlenik`, `radno_mjesto`, `podruznica`
+
 Objašnjenje:
 - Ovaj je pogled osmišljen za prikaz informacija o zaposlenicima koji trenutno rade kao treneri.
 - Funkcionalnost ovog pogleda temelji se na povezivanju podataka iz tablica zaposlenik i radno_mjesto, kako bi se osigurali podaci o zaposlenicima koji imaju radno mjesto trener.
@@ -235,8 +251,11 @@ CREATE VIEW view_zaposlenici_radno_mjesto_odjel AS
 ```
 
 Pogled naziv: `view_zaposlenici_radno_mjesto_odjel`
+
 Svrha/info: prikaz informacija o zaposlenicima zajedno s podacima o njihovom odjelu i statusu zaposlenja
+
 Referentne tablice: `zaposlenik`, `radno_mjesto`, `odjel`
+
 Objašnjenje:
 - Ovaj pogled omogućava detaljan uvid u zaposlenike, njihov status zaposlenja i pripadnost određenim radnim mjestima i odjelima, te je korisno za analizu ljudskih resursa, praćenje organizacijske strukture i podršku upravljanju timovima.
 - Funkcionalnost ovog pogleda temelji se na povezivanju podataka iz tablica zaposlenik, radno mjesto i odjel, kako bi se osigurali detalji o zaposlenicima, uključujući njihove osobne podatke, datum zaposlenja, status, naziv radnog mjesta te naziv odjela u kojem rade.
@@ -265,6 +284,7 @@ DELIMITER ;
 ```
 
 Funkcija vraća ukupan broj zaposlenika koji pripadaju određenom odjelu. Koristi se za analitiku, generiranje izvještaja i automatsko popunjavanje brojčanih pokazatelja u sustavu.
+
 Funkcija prima ID odjela te pomoću jednostavnog COUNT(*) broji zapise iz tablice odjel koji odgovaraju proslijeđenom ID-u. Iako u realnim sustavima broj zaposlenika ne bi trebao biti u ovoj tablici, funkcija se može koristiti ako je polje denormalizirano ili kao placeholder funkcija.
 
 ## Broj zaposlenika na određenom radnom mjestu
@@ -285,6 +305,7 @@ DELIMITER ;
 ```
 
 Funkcija vraća koliko zaposlenika radi na određenom radnom mjestu. Korisno za HR nadzor, analizu popunjenosti radnih pozicija i organizacijske izvještaje.
+
 COUNT(*) se izvršava nad tablicom zaposlenik filtriranom prema id_radno_mjesto. Rezultat je broj zaposlenika na toj poziciji, a funkcija se može pozivati iz upita, procedura ili dashboarda.
 
 ## Prosječna plaću u odjelu
@@ -305,6 +326,7 @@ END //
 DELIMITER ;
 ```
 Funkcija izračunava prosječnu plaću zaposlenika unutar odabranog odjela. Koristi se za financijske analize, usporedbu odjela te HR statistike.
+
 Funkcija spaja zaposlenike i radna mjesta te filtrira radna mjesta prema odjelu. Uz pomoć agregatne funkcije AVG izračunava se prosječna plaća u tom odjelu. Rezultat je tipa DECIMAL, zaokružen na dvije decimale.
 
 ## Puni naziv zaposlenika
@@ -326,6 +348,7 @@ DELIMITER ;
 ```
 
 Vraća puno ime zaposlenika (ime + prezime) kao jedan tekstualni string. Koristi se u prikazima, logovima, izvještajima i procedurama koje generiraju tekstualne informacije.
+
 Funkcija prima ID zaposlenika, dohvaća ime i prezime te ih spaja pomoću CONCAT. Rezultat je formatski ujednačen prikaz punog imena.
 
 ## Starost zaposlenika
@@ -346,6 +369,7 @@ DELIMITER ;
 ```
 
 Vraća trenutačnu starost zaposlenika izraženu u godinama. Koristi se pri HR analitici, demografskim izvještajima i obračunima.
+
 TIMESTAMPDIFF(YEAR, datum_rodenja, CURDATE()) računa razliku u godinama između datuma rođenja i trenutnog datuma. Funkcija vraća cijeli broj godina.
 
 # PROCEDURE
@@ -364,6 +388,7 @@ DELIMITER ;
 ```
 
 Procedure mijenja radno mjesto zaposlenika. Koristi se prilikom internih promjena pozicije, napredovanja, reorganizacije ili transfera.
+
 Procedure prima ID zaposlenika i ID novog radnog mjesta. UPDATE naredbom mijenja vrijednost atributa id_radno_mjesto. Jednostavna i brza za pozivanje iz aplikacije.
 
 ## Azuriranje statusa zaposlenika aktivan i neaktivan
@@ -380,6 +405,7 @@ DELIMITER ;
 ```
 
 Procedure postavlja status zaposlenika na „Aktivan”, „Neaktivan” ili drugi validni status. Koristi se za upravljanje radnim odnosom (zaposlen, otpušten, na čekanju).
+
 Procedure prima ID zaposlenika i novi status. Ažurira status zaposlenika pomoću UPDATE naredbe. Može se proširiti validacijama ako je potrebno ograničiti dozvoljene statuse.
 
 ## Azuriranje broj zaposlenika u odjelu
@@ -403,6 +429,7 @@ DELIMITER ;
 ```
 
 Procedure automatski izračunava i postavlja broj zaposlenika u odjelu. Koristi se ako tablica odjel ima atribut koji treba ručno održavati ili ažurirati nakon promjena zaposlenika.
+
 Procedure prvo izračunava ukupni broj zaposlenika u odjelu pomoću COUNT i JOIN naredbi. Zatim UPDATE-om upisuje rezultat u polje broj_zaposlenika. Može se pozivati nakon unosa, brisanja ili premještanja zaposlenika.
 
 ## Premještanje zaposlenika u drugu podružnicu
@@ -419,6 +446,7 @@ DELIMITER ;
 ```
 
 Procedure služi za premještanje zaposlenika u drugu podružnicu (npr. kad mijenja lokaciju rada). Koristi se prilikom operativnog upravljanja poslovnicama.
+
 Procedure prima ID zaposlenika i ID nove podružnice. UPDATE naredba postavlja novu vrijednost atributa id_podruznica. Logično je koristiti je zajedno s procedurama za izmjenu radnog mjesta i odjela.
 
 ## Promjena plaće zaposlenika
@@ -435,6 +463,7 @@ DELIMITER ;
 ```
 
 Procedure ažurira plaću odabranog zaposlenika. Koristi se pri promjeni ugovora, povišicama, korekcijama ili obračunskim izmjenama.
+
 Prima ID zaposlenika i novu visinu plaće. Jednostavnim UPDATE-om zamjenjuje staru vrijednost. Može se kombinirati s funkcijama koje računaju prosječnu plaću odjela.
 
 # OKIDAČI
