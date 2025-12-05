@@ -8,7 +8,7 @@
 | trener — raspored (Mikel) | 1:N | Trener ima više termina u rasporedu. |
 | zaposlenik - radno_mjesto | 1:N | Jedno radno mjesto može imati više zaposlenika, ali svaki zaposlenik pripada samo jednom radnom mjestu.|
 | odjel - radno_mjesto | 1:N | Jedan odjel može imati više radnih mjesta, ali svako radno mjesto pripada samo jednom odjelu.|
-| podruznica - zaposlenik | 1:N | Jedna podruznica može imati više zaposlenih, ali svaki zaposlenik pripada samo jednoj podruznici.|
+| podruznica - zaposlenik | 1:N | Jedna podružnica može imati više zaposlenih, ali svaki zaposlenik pripada samo jednoj podruznici.|
 | mjesto - podružnica| 1:N | Jedno mjesto može imati više podružnica, ali svaka podružnica pripada samo jednom mjestu.|
 
 # SHEME RELACIJSKOG MODELA
@@ -16,7 +16,7 @@
 - odjel (id, naziv, aktivno, opis, broj_zaposlenika)
 - radno_mjesto (id, naziv, aktivno, opis, id_odjel)
 - podruznica (id, naziv, adresa, id_mjesto)
-- zaposlenik (id, ime, prezime, oib, datum_rodenja, spol, adresa, grad, telefon, email, datum_zaposlenja, datum_prestanka, status_zaposlenika, placa, id_radno_mjesto, id_podruznica)
+- zaposlenik (id, ime, prezime, oib, datum_rodenja, spol, adresa, id_mjesto, telefon, email, datum_zaposlenja, datum_prestanka, status_zaposlenika, placa, id_radno_mjesto, id_podruznica)
 - trener_program (id, trener_id, program_id)
 
 # EER DIJAGRAM (MySQL Workbench)
@@ -26,14 +26,14 @@
 ## Tablica odjel
 
 ### Svrha
-Tablica odjel korisi se za evidenciju različitih odjela unutar fitness centra. Odjeli predstavljaju
+Tablica odjel koristi se za evidenciju različitih odjela unutar fitness centra. Odjeli predstavljaju
 funkcionalne jedinice, poput fitness, wellness, odrzavanje, administracija, recepcija, marketing, prodaja, uprava, racunovodstvo i omogućuju organizaciji da prati broj zaposlenika i upravlja njihovim resursima.
 
 ### Atributi
 | Atribut | Tip | Ograničenje | Ključ | Opis |
 |---------|-----|-------------|-------| ------|
 | `id` | INT AUTO_INCREMENT | | PRIMARY KEY | Jedinstveni identifikator svakog odjela. Automatski se generira i koristi za razlikovanje odjela |
-| `naziv` | VARCHAR(50) | NOT NULL UNIQUE | | Naziv odjela, obavezno polje jer omogućuje identifikaciju odjela. Tipa je VARCHAR iz razloga jer duljina unosa može varirati pa se alokacija memorije vrši dinamički ovisno o unosu. Zbog ograničenja UNIQUE znači da ne mogu postojati dva odjela s istim nazivom. |
+| `naziv` | VARCHAR(50) | NOT NULL UNIQUE | | Naziv odjela, obvezno polje jer omogućuje identifikaciju odjela. Tipa je VARCHAR iz razloga jer duljina unosa može varirati pa se alokacija memorije vrši dinamički ovisno o unosu. Zbog ograničenja UNIQUE znači da ne mogu postojati dva odjela s istim nazivom. |
 | `aktivno` | BOOLEAN | DEFAULT TRUE | | Označava je li odjel trenutno aktivan, zadana vrijednost je True |
 | `opis` | TEXT  | | | Do 65.535 znakova za opis pojednih odjela, unos opisa nije obavezan i ne očekuje se da bude jedinstven. |
 | `broj_zaposlenika` | INT | CHECK (broj_zaposlenika >= 0) DEFAULT 0 | | Broj zaposlenika unutar odjela. Ovo polje ima zadanu vrijednost 0 i mora biti nenegativno. Koristi se za praćenje ljudskih resursa u odjelu. |
@@ -41,16 +41,16 @@ funkcionalne jedinice, poput fitness, wellness, odrzavanje, administracija, rece
 ## Tablica radno_mjesto
 
 ### Svrha
-Predstavlja razlicita radna mjesta unutar svakog odjela fitness centra, poput 'trener', 'tehničar', 'recepcioner', 'administracija'.
+Predstavlja različita radna mjesta unutar svakog odjela fitness centra, poput 'trener', 'tehničar', 'recepcioner', 'administracija'.
 
 ### Atributi
 | Atribut | Tip | Ograničenje | Ključ | Opis |
 |---------|-----|-------------|-------| ------|
-| `id` | INT AUTO_INCREMENT | | PRIMARY KEY | Jedinstveni identifikator svakog ranog mjesta. Automatski se generira i koristi za razlikovanje ranog mjesta. |
-| `naziv` | VARCHAR(50) | NOT NULL UNIQUE | | Naziv radnog mjesta, obavezno polje jer omogućuje identifikaciju radnog mjesta. Tipa je VARCHAR iz razloga jer duljina unosa može varirati pa se alokacija memorije vrši dinamički ovisno o unosu. Zbog ograničenja UNIQUE znači da ne mogu postojati dva radna mjesta s istim nazivom. |
+| `id` | INT AUTO_INCREMENT | | PRIMARY KEY | Jedinstveni identifikator svakog radnog mjesta. Automatski se generira i koristi za razlikovanje radnog mjesta. |
+| `naziv` | VARCHAR(50) | NOT NULL UNIQUE | | Naziv radnog mjesta, obvezno polje jer omogućuje identifikaciju radnog mjesta. Tipa je VARCHAR iz razloga jer duljina unosa može varirati pa se alokacija memorije vrši dinamički ovisno o unosu. Zbog ograničenja UNIQUE znači da ne mogu postojati dva radna mjesta s istim nazivom. |
 | `aktivno` | BOOLEAN | DEFAULT TRUE | | Označava je li radno mjesto trenutno aktivno, zadana vrijednost je True |
 | `opis` | TEXT  | | | Do 65.535 znakova za opis pojednih radnih mjesta, unos opisa nije obavezan i ne očekuje se da bude jedinstven. |
-| `id_odjel` | INT | NOT NULL | FOREIGN KEY REFERENCES odjel(id) | Strani ključ koji osigurava očuvanje referencijalnog integriteta među povezanim tablicama, obavezno polje. |
+| `id_odjel` | INT | NOT NULL | FOREIGN KEY REFERENCES odjel(id) | Strani ključ koji osigurava očuvanje referencijalnog integriteta među povezanim tablicama, obvezno polje. |
 
 ## Tablica poslovnica
 
@@ -62,9 +62,9 @@ Više podružnica može biti u istom gradu – zato je veza na mjesto korisna, j
 | Atribut | Tip | Ograničenje | Ključ | Opis |
 |---------|-----|-------------|-------| ------|
 | `id` | INT AUTO_INCREMENT | | PRIMARY KEY | Jedinstveni identifikator svakog odjela. Automatski se generira i koristi za razlikovanje odjela |
-| `naziv` | VARCHAR(100) | NOT NULL | | Naziv podružnice, obavezno polje jer omogućuje identifikaciju odjela. Tipa je VARCHAR iz razloga jer duljina unosa može varirati pa se alokacija memorije vrši dinamički ovisno o unosu. |
-| `adresa` | VARCHAR(100) | NOT NULL | | Adresa podružnice, obavezno polje. Tipa je VARCHAR iz razloga jer duljina unosa može varirati pa se alokacija memorije vrši dinamički ovisno o unosu. |
-| `id_mjesto` | INT | NOT NULL | FOREIGN KEY REFERENCES mjesto(id) | Strani ključ koji osigurava očuvanje referencijalnog integriteta među povezanim tablicama, obavezno polje. |
+| `naziv` | VARCHAR(100) | NOT NULL | | Naziv podružnice, obvezno polje jer omogućuje identifikaciju odjela. Tipa je VARCHAR iz razloga jer duljina unosa može varirati pa se alokacija memorije vrši dinamički ovisno o unosu. |
+| `adresa` | VARCHAR(100) | NOT NULL | | Adresa podružnice, obvezno polje. Tipa je VARCHAR iz razloga jer duljina unosa može varirati pa se alokacija memorije vrši dinamički ovisno o unosu. |
+| `id_mjesto` | INT | NOT NULL | FOREIGN KEY REFERENCES mjesto(id) | Strani ključ koji osigurava očuvanje referencijalnog integriteta među povezanim tablicama, obvezno polje. |
 
 ## Tablica zaposlenik
 
@@ -74,20 +74,20 @@ Tablica zaposlenik pohranjuje podatke o zaposlenicima fitness centra. Svaki zapo
 ### Atributi
 | Atribut | Tip | Ograničenje | Ključ | Opis |
 |---------|-----|-------------|-------| ------|
-| `id` | INT AUTO_INCREMENT | | PRIMARY KEY | Jedinstveni identifikator svakog ranog mjesta. Automatski se generira i koristi za razlikovanje ranog mjesta. |
-| `ime` | VARCHAR(50) | NOT NULL | | Ime zaposlenika, obavezno polje za identifikaciju. Tipa je VARCHAR iz razloga jer duljina unosa može varirati pa se alokacija memorije vrši dinamički ovisno o unosu. |
-| `prezime` | VARCHAR(50) | NOT NULL | | Adresa zaposlenika, opcionalno polje. Tipa je VARCHAR iz razloga jer duljina unosa može varirati pa se alokacija memorije vrši dinamički ovisno o unosu. |
-| `oib` | CHAR(11) | NOT NULL UNIQUE | | OIB zaposlenika, obavezno polje za identifikaciju. Zbog ograničenja UNIQUE znači da ne mogu postojati dva zaposlenika s istim OIBom. |
-| `datum_rodjenja` | DATE | | | Datum rođenja, opcionalno polje.|
+| `id` | INT AUTO_INCREMENT | | PRIMARY KEY | Jedinstveni identifikator svakog radnog mjesta. Automatski se generira i koristi za razlikovanje radnog mjesta. |
+| `ime` | VARCHAR(50) | NOT NULL | | Ime zaposlenika, obvezno polje za identifikaciju. Tipa je VARCHAR iz razloga jer duljina unosa može varirati pa se alokacija memorije vrši dinamički ovisno o unosu. |
+| `prezime` | VARCHAR(50) | NOT NULL | | Prezime zaposlenika, obvezno polje za identifikaciju. Tipa je VARCHAR iz razloga jer duljina unosa može varirati pa se alokacija memorije vrši dinamički ovisno o unosu. |
+| `oib` | CHAR(13) | NOT NULL UNIQUE | | OIB zaposlenika, obvezno polje za identifikaciju. Zbog ograničenja UNIQUE znači da ne mogu postojati dva zaposlenika s istim OIBom. |
+| `datum_rodenja` | DATE | | | Datum rođenja, opcionalno polje.|
 | `spol` | ENUM('M', 'Ž', 'Drugo') | | | Spol zaposlenika, opcionalno polje, unaprijed definirane opcije. |
 | `adresa` | VARCHAR(100) | NULL | | Adresa zaposlenika, opcionalno polje. Tipa je VARCHAR iz razloga jer duljina unosa može varirati pa se alokacija memorije vrši dinamički ovisno o unosu. |
-| `grad` | VARCHAR(50) | NULL | | Grad povezan sa adresom zaposlenika, opcionalno polje. Tipa je VARCHAR iz razloga jer duljina unosa može varirati pa se alokacija memorije vrši dinamički ovisno o unosu. |
+| `id_mjesto` | INT | NOT NULL | FOREIGN KEY REFERENCES mjesto(id) | Strani ključ koji osigurava očuvanje referencijalnog integriteta među povezanim tablicama, obvezno polje. |
 | `telefon` | VARCHAR(20) | NULL | | Kontakt broj zaposlenika, opcionalno polje. Tipa je VARCHAR iz razloga jer duljina unosa može varirati pa se alokacija memorije vrši dinamički ovisno o unosu. |
 | `email` | VARCHAR(100) | NULL | | Email adresa zaposlenika za komunikaciju unutar organizacije, opcionalno polje. Tipa je VARCHAR iz razloga jer duljina unosa može varirati pa se alokacija memorije vrši dinamički ovisno o unosu. |
-| `datum_zaposlenja` | DATE | NOT NULL | DEFAULT NOW()| Datum kada je zaposlenik počeo raditi. Ovo je obavezno polje za praćenje radnog staža. Ukoliko nije definirano, postavlja se datum kada je uneseno.|
+| `datum_zaposlenja` | DATE | NOT NULL | DEFAULT NOW()| Datum kada je zaposlenik počeo raditi. Ovo je obvezno polje za praćenje radnog staža. Ukoliko nije definirano, postavlja se datum kada je uneseno.|
 | `datum_prestanka` | DATE | | DEFAULT NULL| Datum kada je zaposlenik prestao raditi. Ukoliko nije definirano, postavlja se vrijednost NULL.|
 | `status_zaposlenika` | ENUM('aktivan', 'neaktivan') | NOT NULL | | Status zaposlenika koji pokazuje je li zaposlenik trenutno aktivan ili neaktivan. |
-| `placa` | DECIMAL(10,2) | DEFAULT 0 CHECK (placa >= 0) | | Plaća zaposlenika, ukoliko nije definirano, postavlja se vrijednost NULL. Pri unosu ili updateu se provjerava dal i je unesena plaća veća ili jednaka 0.|
+| `placa` | DECIMAL(10,2) | DEFAULT 0 CHECK (placa >= 0) | | Plaća zaposlenika, zadana vrijednost je 0. Pri unosu ili updateu provjerava se da je plaća nenegativna.|
 | `id_radno_mjesto` | INT | NOT NULL | FOREIGN KEY REFERENCES radno_mjesto(id) | Strani ključ koji osigurava očuvanje referencijalnog integriteta među povezanim tablicama, obvezno polje. |
 | `id_podruznica` | INT | NOT NULL | FOREIGN KEY REFERENCES podruznica(id) | Strani ključ koji osigurava očuvanje referencijalnog integriteta među povezanim tablicama, obvezno polje. |
 
@@ -104,15 +104,434 @@ Drugim riječima — jedan program ima jednog glavnog trenera, ali trener može 
 | `id_trener` | INT | NOT NULL | FOREIGN KEY REFERENCES zaposlenik(id) | Strani ključ koji osigurava očuvanje referencijalnog integriteta među povezanim tablicama, obvezno polje. |
 | `id_program` | INT | NOT NULL | FOREIGN KEY REFERENCES program(id) | Strani ključ koji osigurava očuvanje referencijalnog integriteta među povezanim tablicama, obvezno polje. |
 
-# UPITI
+# SLOŽENI UPITI
+
+## Broj zaposlenika po odjelu (uz info o aktivnosti odjela)
+
+``` sql
+SELECT o.naziv AS odjel, o.aktivno, COUNT(z.id) AS broj_zaposlenika
+    FROM odjel o
+    LEFT JOIN radno_mjesto rm ON rm.id_odjel = o.id
+    LEFT JOIN zaposlenik z ON z.id_radno_mjesto = rm.id
+    GROUP BY o.id
+    ORDER BY broj_zaposlenika DESC;
+```
+Svrha/info: Ovaj upit daje pregled broja zaposlenika u svakom odjelu, uz informaciju je li odjel aktivan. Koristi se za analizu strukture organizacije i raspodjele radne snage.
+Referentne tablice: odjel, radno_mjesto, zaposlenik
+Objašnjenje: Upit koristi LEFT JOIN kako bi prikazao sve odjele, uključujući i one koji možda trenutno nemaju zaposlenike. Preko veze odjel → radno mjesto → zaposlenik broji se ukupan broj zaposlenika po odjelu. Rezultat se sortira silazno prema broju zaposlenika.
+
+## Broj zaposlenika po radnom mjestu
+
+``` sql
+SELECT rm.naziv AS radno_mjesto, COUNT(z.id) AS broj_zaposlenika
+    FROM radno_mjesto rm
+    LEFT JOIN zaposlenik z ON z.id_radno_mjesto = rm.id
+    GROUP BY rm.id
+    ORDER BY broj_zaposlenika DESC;
+```
+Svrha/info: Upit prikazuje koliko zaposlenika radi na svakom radnom mjestu. Koristan je za praćenje popunjenosti pozicija i detekciju eventualnih radnih mjesta bez zaposlenika.
+Referentne tablice: radno_mjesto, zaposlenik
+Objašnjenje: LEFT JOIN osigurava da se prikažu i radna mjesta bez zaposlenika. COUNT(z.id) izračunava broj zaposlenika vezanih za svako radno mjesto. Rezultat se grupira po ID-u radnog mjesta i sortira prema broju zaposlenika.
+
+## Zaposlenici kojima ugovor uskoro istječe (30 dana)
+
+``` sql
+SELECT z.ime, z.prezime, z.datum_prestanka, DATEDIFF(z.datum_prestanka, CURDATE()) AS dana_do_isteka
+    FROM zaposlenik z
+    WHERE z.datum_prestanka IS NOT NULL
+    AND DATEDIFF(z.datum_prestanka, CURDATE()) BETWEEN 0 AND 30
+    ORDER BY z.datum_prestanka;
+
+```
+Svrha/info: Upit identificira zaposlenike kojima datum prestanka radnog odnosa dolazi u sljedećih 30 dana. Koristi se za planiranje ljudskih resursa i pravodobno reagiranje na isteke ugovora.
+Referentne tablice: zaposlenik
+Objašnjenje: Filtriraju se zaposlenici čiji datum prestanka nije NULL. Funkcija DATEDIFF izračunava broj dana do isteka ugovora, a rezultat uključuje samo one između 0 i 30 dana. Podaci se sortiraju po datumu prestanka radi preglednosti.
+
+## Broj zaposlenika po spolu i odjelu
+
+``` sql
+SELECT o.naziv AS odjel, SUM(CASE WHEN z.spol = 'M' THEN 1 ELSE 0 END) AS musko, SUM(CASE WHEN z.spol = 'Ž' THEN 1 ELSE 0 END) AS zensko
+    FROM odjel o
+    LEFT JOIN radno_mjesto rm ON rm.id_odjel = o.id
+    LEFT JOIN zaposlenik z ON z.id_radno_mjesto = rm.id
+    GROUP BY o.id;
+
+```
+Svrha/info: Upit prikazuje rodnu strukturu zaposlenika po odjelima — broj muškaraca i žena u svakom odjelu. Koristi se u HR analitikama za praćenje demografske raspodjele.
+Referentne tablice: odjel, radno_mjesto, zaposlenik
+Objašnjenje: Kombinira se odjel → radno mjesto → zaposlenik. Pomoću CASE WHEN broje se zaposlenici prema spolu ('M' ili 'Ž'). LEFT JOIN omogućuje prikaz odjela čak i ako su trenutno prazni. Rezultati se grupiraju po odjelu.
+
+## Prosječna dob zaposlenika po odjelu
+
+``` sql
+SELECT o.naziv AS odjel, ROUND(AVG(TIMESTAMPDIFF(YEAR, z.datum_rodenja, CURDATE())), 1) AS prosjecna_dob
+    FROM odjel o
+    LEFT JOIN radno_mjesto rm ON rm.id_odjel = o.id
+    LEFT JOIN zaposlenik z ON z.id_radno_mjesto = rm.id
+    GROUP BY o.id;
+
+```
+Svrha/info: Upit izračunava prosječnu dob zaposlenika u svakom odjelu. Koristi se za analizu dobne strukture, planiranje sukcesije i razumijevanje demografskih obrazaca.
+Referentne tablice: odjel, radno_mjesto, zaposlenik
+Objašnjenje: Upit računa dob svakog zaposlenika pomoću TIMESTAMPDIFF(YEAR, datum_rodenja, CURDATE()) i zatim izračunava prosjek za svaki odjel. Korišten je LEFT JOIN kako bi se prikazali i odjeli bez zaposlenika (gdje će prosjek biti NULL). Rezultat je zaokružen na jednu decimalu.
 
 # POGLEDI
 
+## Neaktivni zaposlenici
+
+``` sql
+CREATE VIEW view_neaktivni_zaposlenici AS
+	SELECT id, ime, prezime, datum_zaposlenja, datum_prestanka, status_zaposlenika,
+    CONCAT(
+		FLOOR(DATEDIFF(datum_prestanka, datum_zaposlenja)/365.25), ' godina, ',
+		FLOOR((DATEDIFF(datum_prestanka, datum_zaposlenja) - FLOOR(DATEDIFF(datum_prestanka, datum_zaposlenja)/365.25)*365.25)/30.44), ' mjeseci'
+        ) AS ukupno_zaposlen
+    FROM zaposlenik
+    WHERE status_zaposlenika = 'neaktivan';
+```
+
+Pogled naziv: `view_neaktivni_zaposlenici`
+Svrha/info: prikaz informacija o zaposlenicima koji su trenutno neaktivni i koliko dugo su bili zaposleni
+Referentne tablice: `zaposlenik`
+Objašnjenje:
+- Ovaj je pogled osmišljen kako bi odjelu ljudskih resursa pružio jasan pregled neaktivnih zaposlenika i trajanja njihovog zaposlenja.
+- Funkcija FLOOR nam omogućava da skratimo decimalne vrijednosti na cijeli broj bez zaokruživanja.
+- Koristi funkciju DATEDIFF za izračun ukupnog broja dana između početka i završetka zaposlenja.
+- Radi lakšeg tumačenja podataka, pretvara ukupan broj dana u približne godine i mjesece koristeći prosječne duljine godina/mjeseca (365,25 dana godišnje i 30,44 dana mjesečno).
+- Uvjet postavljen u WHERE klauzuli osigurava da se u pogledu prikazuju isključivo zaposlenici čiji je status označen kao neaktivan.
+- Korištenjem ovog pogleda izbjegava se potreba za ručnim filtriranjem podataka u tablici zaposlenik, čime se štedi vrijeme i osigurava tačnost u analizi.
+
+## Aktivni zaposlenici koji rade kao treneri
+
+``` sql
+CREATE VIEW view_zaposlenici_treneri AS
+	SELECT z.id, z.ime, z.prezime, rm.naziv AS 'Radno mjesto', p.naziv AS 'Podruznica'
+    FROM zaposlenik z
+		INNER JOIN radno_mjesto rm ON z.id_radno_mjesto = rm.id
+        INNER JOIN podruznica p ON z.id_podruznica = p.id
+    WHERE status_zaposlenika = 'aktivan'
+    AND z.id_radno_mjesto = 1;
+```
+
+Pogled naziv: `view_zaposlenici_treneri`
+Svrha/info: prikaz informacija o zaposlenicima koji su trenutno zaposleni kao treneri
+Referentne tablice: `zaposlenik`, `radno_mjesto`, `podruznica`
+Objašnjenje:
+- Ovaj je pogled osmišljen za prikaz informacija o zaposlenicima koji trenutno rade kao treneri.
+- Funkcionalnost ovog pogleda temelji se na povezivanju podataka iz tablica zaposlenik i radno_mjesto, kako bi se osigurali podaci o zaposlenicima koji imaju radno mjesto trener.
+- Povezivanje se vrši preko atributa radno_mjesto_id, čime se omogućava precizno filtriranje zaposlenika prema njihovom pripadništvu određenom ranom mjestu.
+- Uvjet postavljen u WHERE klauzuli osigurava da se u pogledu prikazuju isključivo zaposlenici čiji je status označen kao aktivan i koji pripadaju radnom mjestu trenera.
+- Korištenjem ovog pogleda izbjegava se potreba za ručnim povezivanjem i filtriranjem podataka iz više tablica, čime se štedi vrijeme i osigurava tačnost u analizi.
+
+## Podaci o zaposlenicima s radnim mjestom, odjelom i statusom
+
+``` sql
+CREATE VIEW view_zaposlenici_radno_mjesto_odjel AS
+	SELECT z.id, z.ime, z.prezime, z.oib, z.datum_rodenja, z.spol, z.datum_zaposlenja, z.datum_prestanka, z.status_zaposlenika, z.placa, rm.naziv AS 'Radno mjesto', o.naziv AS 'Odjel', p.naziv AS 'Podruznica'
+    FROM zaposlenik z
+		INNER JOIN radno_mjesto rm ON z.id_radno_mjesto = rm.id
+        INNER JOIN podruznica p ON z.id_podruznica = p.id
+        INNER JOIN odjel o ON rm.id_odjel = o.id;
+```
+
+Pogled naziv: `view_zaposlenici_radno_mjesto_odjel`
+Svrha/info: prikaz informacija o zaposlenicima zajedno s podacima o njihovom odjelu i statusu zaposlenja
+Referentne tablice: `zaposlenik`, `radno_mjesto`, `odjel`
+Objašnjenje:
+- Ovaj pogled omogućava detaljan uvid u zaposlenike, njihov status zaposlenja i pripadnost određenim radnim mjestima i odjelima, te je korisno za analizu ljudskih resursa, praćenje organizacijske strukture i podršku upravljanju timovima.
+- Funkcionalnost ovog pogleda temelji se na povezivanju podataka iz tablica zaposlenik, radno mjesto i odjel, kako bi se osigurali detalji o zaposlenicima, uključujući njihove osobne podatke, datum zaposlenja, status, naziv radnog mjesta te naziv odjela u kojem rade.
+- Povezivanje s tablicom odjel vrši se preko atributa id_odjel koji smo povezali preko tablice radno_mjesto i id_radno_mjesto, čime se omogućava detaljan prikaz zaposlenika zajedno s
+informacijama o njihovom radnom mjestu i njihovim odjelima.
+- Rezultati u ovom pogledu nisu specifično sortirani, jer je primarni cilj prikazati kompletne informacije o zaposlenicima uz povezanost s radnim mjestom, odjelima i statusima.
+
+
 # FUNKCIJE
+
+## Broj zaposlenih u određenom odjelu
+
+``` sql
+DELIMITER //
+CREATE FUNCTION broj_zaposlenih_odjel(p_id_odjel INT) RETURNS INT
+DETERMINISTIC
+BEGIN
+    DECLARE rezultat INT;
+    SELECT COUNT(z.id) INTO rezultat
+        FROM zaposlenik z
+        JOIN radno_mjesto rm ON z.id_radno_mjesto = rm.id
+        WHERE rm.id_odjel = p_id_odjel;
+	RETURN rezultat;
+END //
+DELIMITER ;
+```
+
+Funkcija vraća ukupan broj zaposlenika koji pripadaju određenom odjelu. Koristi se za analitiku, generiranje izvještaja i automatsko popunjavanje brojčanih pokazatelja u sustavu.
+Funkcija prima ID odjela te pomoću jednostavnog COUNT(*) broji zapise iz tablice odjel koji odgovaraju proslijeđenom ID-u. Iako u realnim sustavima broj zaposlenika ne bi trebao biti u ovoj tablici, funkcija se može koristiti ako je polje denormalizirano ili kao placeholder funkcija.
+
+## Broj zaposlenika na određenom radnom mjestu
+
+``` sql
+DELIMITER //
+CREATE FUNCTION broj_na_radnom_mjestu(p_id_radno_mjesto INT)
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    DECLARE rezultat INT;
+    SELECT COUNT(*) INTO rezultat
+        FROM zaposlenik
+        WHERE id_radno_mjesto = p_id_radno_mjesto;
+    RETURN rezultat;
+END //
+DELIMITER ;
+```
+
+Funkcija vraća koliko zaposlenika radi na određenom radnom mjestu. Korisno za HR nadzor, analizu popunjenosti radnih pozicija i organizacijske izvještaje.
+COUNT(*) se izvršava nad tablicom zaposlenik filtriranom prema id_radno_mjesto. Rezultat je broj zaposlenika na toj poziciji, a funkcija se može pozivati iz upita, procedura ili dashboarda.
+
+## Prosječna plaću u odjelu
+
+``` sql
+DELIMITER //
+CREATE FUNCTION prosjecna_placa_odjela(p_odjel_id INT)
+RETURNS DECIMAL(10,2)
+DETERMINISTIC
+BEGIN
+    DECLARE rezultat DECIMAL(10,2);
+        SELECT AVG(z.placa) INTO rezultat
+        FROM zaposlenik z
+        JOIN radno_mjesto rm ON rm.id = z.id_radno_mjesto
+        WHERE rm.id_odjel = p_odjel_id;
+    RETURN rezultat;
+END //
+DELIMITER ;
+```
+Funkcija izračunava prosječnu plaću zaposlenika unutar odabranog odjela. Koristi se za financijske analize, usporedbu odjela te HR statistike.
+Funkcija spaja zaposlenike i radna mjesta te filtrira radna mjesta prema odjelu. Uz pomoć agregatne funkcije AVG izračunava se prosječna plaća u tom odjelu. Rezultat je tipa DECIMAL, zaokružen na dvije decimale.
+
+## Puni naziv zaposlenika
+
+``` sql
+DELIMITER //
+CREATE FUNCTION puno_ime(p_zaposlenik_id INT)
+RETURNS VARCHAR(200)
+DETERMINISTIC
+BEGIN
+    DECLARE ime_prezime VARCHAR(200);
+    SELECT CONCAT(ime, ' ', prezime) INTO ime_prezime
+    FROM zaposlenik
+    WHERE id = p_zaposlenik_id;
+
+    RETURN ime_prezime;
+END //
+DELIMITER ;
+```
+
+Vraća puno ime zaposlenika (ime + prezime) kao jedan tekstualni string. Koristi se u prikazima, logovima, izvještajima i procedurama koje generiraju tekstualne informacije.
+Funkcija prima ID zaposlenika, dohvaća ime i prezime te ih spaja pomoću CONCAT. Rezultat je formatski ujednačen prikaz punog imena.
+
+## Starost zaposlenika
+
+``` sql
+DELIMITER //
+CREATE FUNCTION starost_zaposlenika(p_id INT)
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    DECLARE godine INT;
+    SELECT TIMESTAMPDIFF(YEAR, datum_rodenja, CURDATE()) INTO godine
+        FROM zaposlenik
+        WHERE id = p_id;
+    RETURN godine;
+END //
+DELIMITER ;
+```
+
+Vraća trenutačnu starost zaposlenika izraženu u godinama. Koristi se pri HR analitici, demografskim izvještajima i obračunima.
+TIMESTAMPDIFF(YEAR, datum_rodenja, CURDATE()) računa razliku u godinama između datuma rođenja i trenutnog datuma. Funkcija vraća cijeli broj godina.
 
 # PROCEDURE
 
+## Azuriranje radnog mjesta zaposlenika
+
+``` sql
+DELIMITER //
+CREATE PROCEDURE azuriraj_radno_mjesto (IN p_zaposlenik_id INT, IN p_novo_radno_mjesto INT)
+BEGIN
+    UPDATE zaposlenik
+    SET id_radno_mjesto = p_novo_radno_mjesto
+    WHERE id = p_zaposlenik_id;
+END //
+DELIMITER ;
+```
+
+Procedure mijenja radno mjesto zaposlenika. Koristi se prilikom internih promjena pozicije, napredovanja, reorganizacije ili transfera.
+Procedure prima ID zaposlenika i ID novog radnog mjesta. UPDATE naredbom mijenja vrijednost atributa id_radno_mjesto. Jednostavna i brza za pozivanje iz aplikacije.
+
+## Azuriranje statusa zaposlenika aktivan i neaktivan
+
+``` sql
+DELIMITER //
+CREATE PROCEDURE azuriraj_status (IN p_zaposlenik_id INT, IN p_status VARCHAR(20))
+BEGIN
+    UPDATE zaposlenik
+    SET status_zaposlenika = p_status
+    WHERE id = p_zaposlenik_id;
+END //
+DELIMITER ;
+```
+
+Procedure postavlja status zaposlenika na „Aktivan”, „Neaktivan” ili drugi validni status. Koristi se za upravljanje radnim odnosom (zaposlen, otpušten, na čekanju).
+Procedure prima ID zaposlenika i novi status. Ažurira status zaposlenika pomoću UPDATE naredbe. Može se proširiti validacijama ako je potrebno ograničiti dozvoljene statuse.
+
+## Azuriranje broj zaposlenika u odjelu
+
+``` sql
+DELIMITER //
+CREATE PROCEDURE azuriraj_broj_zaposlenika_odjela (IN p_odjel_id INT)
+BEGIN
+    DECLARE ukupno INT;
+
+    SELECT COUNT(z.id) INTO ukupno
+        FROM zaposlenik z
+        JOIN radno_mjesto rm ON rm.id = z.id_radno_mjesto
+        WHERE rm.id_odjel = p_odjel_id;
+
+    UPDATE odjel
+    SET broj_zaposlenika = ukupno
+    WHERE id = p_odjel_id;
+END //
+DELIMITER ;
+```
+
+Procedure automatski izračunava i postavlja broj zaposlenika u odjelu. Koristi se ako tablica odjel ima atribut koji treba ručno održavati ili ažurirati nakon promjena zaposlenika.
+Procedure prvo izračunava ukupni broj zaposlenika u odjelu pomoću COUNT i JOIN naredbi. Zatim UPDATE-om upisuje rezultat u polje broj_zaposlenika. Može se pozivati nakon unosa, brisanja ili premještanja zaposlenika.
+
+## Premještanje zaposlenika u drugu podružnicu
+
+``` sql
+DELIMITER //
+CREATE PROCEDURE premjesti_podruznica (IN p_zaposlenik_id INT, IN p_nova_podruznica INT)
+BEGIN
+    UPDATE zaposlenik
+    SET id_podruznica = p_nova_podruznica
+    WHERE id = p_zaposlenik_id;
+END //
+DELIMITER ;
+```
+
+Procedure služi za premještanje zaposlenika u drugu podružnicu (npr. kad mijenja lokaciju rada). Koristi se prilikom operativnog upravljanja poslovnicama.
+Procedure prima ID zaposlenika i ID nove podružnice. UPDATE naredba postavlja novu vrijednost atributa id_podruznica. Logično je koristiti je zajedno s procedurama za izmjenu radnog mjesta i odjela.
+
+## Promjena plaće zaposlenika
+
+``` sql
+DELIMITER //
+CREATE PROCEDURE promijeni_placu (IN p_zaposlenik_id INT, IN p_nova_placa DECIMAL(10,2))
+BEGIN
+    UPDATE zaposlenik
+    SET placa = p_nova_placa
+    WHERE id = p_zaposlenik_id;
+END //
+DELIMITER ;
+```
+
+Procedure ažurira plaću odabranog zaposlenika. Koristi se pri promjeni ugovora, povišicama, korekcijama ili obračunskim izmjenama.
+Prima ID zaposlenika i novu visinu plaće. Jednostavnim UPDATE-om zamjenjuje staru vrijednost. Može se kombinirati s funkcijama koje računaju prosječnu plaću odjela.
+
 # OKIDAČI
+
+## Automatsko azuriranje statusa nakon unosa datuma prestanka zaposlenja
+
+``` sql
+DELIMITER //
+CREATE TRIGGER bu_status_prestanak_zaposlenik
+BEFORE UPDATE ON zaposlenik
+FOR EACH ROW
+BEGIN
+    IF NEW.datum_prestanka IS NOT NULL THEN
+        SET NEW.status_zaposlenika = 'neaktivan';
+    END IF;
+END //
+DELIMITER ;
+```
+
+Svrha: Automatsko ažuriranje statusa zaposlenika nakon unosa datuma prestanka zaposlenja.
+
+Ovaj okidač, nazvan bu_status_prestanak_zaposlenik, kreiran je kako bi nakon ažuriranja zapisa u tablici zaposlenik automatski promijenio status zaposlenika na 'neaktivan' kada je upisan datum prestanka zaposlenja. Funkcionalnost okidača temelji se na provjeri polja datum_prestanka u zapisu koji se ažurira.
+
+Okidač se aktivira prije ažuriranja zapisa u tablici zaposlenik (BEFORE UPDATE). Ukoliko je polje datum_prestanka različito od NULL, okidač automatski postavlja atribut status_zaposlenika na 'neaktivan'. Na taj način, status zaposlenika se dosljedno ažurira svaki put kada se unese datum prestanka, čime se održava integritet podataka i smanjuje mogućnost ljudske pogreške.
+
+Ovaj okidač omogućava automatsku kontrolu statusa zaposlenika i olakšava praćenje aktivnih i neaktivnih zaposlenika u organizaciji. Podaci generirani ovim okidačem mogu se koristiti za analitiku, izvještavanje i planiranje ljudskih resursa.
+
+## Automatsko postavljanje statusa na aktivan prilikom kreiranja novog zaposlenika
+
+``` sql
+DELIMITER //
+CREATE TRIGGER bi_status_zaposlenik
+BEFORE INSERT ON zaposlenik
+FOR EACH ROW
+BEGIN
+    IF NEW.status_zaposlenika IS NULL THEN
+        SET NEW.status_zaposlenika = 'aktivan';
+    END IF;
+END //
+DELIMITER ;
+```
+
+Svrha: Automatsko postavljanje statusa zaposlenika na 'aktivan' prilikom kreiranja novog zaposlenika.
+
+Okidač bi_status_zaposlenik kreiran je kako bi svaki novi unos u tablici zaposlenik automatski dobio status 'aktivan', osim ako izričito nije definiran drugi status. Funkcionalnost okidača temelji se na provjeri polja status_zaposlenika u novom zapisu (NEW).
+
+Okidač se aktivira prije unosa novog zapisa (BEFORE INSERT). Ako polje status_zaposlenika nije definirano, okidač postavlja njegovu vrijednost na 'aktivan'. Na taj način se sprječava pojava praznih ili neodređenih statusa zaposlenika i osigurava osnovna konzistentnost podataka o zaposlenicima.
+
+Primjena ovog okidača olakšava administraciju i upravljanje zaposlenicima, jer garantira da svi novi zaposlenici automatski imaju valjani status, što je ključno za izvještavanje, analitiku i procesiranje podataka u sustavu.
+
+## Azuriranje broja zaposlenika u odjelu - dodavanje novog zaposlenog
+
+``` sql
+DELIMITER //
+CREATE TRIGGER ai_povecaj_broj_zaposlenik
+AFTER INSERT ON zaposlenik
+FOR EACH ROW
+BEGIN
+    UPDATE odjel d
+    JOIN radno_mjesto rm ON rm.id_odjel = d.id
+    SET d.broj_zaposlenika = d.broj_zaposlenika + 1
+    WHERE rm.id = NEW.id_radno_mjesto;
+END //
+DELIMITER ;
+```
+
+Svrha: Automatsko ažuriranje broja zaposlenika u odjelu prilikom dodavanja novog zaposlenika.
+
+Okidač ai_povecaj_broj_zaposlenik kreiran je kako bi nakon dodavanja novog zaposlenika u tablicu zaposlenik automatski ažurirao broj zaposlenika u odjelu kojem pripada novi zaposlenik. Funkcionalnost okidača temelji se na spajanju tablica radno_mjesto i odjel, gdje se odjel određuje prema id_radno_mjesto zaposlenika.
+
+Okidač se aktivira nakon unosa zapisa (AFTER INSERT) i izvršava UPDATE naredbu nad tablicom odjel, povećavajući vrijednost polja broj_zaposlenika za odgovarajući odjel za jedan. Na taj način, broj zaposlenika u odjelu se automatski ažurira svaki put kada se unese novi zaposlenik, čime se osigurava točnost i aktualnost podataka.
+
+Primjena ovog okidača olakšava administraciju ljudskih resursa, omogućava automatsko praćenje popunjenosti odjela te osigurava da izvještaji i statistike o broju zaposlenika uvijek budu ažurni.
+
+## Azuriranje broja zaposlenika u odjelu - brisanje zaposlenika
+
+``` sql
+DELIMITER //
+CREATE TRIGGER ad_smanji_broj_zaposlenik
+AFTER DELETE ON zaposlenik
+FOR EACH ROW
+BEGIN
+    UPDATE odjel d
+    JOIN radno_mjesto rm ON rm.id_odjel = d.id
+    SET d.broj_zaposlenika = d.broj_zaposlenika - 1
+    WHERE rm.id = OLD.id_radno_mjesto;
+END //
+DELIMITER ;
+```
+
+Svrha: Automatsko ažuriranje broja zaposlenika u odjelu prilikom brisanja zaposlenika.
+
+Okidač ad_smanji_broj_zaposlenik kreiran je kako bi nakon brisanja zapisa iz tablice zaposlenik automatski ažurirao broj zaposlenika u odjelu kojem je pripadao obrisani zaposlenik. Funkcionalnost okidača temelji se na spajanju tablica radno_mjesto i odjel, gdje se odjel određuje prema id_radno_mjesto zaposlenika koji se briše.
+
+Okidač se aktivira nakon brisanja zapisa (AFTER DELETE) i izvršava UPDATE naredbu nad tablicom odjel, smanjujući vrijednost polja broj_zaposlenika za odgovarajući odjel za jedan. Na taj način, broj zaposlenika u odjelu se automatski ažurira svaki put kada zaposlenik bude obrisan iz sustava, čime se održava točnost podataka o broju zaposlenika po odjelima.
+
+Ovaj okidač omogućava automatsku kontrolu i ažuriranje podataka, olakšava upravljanje ljudskim resursima te osigurava precizne informacije za analizu i izvještavanje o strukturi zaposlenika unutar organizacije.
 
 # AUTENTIFIKACIJA I AUTORIZACIJA
 
