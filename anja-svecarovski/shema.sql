@@ -47,7 +47,7 @@ CREATE TABLE zaposlenik (
 	id INT AUTO_INCREMENT, # iznos se automatski sam povecava
     ime VARCHAR(50) NOT NULL, # ime zaposlenika, obavezno polje
     prezime VARCHAR(50) NOT NULL, # prezime zaposlenika, obavezno polje
-    oib CHAR(11) NOT NULL, # osobni identifikacijski broj zaposlenika, obavezno polje
+    oib CHAR(13) NOT NULL, # osobni identifikacijski broj zaposlenika, obavezno polje
     datum_rodenja DATE, # datum rodenja zaposlenika
     spol ENUM('M', 'Ž', 'Drugo'), # spol zaposlenika, unaprijed definirane opcije
     adresa VARCHAR(100), # adresa stanovanja zaposlenika
