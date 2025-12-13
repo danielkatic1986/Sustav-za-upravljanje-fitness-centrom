@@ -1,6 +1,6 @@
 # SLOŽENI UPITI
 
-# Broj zaposlenika po odjelu (uz info o aktivnosti odjela)
+# Broj zaposlenika po odjelu
 
 SELECT o.naziv AS odjel, o.aktivno, COUNT(z.id) AS broj_zaposlenika
     FROM odjel o
@@ -26,14 +26,6 @@ SELECT z.ime, z.prezime, z.datum_prestanka, DATEDIFF(z.datum_prestanka, CURDATE(
     ORDER BY z.datum_prestanka;
 
 
-## Broj zaposlenika po spolu i odjelu
-
-SELECT o.naziv AS odjel, SUM(CASE WHEN z.spol = 'M' THEN 1 ELSE 0 END) AS musko, SUM(CASE WHEN z.spol = 'Ž' THEN 1 ELSE 0 END) AS zensko
-    FROM odjel o
-    LEFT JOIN radno_mjesto rm ON rm.id_odjel = o.id
-    LEFT JOIN zaposlenik z ON z.id_radno_mjesto = rm.id
-    GROUP BY o.id;
-
 ## Prosječna dob zaposlenika po odjelu
 
 SELECT o.naziv AS odjel, ROUND(AVG(TIMESTAMPDIFF(YEAR, z.datum_rodenja, CURDATE())), 1) AS prosjecna_dob
@@ -43,20 +35,6 @@ SELECT o.naziv AS odjel, ROUND(AVG(TIMESTAMPDIFF(YEAR, z.datum_rodenja, CURDATE(
     GROUP BY o.id;
 
 # POGLEDI
-
-## Neaktivni zaposlenici
-
-CREATE VIEW view_neaktivni_zaposlenici AS
-	SELECT id, ime, prezime, datum_zaposlenja, datum_prestanka, status_zaposlenika,
-    CONCAT(
-		FLOOR(DATEDIFF(datum_prestanka, datum_zaposlenja)/365.25), ' godina, ',
-		FLOOR((DATEDIFF(datum_prestanka, datum_zaposlenja) - FLOOR(DATEDIFF(datum_prestanka, datum_zaposlenja)/365.25)*365.25)/30.44), ' mjeseci'
-        ) AS ukupno_zaposlen
-    FROM zaposlenik
-    WHERE status_zaposlenika = 'neaktivan';
-
-SELECT *
-FROM view_neaktivni_zaposlenici;
 
 ## Aktivni zaposlenici koji rade kao treneri
 
@@ -83,155 +61,152 @@ CREATE VIEW view_zaposlenici_radno_mjesto_odjel AS
 SELECT *
 FROM view_zaposlenici_radno_mjesto_odjel;
 
+## Zaposlenici koji danas slave rođendan ili imaju godišnjicu zaposlenja
+
+CREATE VIEW danasnji_dogadjaji AS
+	SELECT z.id AS zaposlenik_id, CONCAT(z.ime, ' ', z.prezime) AS puno_ime, z.datum_rodenja, z.datum_zaposlenja, rm.naziv AS radno_mjesto, o.naziv AS odjel,
+    CASE 
+        WHEN DAY(z.datum_rodenja) = DAY(CURDATE()) 
+         AND MONTH(z.datum_rodenja) = MONTH(CURDATE())
+        THEN 'Rodjendan'
+        ELSE NULL
+    END AS danas_rodjendan,
+    CASE 
+        WHEN DAY(z.datum_zaposlenja) = DAY(CURDATE())
+         AND MONTH(z.datum_zaposlenja) = MONTH(CURDATE())
+        THEN 'Dan zaposlenja'
+        ELSE NULL
+    END AS danas_zaposlen
+FROM zaposlenik z
+JOIN radno_mjesto rm ON z.id_radno_mjesto = rm.id
+JOIN odjel o ON rm.id_odjel = o.id
+WHERE 
+    (DAY(z.datum_rodenja) = DAY(CURDATE()) AND MONTH(z.datum_rodenja) = MONTH(CURDATE()))
+    OR
+    (DAY(z.datum_zaposlenja) = DAY(CURDATE()) AND MONTH(z.datum_zaposlenja) = MONTH(CURDATE()));
+
+SELECT *
+FROM danasnji_dogadjaji;
+
 # FUNKCIJE
 
-## Broj zaposlenih u određenom odjelu
+## Broj zaposlenih po spolu u odjelu
 
 DELIMITER //
-CREATE FUNCTION broj_zaposlenih_odjel(p_id_odjel INT) RETURNS INT
+CREATE FUNCTION broj_zaposlenih_spol(p_id_odjel INT) RETURNS VARCHAR(100)
 DETERMINISTIC
 BEGIN
-    DECLARE rezultat INT;
-    SELECT COUNT(z.id) INTO rezultat
+    DECLARE br_zene INT DEFAULT 0;
+    DECLARE br_muskarci INT DEFAULT 0;
+    DECLARE ukupno INT DEFAULT 0;
+    DECLARE odjel_ime VARCHAR(50);
+
+    SELECT COUNT(CASE WHEN z.spol = 'Ž' THEN 1 END),
+           COUNT(CASE WHEN z.spol = 'M' THEN 1 END)
+        INTO br_zene, br_muskarci
         FROM zaposlenik z
         JOIN radno_mjesto rm ON z.id_radno_mjesto = rm.id
         WHERE rm.id_odjel = p_id_odjel;
-	RETURN rezultat;
+    SET ukupno = br_zene + br_muskarci;
+    SELECT naziv INTO odjel_ime
+        FROM odjel
+        WHERE id = p_id_odjel;
+        
+	RETURN CONCAT('Postotak zaposlenika po spolu u odjelu: ',odjel_ime,' -> ','Žene: ', ROUND((br_zene/ukupno)*100,2),'%', ', Muškarci: ', ROUND((br_muskarci/ukupno)*100,2),'%');
 END //
 DELIMITER ;
 
-SELECT broj_zaposlenih_odjel(1) FROM DUAL;
+SELECT broj_zaposlenih_spol(1) FROM DUAL;
 
-## Broj zaposlenika na određenom radnom mjestu
-
-DELIMITER //
-CREATE FUNCTION broj_na_radnom_mjestu(p_id_radno_mjesto INT)
-RETURNS INT
-DETERMINISTIC
-BEGIN
-    DECLARE rezultat INT;
-    SELECT COUNT(*) INTO rezultat
-        FROM zaposlenik
-        WHERE id_radno_mjesto = p_id_radno_mjesto;
-    RETURN rezultat;
-END //
-DELIMITER ;
-
-SELECT broj_na_radnom_mjestu(1) FROM DUAL;
-
-## Prosječna plaću u odjelu
+## Prosječna plaća u odjelu po spolu
 
 DELIMITER //
-CREATE FUNCTION prosjecna_placa_odjela(p_odjel_id INT)
-RETURNS DECIMAL(10,2)
+CREATE FUNCTION prosjecna_placa_odjela_po_spolu(p_id_odjel INT) RETURNS VARCHAR(100)
 DETERMINISTIC
 BEGIN
-    DECLARE rezultat DECIMAL(10,2);
-        SELECT AVG(z.placa) INTO rezultat
+    DECLARE rezultat_zene DECIMAL(10,2);
+    DECLARE rezultat_muski DECIMAL(10,2);
+    DECLARE odjel_ime VARCHAR(50);
+
+    SELECT AVG(CASE WHEN z.spol = 'Ž' THEN z.placa END),
+           AVG(CASE WHEN z.spol = 'M' THEN z.placa END)
+        INTO rezultat_zene, rezultat_muski
         FROM zaposlenik z
         JOIN radno_mjesto rm ON rm.id = z.id_radno_mjesto
-        WHERE rm.id_odjel = p_odjel_id;
-    RETURN rezultat;
+        WHERE rm.id_odjel = p_id_odjel;
+    SELECT naziv INTO odjel_ime
+        FROM odjel
+        WHERE id = p_id_odjel;
+
+    RETURN CONCAT('Prosječna plaća u odjelu: ', odjel_ime, ' -> Žene: ', ROUND(rezultat_zene,2),' EUR', ', Muškarci: ', ROUND(rezultat_muski,2),' EUR');
 END //
 DELIMITER ;
 
-SELECT prosjecna_placa_odjela(1) FROM DUAL;
+SELECT prosjecna_placa_odjela_po_spolu(1) FROM DUAL;
 
-## Puni naziv zaposlenika
-
-DELIMITER //
-CREATE FUNCTION puno_ime(p_zaposlenik_id INT)
-RETURNS VARCHAR(200)
-DETERMINISTIC
-BEGIN
-    DECLARE ime_prezime VARCHAR(200);
-    SELECT CONCAT(ime, ' ', prezime) INTO ime_prezime
-    FROM zaposlenik
-    WHERE id = p_zaposlenik_id;
-
-    RETURN ime_prezime;
-END //
-DELIMITER ;
-
-SELECT puno_ime(1) FROM DUAL;
-
-## Starost zaposlenika
+## Današnji dogadjaji - overview
 
 DELIMITER //
-CREATE FUNCTION starost_zaposlenika(p_id INT)
-RETURNS INT
+CREATE FUNCTION danasnji_dogadjaji_zaposlenika() RETURNS VARCHAR(200)
 DETERMINISTIC
 BEGIN
-    DECLARE godine INT;
-    SELECT TIMESTAMPDIFF(YEAR, datum_rodenja, CURDATE()) INTO godine
+    DECLARE br_rodjendan INT;
+    DECLARE br_godisnjica INT;
+
+    SELECT COUNT(*) INTO br_rodjendan
         FROM zaposlenik
-        WHERE id = p_id;
-    RETURN godine;
+        WHERE DAY(datum_rodenja) = DAY(CURDATE())
+        AND MONTH(datum_rodenja) = MONTH(CURDATE());
+
+    SELECT COUNT(*) INTO br_godisnjica
+        FROM zaposlenik
+        WHERE DAY(datum_zaposlenja) = DAY(CURDATE())
+        AND MONTH(datum_zaposlenja) = MONTH(CURDATE());
+
+    RETURN CONCAT('Danas rođendan slavi ', br_rodjendan,' zaposlenika, a godišnjicu zaposlenja slavi ',br_godisnjica, ' zaposlenika.');
 END //
 DELIMITER ;
 
-SELECT starost_zaposlenika(1);
+SELECT danasnji_dogadjaji_zaposlenika() FROM DUAL;
 
 # PROCEDURE
 
-## Azuriranje radnog mjesta zaposlenika
+## Azuriranje radnog mjesta zaposlenika i broj zaposlenika u odjelu
 
 DELIMITER //
 CREATE PROCEDURE azuriraj_radno_mjesto (IN p_zaposlenik_id INT, IN p_novo_radno_mjesto INT)
 BEGIN
+    DECLARE stari_odjel INT;
+    DECLARE novi_odjel INT;
+
+    SELECT rm.id_odjel
+    INTO stari_odjel
+    FROM zaposlenik z
+    JOIN radno_mjesto rm ON rm.id = z.id_radno_mjesto
+    WHERE z.id = p_zaposlenik_id;
+
+    SELECT id_odjel
+    INTO novi_odjel
+    FROM radno_mjesto
+    WHERE id = p_novo_radno_mjesto;
+
+    IF stari_odjel <> novi_odjel THEN
+        UPDATE odjel
+        SET broj_zaposlenika = broj_zaposlenika - 1
+        WHERE id = stari_odjel;
+
+        UPDATE odjel
+        SET broj_zaposlenika = broj_zaposlenika + 1
+        WHERE id = novi_odjel;
+    END IF;
+    
     UPDATE zaposlenik
     SET id_radno_mjesto = p_novo_radno_mjesto
     WHERE id = p_zaposlenik_id;
 END //
 DELIMITER ;
 
-CALL azuriraj_radno_mjesto(1,2);
-
-## Azuriranje statusa zaposlenika aktivan i neaktivan
-
-DELIMITER //
-CREATE PROCEDURE azuriraj_status (IN p_zaposlenik_id INT, IN p_status VARCHAR(20))
-BEGIN
-    UPDATE zaposlenik
-    SET status_zaposlenika = p_status
-    WHERE id = p_zaposlenik_id;
-END //
-DELIMITER ;
-
-CALL azuriraj_status(1, 'Neaktivan');
-
-## Azuriranje broj zaposlenika u odjelu
-
-DELIMITER //
-CREATE PROCEDURE azuriraj_broj_zaposlenika_odjela (IN p_odjel_id INT)
-BEGIN
-    DECLARE ukupno INT;
-
-    SELECT COUNT(z.id) INTO ukupno
-        FROM zaposlenik z
-        JOIN radno_mjesto rm ON rm.id = z.id_radno_mjesto
-        WHERE rm.id_odjel = p_odjel_id;
-
-    UPDATE odjel
-    SET broj_zaposlenika = ukupno
-    WHERE id = p_odjel_id;
-END //
-DELIMITER ;
-
-CALL azuriraj_broj_zaposlenika_odjela (1);
-
-## Premještanje zaposlenika u drugu podružnicu
-
-DELIMITER //
-CREATE PROCEDURE premjesti_podruznica (IN p_zaposlenik_id INT, IN p_nova_podruznica INT)
-BEGIN
-    UPDATE zaposlenik
-    SET id_podruznica = p_nova_podruznica
-    WHERE id = p_zaposlenik_id;
-END //
-DELIMITER ;
-
-CALL premjesti_podruznica(1,9);
+CALL azuriraj_radno_mjesto(1,4);
 
 ## Promjena plaće zaposlenika
 
