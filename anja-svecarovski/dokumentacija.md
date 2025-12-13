@@ -408,7 +408,7 @@ END //
 DELIMITER ;
 ```
 
-Procedure ažurira plaću odabranog zaposlenika. Koristi se pri promjeni ugovora, povišicama, korekcijama ili obračunskim izmjenama.
+Procedura ažurira plaću odabranog zaposlenika. Koristi se pri promjeni ugovora, povišicama, korekcijama ili obračunskim izmjenama.
 
 Prima ID zaposlenika i novu visinu plaće. Jednostavnim UPDATE-om zamjenjuje staru vrijednost. Može se kombinirati s funkcijama koje računaju prosječnu plaću odjela.
 
