@@ -10,6 +10,7 @@
 | odjel - radno_mjesto | 1:N | Jedan odjel može imati više radnih mjesta, ali svako radno mjesto pripada samo jednom odjelu.|
 | podruznica - zaposlenik | 1:N | Jedna podružnica može imati više zaposlenih, ali svaki zaposlenik pripada samo jednoj podruznici.|
 | mjesto - podružnica| 1:N | Jedno mjesto može imati više podružnica, ali svaka podružnica pripada samo jednom mjestu.|
+| mjesto - zaposlenik| 1:N | Jedno mjesto može imati više podružnica, ali svaka podružnica pripada samo jednom mjestu.|
 
 # SHEME RELACIJSKOG MODELA
 
@@ -106,7 +107,7 @@ Drugim riječima — jedan program ima jednog glavnog trenera, ali trener može 
 
 # SLOŽENI UPITI
 
-## Broj zaposlenika po odjelu (uz info o aktivnosti odjela)
+## Broj zaposlenika po odjelu
 
 ``` sql
 SELECT o.naziv AS odjel, o.aktivno, COUNT(z.id) AS broj_zaposlenika
@@ -153,22 +154,6 @@ Referentne tablice: `zaposlenik`
 
 Objašnjenje: Filtriraju se zaposlenici čiji datum prestanka nije NULL. Funkcija DATEDIFF izračunava broj dana do isteka ugovora, a rezultat uključuje samo one između 0 i 30 dana. Podaci se sortiraju po datumu prestanka radi preglednosti.
 
-## Broj zaposlenika po spolu i odjelu
-
-``` sql
-SELECT o.naziv AS odjel, SUM(CASE WHEN z.spol = 'M' THEN 1 ELSE 0 END) AS musko, SUM(CASE WHEN z.spol = 'Ž' THEN 1 ELSE 0 END) AS zensko
-    FROM odjel o
-    LEFT JOIN radno_mjesto rm ON rm.id_odjel = o.id
-    LEFT JOIN zaposlenik z ON z.id_radno_mjesto = rm.id
-    GROUP BY o.id;
-
-```
-Svrha/info: Upit prikazuje rodnu strukturu zaposlenika po odjelima — broj muškaraca i žena u svakom odjelu. Koristi se u HR analitikama za praćenje demografske raspodjele.
-
-Referentne tablice: `odjel`, `radno_mjesto`, `zaposlenik`
-
-Objašnjenje: Kombinira se odjel → radno mjesto → zaposlenik. Pomoću CASE WHEN broje se zaposlenici prema spolu ('M' ili 'Ž'). LEFT JOIN omogućuje prikaz odjela čak i ako su trenutno prazni. Rezultati se grupiraju po odjelu.
-
 ## Prosječna dob zaposlenika po odjelu
 
 ``` sql
@@ -186,33 +171,6 @@ Referentne tablice: `odjel`, r`adno_mjesto`, `zaposlenik`
 Objašnjenje: Upit računa dob svakog zaposlenika pomoću TIMESTAMPDIFF(YEAR, datum_rodenja, CURDATE()) i zatim izračunava prosjek za svaki odjel. Korišten je LEFT JOIN kako bi se prikazali i odjeli bez zaposlenika (gdje će prosjek biti NULL). Rezultat je zaokružen na jednu decimalu.
 
 # POGLEDI
-
-## Neaktivni zaposlenici
-
-``` sql
-CREATE VIEW view_neaktivni_zaposlenici AS
-	SELECT id, ime, prezime, datum_zaposlenja, datum_prestanka, status_zaposlenika,
-    CONCAT(
-		FLOOR(DATEDIFF(datum_prestanka, datum_zaposlenja)/365.25), ' godina, ',
-		FLOOR((DATEDIFF(datum_prestanka, datum_zaposlenja) - FLOOR(DATEDIFF(datum_prestanka, datum_zaposlenja)/365.25)*365.25)/30.44), ' mjeseci'
-        ) AS ukupno_zaposlen
-    FROM zaposlenik
-    WHERE status_zaposlenika = 'neaktivan';
-```
-
-Pogled naziv: `view_neaktivni_zaposlenici`
-
-Svrha/info: prikaz informacija o zaposlenicima koji su trenutno neaktivni i koliko dugo su bili zaposleni
-
-Referentne tablice: `zaposlenik`
-
-Objašnjenje:
-- Ovaj je pogled osmišljen kako bi odjelu ljudskih resursa pružio jasan pregled neaktivnih zaposlenika i trajanja njihovog zaposlenja.
-- Funkcija FLOOR nam omogućava da skratimo decimalne vrijednosti na cijeli broj bez zaokruživanja.
-- Koristi funkciju DATEDIFF za izračun ukupnog broja dana između početka i završetka zaposlenja.
-- Radi lakšeg tumačenja podataka, pretvara ukupan broj dana u približne godine i mjesece koristeći prosječne duljine godina/mjeseca (365,25 dana godišnje i 30,44 dana mjesečno).
-- Uvjet postavljen u WHERE klauzuli osigurava da se u pogledu prikazuju isključivo zaposlenici čiji je status označen kao neaktivan.
-- Korištenjem ovog pogleda izbjegava se potreba za ručnim filtriranjem podataka u tablici zaposlenik, čime se štedi vrijeme i osigurava tačnost u analizi.
 
 ## Aktivni zaposlenici koji rade kao treneri
 
@@ -263,123 +221,168 @@ Objašnjenje:
 informacijama o njihovom radnom mjestu i njihovim odjelima.
 - Rezultati u ovom pogledu nisu specifično sortirani, jer je primarni cilj prikazati kompletne informacije o zaposlenicima uz povezanost s radnim mjestom, odjelima i statusima.
 
+## Zaposlenici koji danas slave rođendan ili imaju godišnjicu zaposlenja
+
+``` sql
+CREATE VIEW danasnji_dogadjaji AS
+	SELECT z.id AS zaposlenik_id, CONCAT(z.ime, ' ', z.prezime) AS puno_ime, z.datum_rodenja, z.datum_zaposlenja, rm.naziv AS radno_mjesto, o.naziv AS odjel,
+    CASE 
+        WHEN DAY(z.datum_rodenja) = DAY(CURDATE()) 
+         AND MONTH(z.datum_rodenja) = MONTH(CURDATE())
+        THEN 'Rodjendan'
+        ELSE NULL
+    END AS danas_rodjendan,
+    CASE 
+        WHEN DAY(z.datum_zaposlenja) = DAY(CURDATE())
+         AND MONTH(z.datum_zaposlenja) = MONTH(CURDATE())
+        THEN 'Dan zaposlenja'
+        ELSE NULL
+    END AS danas_zaposlen
+FROM zaposlenik z
+JOIN radno_mjesto rm ON z.id_radno_mjesto = rm.id
+JOIN odjel o ON rm.id_odjel = o.id
+WHERE 
+    (DAY(z.datum_rodenja) = DAY(CURDATE()) AND MONTH(z.datum_rodenja) = MONTH(CURDATE()))
+    OR
+    (DAY(z.datum_zaposlenja) = DAY(CURDATE()) AND MONTH(z.datum_zaposlenja) = MONTH(CURDATE()));
+```
+
+Pogled naziv: `danasnji_dogadjaji`
+
+Svrha/info: prikaz informacija o zaposlenicima koji danas imaju rođendan ili su zaposleni na današnji datum
+
+Referentne tablice: `zaposlenik`, `radno_mjesto`, `odjel`
+
+Objašnjenje:
+- Ovaj je pogled osmišljen kako bi odjelu ljudskih resursa pružio jasan pregled zaposlenika koji danas slave rođendan ili datum zaposlenja
+- U uvjetu WHERE pregledava se da li je datum i mjesec rođenja/zaposlenja jednak današnjem datumu i mjescu, i pokazati će ono što ispuni taj uvjet
+- Korištenje ovog pogleda služi odjelu ljudskih resursa da znaju točno tko danas "nešto slavi" kako bi se ta informacija mogla prenijeti ostalima i podići povezanost zaposlenika tako što znaju više o kolegama.
+
 
 # FUNKCIJE
 
-## Broj zaposlenih u određenom odjelu
+## Broj zaposlenih po spolu u odjelu
 
 ``` sql
 DELIMITER //
-CREATE FUNCTION broj_zaposlenih_odjel(p_id_odjel INT) RETURNS INT
+CREATE FUNCTION broj_zaposlenih_spol(p_id_odjel INT) RETURNS VARCHAR(100)
 DETERMINISTIC
 BEGIN
-    DECLARE rezultat INT;
-    SELECT COUNT(z.id) INTO rezultat
+    DECLARE br_zene INT DEFAULT 0;
+    DECLARE br_muskarci INT DEFAULT 0;
+    DECLARE ukupno INT DEFAULT 0;
+    DECLARE odjel_ime VARCHAR(50);
+
+    SELECT COUNT(CASE WHEN z.spol = 'Ž' THEN 1 END),
+           COUNT(CASE WHEN z.spol = 'M' THEN 1 END)
+        INTO br_zene, br_muskarci
         FROM zaposlenik z
         JOIN radno_mjesto rm ON z.id_radno_mjesto = rm.id
         WHERE rm.id_odjel = p_id_odjel;
-	RETURN rezultat;
+    SET ukupno = br_zene + br_muskarci;
+    SELECT naziv INTO odjel_ime
+        FROM odjel
+        WHERE id = p_id_odjel;
+
+	RETURN CONCAT('Postotak zaposlenika po spolu u odjelu: ',odjel_ime,' -> ','Žene: ', ROUND((br_zene/ukupno)*100,2),'%', ', Muškarci: ', ROUND((br_muskarci/ukupno)*100,2),'%');
 END //
 DELIMITER ;
 ```
 
-Funkcija vraća ukupan broj zaposlenika koji pripadaju određenom odjelu. Koristi se za analitiku, generiranje izvještaja i automatsko popunjavanje brojčanih pokazatelja u sustavu.
+Funkcija vraća ukupan postotak zaposlenika po spolu koji pripadaju određenom odjelu. Koristi se za analitiku i generiranje izvještaja.
+Funkcija prima jedan parametar p_id_odjel koji predstavlja ID odjela za koji se želi odrediti postotak zaposlenika po spolu. Fukcija koristi dvije varijable br_zene i br_muskarci za brojanje zaposlenika po spolu za unesni odjel, te varijablu ukupno za izraćunavanje ukupnog broja zaposlenika.
+Nakon izračuna brojeva zaposlenika po spolu, funkcija koristi ROUND() funkciju za zaokruživanje postotka zaposlenika po spolu na dva decimalna mjesta. Funkcija na kraju vraća rezultat u obliku stringa koji sadrži ime odjela, postotak ženskih zaposlenika i postotak muških zaposlenika.
 
-Funkcija prima ID odjela te pomoću jednostavnog COUNT(*) broji zapise iz tablice odjel koji odgovaraju proslijeđenom ID-u. Iako u realnim sustavima broj zaposlenika ne bi trebao biti u ovoj tablici, funkcija se može koristiti ako je polje denormalizirano ili kao placeholder funkcija.
-
-## Broj zaposlenika na određenom radnom mjestu
-
-``` sql
-DELIMITER //
-CREATE FUNCTION broj_na_radnom_mjestu(p_id_radno_mjesto INT)
-RETURNS INT
-DETERMINISTIC
-BEGIN
-    DECLARE rezultat INT;
-    SELECT COUNT(*) INTO rezultat
-        FROM zaposlenik
-        WHERE id_radno_mjesto = p_id_radno_mjesto;
-    RETURN rezultat;
-END //
-DELIMITER ;
-```
-
-Funkcija vraća koliko zaposlenika radi na određenom radnom mjestu. Korisno za HR nadzor, analizu popunjenosti radnih pozicija i organizacijske izvještaje.
-
-COUNT(*) se izvršava nad tablicom zaposlenik filtriranom prema id_radno_mjesto. Rezultat je broj zaposlenika na toj poziciji, a funkcija se može pozivati iz upita, procedura ili dashboarda.
-
-## Prosječna plaću u odjelu
+## Prosječna plaća u odjelu po spolu
 
 ``` sql
 DELIMITER //
-CREATE FUNCTION prosjecna_placa_odjela(p_odjel_id INT)
-RETURNS DECIMAL(10,2)
+CREATE FUNCTION prosjecna_placa_odjela_po_spolu(p_id_odjel INT) RETURNS VARCHAR(100)
 DETERMINISTIC
 BEGIN
-    DECLARE rezultat DECIMAL(10,2);
-        SELECT AVG(z.placa) INTO rezultat
+    DECLARE rezultat_zene DECIMAL(10,2);
+    DECLARE rezultat_muski DECIMAL(10,2);
+    DECLARE odjel_ime VARCHAR(50);
+
+    SELECT AVG(CASE WHEN z.spol = 'Ž' THEN z.placa END),
+           AVG(CASE WHEN z.spol = 'M' THEN z.placa END)
+        INTO rezultat_zene, rezultat_muski
         FROM zaposlenik z
         JOIN radno_mjesto rm ON rm.id = z.id_radno_mjesto
-        WHERE rm.id_odjel = p_odjel_id;
-    RETURN rezultat;
+        WHERE rm.id_odjel = p_id_odjel;
+    SELECT naziv INTO odjel_ime
+        FROM odjel
+        WHERE id = p_id_odjel;
+
+    RETURN CONCAT('Prosječna plaća u odjelu: ', odjel_ime, ' -> Žene: ', ROUND(rezultat_zene,2),' EUR', ', Muškarci: ', ROUND(rezultat_muski,2),' EUR');
 END //
 DELIMITER ;
 ```
-Funkcija izračunava prosječnu plaću zaposlenika unutar odabranog odjela. Koristi se za financijske analize, usporedbu odjela te HR statistike.
+Funkcija izračunava prosječnu plaću zaposlenika po spolu unutar odabranog odjela. Koristi se za financijske analize, usporedbu odjela te HR statistike.
 
-Funkcija spaja zaposlenike i radna mjesta te filtrira radna mjesta prema odjelu. Uz pomoć agregatne funkcije AVG izračunava se prosječna plaća u tom odjelu. Rezultat je tipa DECIMAL, zaokružen na dvije decimale.
+Funkcija spaja zaposlenike i radna mjesta te filtrira radna mjesta prema odjelu. Uz pomoć agregatne funkcije AVG izračunava se prosječna plaća po spolu u tom odjelu. Nakon izračuna prosječne plaće zaposlenika po spolu, funkcija koristi ROUND() funkciju za zaokruživanje iznosa prosječne plaće zaposlenika po spolu na dva decimalna mjesta. Funkcija na kraju vraća rezultat u obliku stringa koji sadrži ime odjela, prosječnu plaću ženskih zaposlenika i prosječnu plaću muških zaposlenika.
 
-## Puni naziv zaposlenika
-
-``` sql
-DELIMITER //
-CREATE FUNCTION puno_ime(p_zaposlenik_id INT)
-RETURNS VARCHAR(200)
-DETERMINISTIC
-BEGIN
-    DECLARE ime_prezime VARCHAR(200);
-    SELECT CONCAT(ime, ' ', prezime) INTO ime_prezime
-    FROM zaposlenik
-    WHERE id = p_zaposlenik_id;
-
-    RETURN ime_prezime;
-END //
-DELIMITER ;
-```
-
-Vraća puno ime zaposlenika (ime + prezime) kao jedan tekstualni string. Koristi se u prikazima, logovima, izvještajima i procedurama koje generiraju tekstualne informacije.
-
-Funkcija prima ID zaposlenika, dohvaća ime i prezime te ih spaja pomoću CONCAT. Rezultat je formatski ujednačen prikaz punog imena.
-
-## Starost zaposlenika
+## Današnji dogadjaji - overview
 
 ``` sql
 DELIMITER //
-CREATE FUNCTION starost_zaposlenika(p_id INT)
-RETURNS INT
+CREATE FUNCTION danasnji_dogadjaji_zaposlenika() RETURNS VARCHAR(200)
 DETERMINISTIC
 BEGIN
-    DECLARE godine INT;
-    SELECT TIMESTAMPDIFF(YEAR, datum_rodenja, CURDATE()) INTO godine
+    DECLARE br_rodjendan INT;
+    DECLARE br_godisnjica INT;
+
+    SELECT COUNT(*) INTO br_rodjendan
         FROM zaposlenik
-        WHERE id = p_id;
-    RETURN godine;
+        WHERE DAY(datum_rodenja) = DAY(CURDATE())
+        AND MONTH(datum_rodenja) = MONTH(CURDATE());
+
+    SELECT COUNT(*) INTO br_godisnjica
+        FROM zaposlenik
+        WHERE DAY(datum_zaposlenja) = DAY(CURDATE())
+        AND MONTH(datum_zaposlenja) = MONTH(CURDATE());
+
+    RETURN CONCAT('Danas rođendan slavi ', br_rodjendan,' zaposlenika, a godišnjicu zaposlenja slavi ',br_godisnjica, ' zaposlenika.');
 END //
 DELIMITER ;
 ```
 
-Vraća trenutačnu starost zaposlenika izraženu u godinama. Koristi se pri HR analitici, demografskim izvještajima i obračunima.
-
-TIMESTAMPDIFF(YEAR, datum_rodenja, CURDATE()) računa razliku u godinama između datuma rođenja i trenutnog datuma. Funkcija vraća cijeli broj godina.
+Ova fukcija služi za generiranje sažetog dnevnog izvještaja odjelu ljudskih resursa o zaposlenicima koji na današnji dan slave rođendan ili godišnjicu zaposlenja, za dnevni bilten dešavanja u fitness centru.
+Funkcija na kraju vraća rezultat u obliku stringa koji sadrži ime i prezime zaposlenika, starost i godine zaposlenja.
+Detaljan popis zaposlenika koji slave rođendan ili godišnjicu zaposlenja dobiva se pomoću pogleda `Zaposlenici koji danas slave rođendan ili imaju godišnjicu zaposlenja`.
 
 # PROCEDURE
 
-## Azuriranje radnog mjesta zaposlenika
+## Azuriranje radnog mjesta zaposlenika i broj zaposlenika u odjelu
 
 ``` sql
 DELIMITER //
 CREATE PROCEDURE azuriraj_radno_mjesto (IN p_zaposlenik_id INT, IN p_novo_radno_mjesto INT)
 BEGIN
+    DECLARE stari_odjel INT;
+    DECLARE novi_odjel INT;
+
+    SELECT rm.id_odjel
+    INTO stari_odjel
+    FROM zaposlenik z
+    JOIN radno_mjesto rm ON rm.id = z.id_radno_mjesto
+    WHERE z.id = p_zaposlenik_id;
+
+    SELECT id_odjel
+    INTO novi_odjel
+    FROM radno_mjesto
+    WHERE id = p_novo_radno_mjesto;
+
+    IF stari_odjel <> novi_odjel THEN
+        UPDATE odjel
+        SET broj_zaposlenika = broj_zaposlenika - 1
+        WHERE id = stari_odjel;
+
+        UPDATE odjel
+        SET broj_zaposlenika = broj_zaposlenika + 1
+        WHERE id = novi_odjel;
+    END IF;
+    
     UPDATE zaposlenik
     SET id_radno_mjesto = p_novo_radno_mjesto
     WHERE id = p_zaposlenik_id;
@@ -387,67 +390,10 @@ END //
 DELIMITER ;
 ```
 
-Procedure mijenja radno mjesto zaposlenika. Koristi se prilikom internih promjena pozicije, napredovanja, reorganizacije ili transfera.
+Procedura mijenja radno mjesto zaposlenika. Koristi se prilikom internih promjena pozicije, napredovanja, reorganizacije ili transfera.
+Procedure prima ID zaposlenika i ID novog radnog mjesta. UPDATE naredbom mijenja vrijednost atributa id_radno_mjesto.
 
-Procedure prima ID zaposlenika i ID novog radnog mjesta. UPDATE naredbom mijenja vrijednost atributa id_radno_mjesto. Jednostavna i brza za pozivanje iz aplikacije.
-
-## Azuriranje statusa zaposlenika aktivan i neaktivan
-
-``` sql
-DELIMITER //
-CREATE PROCEDURE azuriraj_status (IN p_zaposlenik_id INT, IN p_status VARCHAR(20))
-BEGIN
-    UPDATE zaposlenik
-    SET status_zaposlenika = p_status
-    WHERE id = p_zaposlenik_id;
-END //
-DELIMITER ;
-```
-
-Procedure postavlja status zaposlenika na „Aktivan”, „Neaktivan” ili drugi validni status. Koristi se za upravljanje radnim odnosom (zaposlen, otpušten, na čekanju).
-
-Procedure prima ID zaposlenika i novi status. Ažurira status zaposlenika pomoću UPDATE naredbe. Može se proširiti validacijama ako je potrebno ograničiti dozvoljene statuse.
-
-## Azuriranje broj zaposlenika u odjelu
-
-``` sql
-DELIMITER //
-CREATE PROCEDURE azuriraj_broj_zaposlenika_odjela (IN p_odjel_id INT)
-BEGIN
-    DECLARE ukupno INT;
-
-    SELECT COUNT(z.id) INTO ukupno
-        FROM zaposlenik z
-        JOIN radno_mjesto rm ON rm.id = z.id_radno_mjesto
-        WHERE rm.id_odjel = p_odjel_id;
-
-    UPDATE odjel
-    SET broj_zaposlenika = ukupno
-    WHERE id = p_odjel_id;
-END //
-DELIMITER ;
-```
-
-Procedure automatski izračunava i postavlja broj zaposlenika u odjelu. Koristi se ako tablica odjel ima atribut koji treba ručno održavati ili ažurirati nakon promjena zaposlenika.
-
-Procedure prvo izračunava ukupni broj zaposlenika u odjelu pomoću COUNT i JOIN naredbi. Zatim UPDATE-om upisuje rezultat u polje broj_zaposlenika. Može se pozivati nakon unosa, brisanja ili premještanja zaposlenika.
-
-## Premještanje zaposlenika u drugu podružnicu
-
-``` sql
-DELIMITER //
-CREATE PROCEDURE premjesti_podruznica (IN p_zaposlenik_id INT, IN p_nova_podruznica INT)
-BEGIN
-    UPDATE zaposlenik
-    SET id_podruznica = p_nova_podruznica
-    WHERE id = p_zaposlenik_id;
-END //
-DELIMITER ;
-```
-
-Procedure služi za premještanje zaposlenika u drugu podružnicu (npr. kad mijenja lokaciju rada). Koristi se prilikom operativnog upravljanja poslovnicama.
-
-Procedure prima ID zaposlenika i ID nove podružnice. UPDATE naredba postavlja novu vrijednost atributa id_podruznica. Logično je koristiti je zajedno s procedurama za izmjenu radnog mjesta i odjela.
+Također, procedura provjerava da li je novim radnim mjestom promijenjen i odjel, te postavlja novi zaposlenika u starom i novom odjelu. Pošto imamo okidače koji računaju kada imamo novog zaposlenika ili kada netko odlazi, ova procedura se koristi kada zaposlenik promijenom radnog mjesta promijeni i odjel u kojem je zaposlen, da bi držali broj_zaposlenih u tablici odjel ažurnim.
 
 ## Promjena plaće zaposlenika
 
