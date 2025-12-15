@@ -57,13 +57,13 @@
 
 &emsp;Poslovni proces obuhvaćen ovom bazom podataka odnosi se na upravljanje fitness centrom koji posluje kroz više poslovnica/podružnica. Sustav omogućuje da se svi ključni podaci prate centralizirano, bez obzira na to u kojoj se podružnici određena aktivnost odvija.
 
-&emsp;Vjerojatno najvažniji dio, bez kojeg fitness centri ne bi imali smisla, jesu članovi fitness centra. Oni se evidentiraju pomoću tablice `clan` pri čemu se bilježe podaci poput imena, prezimena, OIB-a, spola, datuma rođenja, adrese, e-mail adrese, kontakt telefona, datuma učlanjenja, datuma posljednje aktivnosti te statusa aktivnosti člana . Članovi koriste različite vrste članarina koje se definiraju u tablici `clanarina`, a svaka članarina, osim što je povezana s određenim članom, dodatno je definirana tipom i statusom koji se bilježe pomoću tablica `tip_clanarine` i `status_clanarine`, te datumom početka i datumom završetka članarine. Za svaki tip članarine dodatno se evidentira naziv, trajanje, cijena i opis, dok se za svaki status članarine definira naziv i kratki opis. Unutar tablice `statistika_potrosnje` periodično se evidentira analiza potrošnje članova po kvartalima, pri čemu se evidentira godina, kvartal i ukupan iznos unutar tog kvartala. Pri evidenciji članova koristi se i tablica `mjesto`, kojom se definira popis mjesta s nazivom, poštanskim brojem i državom, a navedena tablica koristi se i pri evidenciji zaposlenika i podružnica.
+&emsp;Vjerojatno najvažniji dio, bez kojeg fitness centri ne bi imali smisla, jesu članovi fitness centra. Oni se evidentiraju pomoću tablice `clan` pri čemu se bilježe podaci poput imena, prezimena, OIB-a, spola, datuma rođenja, adrese, e-mail adrese, kontakt telefona, datuma učlanjenja, datuma posljednje aktivnosti te statusa aktivnosti člana . Članovi koriste različite vrste članarina koje se definiraju u tablici `clanarina`, a svaka članarina, osim što je povezana s određenim članom, dodatno je definirana tipom i statusom koji se bilježe pomoću tablica `tip_clanarine` i `status_clanarine`, te datumom početka i datumom završetka članarine. Za svaki tip članarine dodatno se evidentira naziv, trajanje, cijena i opis, dok se za svaki status članarine definira naziv i kratki opis. Unutar tablice `statistika_potrosnje` periodično se evidentira analiza potrošnje članova po kvartalima, pri čemu se evidentira godina, kvartal i ukupan iznos unutar tog kvartala. Pri evidenciji članova koristi se i tablica `mjesto`, kojom se definira popis mjesta s nazivom, poštanskim brojem i državom, a navedena tablica koristi se i pri evidenciji zaposlenika i podružnica. Jedna od iznimaka koju ova baza podataka ima jest ta da se pojedina članarina ne veže uz konkretno plaćanje, nego se podrazumijeva da svaki član plaća isključivo svoje članarine. Također, članarina postaje aktivna od dana kada je plaćena, a status članarine ažurira se automatski kroz sustav nakon što se izvrši plaćanje. Navedeno se razlikuje od stvarne primjene, gdje jedan član može jednim plaćanjem uplatiti članarinu za sebe i za drugog člana ili gdje član uplati članarinu koja se aktivira na unaprijed dogovoreni datum u bližoj budućnosti.
 
-&emsp;Financijski dio baze podataka obuhvaća izdavanje računa i praćenje plaćanja tj. kada član kupi neku od članarina, u tablici `racun` pohranjuje se zapis u kojem se bilježi način plaćanja, datum i vrijeme izdavanja, iznos prije popusta, eventualni popust te ukupan iznos. Koristeći tablicu `placanje` povezuje se račune s članovima, a unutar nje bilježi se dodatni opis plaćanja i status plaćanja. Mogući popusti definirani su unutar tablice `popust` gdje su za svaki popust navedeni naziv i iznos popusta koje možemo dodjeljivati našim članovima.
+&emsp;Financijski dio baze podataka obuhvaća izdavanje računa i praćenje plaćanja tj. kada član kupi neku od članarina, u tablici `racun` pohranjuje se zapis u kojem se bilježi način plaćanja, datum i vrijeme izdavanja, iznos prije popusta, eventualni popust te ukupan iznos. Koristeći tablicu `placanje` povezuje se račune s članovima, a unutar nje bilježi se dodatni opis plaćanja i status plaćanja. Mogući popusti definirani su unutar tablice `popust` gdje su za svaki popust navedeni naziv i iznos popusta koje možemo dodjeljivati našim članovima. Što se tiče plaćanja i računa, u ovom sustavu se za svaki račun veže samo jedno plaćanje, što znači da nema obročnog plaćanja računa koje bi vjerovatno bilo moguće u nekom stvarnom sustavu.
 
 &emsp;Dio baze podataka koji prati treninga realiziran je pomoću tablica program, trening, termin_treninga, rezervacija i trening_clan. Programi treninga opisani su u tablici `program` gdje se za svaki program bilježe naziv, opis i intenzitet. Na temelju programa definiraju se treninzi u tablici `trening` s informacijama o razini treninga, planiranom trajanju u minutama, maksimalnom broju polaznika te podatkom je li trening trenutno aktivan. Termini pojedinih treninga evidentiraju se u tablici `termin_treninga` pri čemu svaki termin ima definiran trening, prostoriju u kojoj se održava, trenera koji ga vodi, vrijeme početka i završetka treninga, podatak o tome je li termin otkazan te broj već podnešenih rezervacija, a dodatno se može unijeti i napomena za termin. Rezervacije članova evidentiraju se kroz tablicu `rezervacija`, gdje se bilježi član , termin treninga na koji se rezervacija odnosi, te vrijeme i način rezervacije. Stvarno prisustvo na treningu evidentira se u tablici `trening_clan` kroz status prisustva, vrijeme dolaska i eventualne napomene.
 
-&emsp;Budući da sustav obuhvaća više poslovnica, ključnu ulogu ima tablica `podruznica` pri čemu se za svaku podružnicu definira naziv, mjesto u kojem se nalazi i adresa. Unutar svake podružnice nalaze se prostorije koje se evidentiraju u tablici `prostorija`, a za svaku prostoriju evidentirani su oznaka, lokacija i maksimalni kapacitet prostorije, podruznica, te tip prostorije preko tablice `tip_prostorije` za koji se dodatno bilježi naziv tipa i kratki opis. Navedeno omogućuje planiranje termina treninga u skladu s kapacitetom i tipom prostora u kojem se održava. Kako neke prostorije sadrže opremu, unutar tablice `oprema` prati se sva oprema smještena u pojedinim prostorijama bilježenjem podatka o nazivu opreme, datumu nabave, trenutnom stanju opreme, prostorija u kojoj se nalazi, te o dobavljaču evidentiranom unutar tablice `dobavljac` za kojeg se bilježe naziv, OIB, kontakt i adresa. Održavanje pojedine opreme evidentira se kroz tablicu `odrzavanje` gdje se bilježi koja je oprema servisirana, datum održavanja, zaposlenik koji je obavio održavanje te kratki opis samog održavanja, čime se osigurava kvaliteta usluge i sigurnost članova.
+&emsp;Budući da sustav obuhvaća više poslovnica, ključnu ulogu ima tablica `podruznica` pri čemu se za svaku podružnicu definira naziv, mjesto u kojem se nalazi i adresa. Unutar svake podružnice nalaze se prostorije koje se evidentiraju u tablici `prostorija`, a za svaku prostoriju evidentirani su oznaka, lokacija i maksimalni kapacitet prostorije, podruznica, te tip prostorije preko tablice `tip_prostorije` za koji se dodatno bilježi naziv tipa i kratki opis. Navedeno omogućuje planiranje termina treninga u skladu s kapacitetom i tipom prostora u kojem se održava. Kako neke prostorije sadrže opremu, unutar tablice `oprema` prati se sva oprema smještena u pojedinim prostorijama bilježenjem podatka o nazivu opreme, datumu nabave, trenutnom stanju opreme, prostorija u kojoj se nalazi, te o dobavljaču evidentiranom unutar tablice `dobavljac` za kojeg se bilježe naziv, OIB, kontakt i adresa. Održavanje pojedine opreme evidentira se kroz tablicu `odrzavanje` gdje se bilježi koja je oprema servisirana, datum održavanja, zaposlenik koji je obavio održavanje te kratki opis samog održavanja, čime se osigurava kvaliteta usluge i sigurnost članova. Treba napomenuti kako se sva evidentirana oprema nalazi u nekoj prostoriji što je razlika od neke stvarne primjene gdje bi možda bila evidentirana oprema ali joj nebi bila definirana prostorija u kojoj se nalazi jer se ista možda koristi u više prostorija ili centara. 
 
 &emsp;Kako bi se rad svih poslovnica odvijao prema planu bitni su zaposlenici, njima se upravlja putem tablica `zaposlenik`, `radno_mjesto` i `odjel`. Za svakog zaposlenika prate se podaci kao što su ime, prezime, OIB, datum rođenja, spol, adresa, kontakt telefon, e-mail adresa, datum zapošljavanja i prestanka rada (ako zaposlenik više nije zaposlen), visina plaće, status zaposlenika, radno mjesto, podružnica u kojoj radi te mjesto iz kojeg dolazi. Radna mjesta grupirana su u odjele uz informacije o nazivu odjela, je li odjel aktivan, kratkom opisu odjela i ukupnom broju zaposlenih unutar tog odjela. Tablica `radno_mjesto` dodatno opisuje pojedina radna mjesta atributima naziv, aktivno i opis, te povezuje radno mjesto s odgovarajućim odjelom. Također, unutar tablice `trener_program` evidentirani su treneri s programima koje su ovlašteni voditi, na taj način sustav može kontrolirati koji trener može voditi koje programe, što se primjenjuje i u planiranju termina treninga.
 
@@ -71,39 +71,41 @@
 
 # ENTITY RELATIONSHIP (ER) DIJAGRAM
 
+Sljedeći ER dijagram detaljno i pregledno prikazuje sve skupove-entiteta (zajedno s pripadajućim skupom atributa), kao i skupove-veza između njih. Kardinalnost mapiranja (strelice) označava koliko drugih entiteta može biti povezano s određenim entitetom putem određene veze.
+
 ![ER_dijagram](./slike/Sustav_za_upravljanje_fitness_centrom_-_ER_dijagram.png)
 
 # VEZE ENTITETA PREMA ER DIJAGRAMU
 
 | Veza | Kardinalnost | Opis |
 |:----:|:------------:|------|
-| `clan` ⬅️ `clanarina`              | N:1 | • Jedan član može imati više članarina                                  <br/> • Jedna članarina pripada samo jednom članu |
-| `tip_clanarine` ⬅️ `clanarina`     | N:1 | • Jedan tip članarine može definirati više članarina                    <br/> • Jedna članarina definirana je točno jednim tipom članarine |
-| `status_clanarine` ⬅️ `clanarina`  | N:1 | • Jedan status članarine može biti dodijeljen na više članarina         <br/> • Jedna članarina može imati dodijeljen samo jedan status članarine |
-| `clan` ⬅️ `statistika_potrosnje`   | N:1 | • Za jednog člana može se voditi više zapisa statististike potrošnje    <br/> • Jedan zapis statistike potrošnje vodi se za točno jednog člana |
-| `clan` ⬅️ `placanje`               | N:1 | • Jedan član može izvšiti više plaćanja                                 <br/> • Jedno plaćanje vrši točno jedan član |
+| `clan` ⬅️ `clanarina`              | M:1 | • Jedan član može imati više članarina                                  <br/> • Jedna članarina pripada samo jednom članu |
+| `tip_clanarine` ⬅️ `clanarina`     | M:1 | • Jedan tip članarine može definirati više članarina                    <br/> • Jedna članarina definirana je točno jednim tipom članarine |
+| `status_clanarine` ⬅️ `clanarina`  | M:1 | • Jedan status članarine može biti dodijeljen na više članarina         <br/> • Jedna članarina može imati dodijeljen samo jedan status članarine |
+| `clan` ⬅️ `statistika_potrosnje`   | M:1 | • Za jednog člana može se voditi više zapisa statististike potrošnje    <br/> • Jedan zapis statistike potrošnje vodi se za točno jednog člana |
+| `clan` ⬅️ `placanje`               | M:1 | • Jedan član može izvšiti više plaćanja                                 <br/> • Jedno plaćanje vrši točno jedan član |
 | `placanje` ↔️ `racun`              | 1:1 | • Jedno plaćanje vezuje se s jednim računom                             <br/> • Jedan račun odnosi se na točno jedno plaćanje |
-| `popust` ⬅️ `racun`                | N:1 | • Jedan popust može biti dodijeljen na više računa                      <br/> • Jedan račun može imati samo jedan popust |
-| `clan` ⬅️ `rezervacija`            | N:1 | • Jedan član može izvšiti više rezervacija                              <br/> • Jednu rezervaciju podnosi točno jedan član |
+| `popust` ⬅️ `racun`                | M:1 | • Jedan popust može biti dodijeljen na više računa                      <br/> • Jedan račun može imati samo jedan popust |
+| `clan` ⬅️ `rezervacija`            | M:1 | • Jedan član može izvšiti više rezervacija                              <br/> • Jednu rezervaciju podnosi točno jedan član |
 | `clan` ↔️ `termin_treninga`        | M:N | • Jedan član može sudjelovati na više termina treninga                  <br/> • Na jednom terminu treninga može sudjelovati više članova |
-| `termin_treninga` ⬅️ `rezervacija` | N:1 | • Jedan termin treninga može imati više rezervacija                     <br/> • Jedna rezervacija se veže na točno jedan termin treninga |
-| `prostorija` ⬅️ `termin_treninga`  | N:1 | • U jednoj prostoriji može se održavati više termina treninga           <br/> • Jedan termin treninga održava se u samo jednoj prostoriji |
-| `tip_prostorije` ⬅️ `prostorija`   | N:1 | • Jedan tip prostorije može opisivati više prostorije                   <br/> • Jedna prostorije ima definiran točno jedan tip prostorije |
-| `podružnica` ⬅️ `prostorija`       | N:1 | • U jednoj podružnici može se nalaziti više prostorija                  <br/> • Jedna prostorija nalazi se samo u jednoj podružnici |
-| `prostorija` ⬅️ `oprema`           | N:1 | • U jednoj prostoriji može se nalaziti više komada opreme               <br/> • Jedan komad opreme nalazi se u samo jednoj prostoriji |
-| `trening` ⬅️ `termin_treninga`     | N:1 | • Jedan trening može se izvoditi na više različitih termina treninga    <br/> • Na jednom terminu treninga može se izvoditi samo jedan trening |
-| `program` ⬅️ `trening`             | N:1 | • Jedan program može definirati više treninga                           <br/> • Jedan trening definira točno jedan program |
-| `zaposlenik` ⬅️ `termin_treninga`  | N:1 | • Jedan zaposlenik/trener može voditi više različitih termina treninga  <br/> • Jedan termin treninga vodi točno jedan zaposlenik/trener |
+| `termin_treninga` ⬅️ `rezervacija` | M:1 | • Jedan termin treninga može imati više rezervacija                     <br/> • Jedna rezervacija se veže na točno jedan termin treninga |
+| `prostorija` ⬅️ `termin_treninga`  | M:1 | • U jednoj prostoriji može se održavati više termina treninga           <br/> • Jedan termin treninga održava se u samo jednoj prostoriji |
+| `tip_prostorije` ⬅️ `prostorija`   | M:1 | • Jedan tip prostorije može opisivati više prostorije                   <br/> • Jedna prostorije ima definiran točno jedan tip prostorije |
+| `podružnica` ⬅️ `prostorija`       | M:1 | • U jednoj podružnici može se nalaziti više prostorija                  <br/> • Jedna prostorija nalazi se samo u jednoj podružnici |
+| `prostorija` ⬅️ `oprema`           | M:1 | • U jednoj prostoriji može se nalaziti više komada opreme               <br/> • Jedan komad opreme nalazi se u samo jednoj prostoriji |
+| `trening` ⬅️ `termin_treninga`     | M:1 | • Jedan trening može se izvoditi na više različitih termina treninga    <br/> • Na jednom terminu treninga može se izvoditi samo jedan trening |
+| `program` ⬅️ `trening`             | M:1 | • Jedan program može definirati više treninga                           <br/> • Jedan trening definira točno jedan program |
+| `zaposlenik` ⬅️ `termin_treninga`  | M:1 | • Jedan zaposlenik/trener može voditi više različitih termina treninga  <br/> • Jedan termin treninga vodi točno jedan zaposlenik/trener |
 | `zaposlenik` ↔️ `program`          | M:N | • Jedan zaposlenik može izvoditi više programa                          <br/> • Jedan program može izvoditi više zaposlenika |
-| `zaposlenik` ⬅️ `odrzavanje`       | N:1 | • Jedan zaposlenik može obaviti više različitih održavanja              <br/> • Za jedno održavanje odgovoran je samo jedan zaposlenik |
-| `oprema` ⬅️ `odrzavanje`           | N:1 | • Jedna oprema može imati više odrađenih održavanja                     <br/> • Jedno održavanje odnosi se na točno jedan komad opreme |
-| `dobavljac` ⬅️ `oprema`            | N:1 | • Jedan dobavljač može isporučivati više različite opreme               <br/> • Jedan artikl opreme dobavlja se od točno jednog dobavljača |
-| `radno_mjesto` ⬅️ `zaposlenik`     | N:1 | • Jedno radno mjesto može imati više zaposlenika                        <br/> • Jedan zaposlenik ima jedno radno mjesto |
-| `odjel` ⬅️ `radno_mjesto`          | N:1 | • Jedan odjel može imati više radnih mjesta                             <br/> • Jedno radno mjesto pripada jednom odjelu |
-| `podruznica` ⬅️ `zaposlenik`       | N:1 | • Jedna podružnica može imati više zaposlenika                          <br/> • Jedan zaposlenik zaposlen je u točno jednoj podružnici |
-| `mjesto` ⬅️ `zaposlenik`           | N:1 | • Iz jednog mjesta može dolaziti više zaposlenika                       <br/> • Jedan zaposlenik dolazi iz jednog mjesta |
-| `mjesto` ⬅️ `podruznica`           | N:1 | • U jednom mjestu može se nalaziti više podružnica                      <br/> • Jedna podružnica nalazi se u jednom mjestu |
-| `mjesto` ⬅️ `clan`                 | N:1 | • Iz jednog mjesta može dolaziti više članova                           <br/> • Jedan član dolazi iz točno jednog mjesta |
+| `zaposlenik` ⬅️ `odrzavanje`       | M:1 | • Jedan zaposlenik može obaviti više različitih održavanja              <br/> • Za jedno održavanje odgovoran je samo jedan zaposlenik |
+| `oprema` ⬅️ `odrzavanje`           | M:1 | • Jedna oprema može imati više odrađenih održavanja                     <br/> • Jedno održavanje odnosi se na točno jedan komad opreme |
+| `dobavljac` ⬅️ `oprema`            | M:1 | • Jedan dobavljač može isporučivati više različite opreme               <br/> • Jedan artikl opreme dobavlja se od točno jednog dobavljača |
+| `radno_mjesto` ⬅️ `zaposlenik`     | M:1 | • Jedno radno mjesto može imati više zaposlenika                        <br/> • Jedan zaposlenik ima jedno radno mjesto |
+| `odjel` ⬅️ `radno_mjesto`          | M:1 | • Jedan odjel može imati više radnih mjesta                             <br/> • Jedno radno mjesto pripada jednom odjelu |
+| `podruznica` ⬅️ `zaposlenik`       | M:1 | • Jedna podružnica može imati više zaposlenika                          <br/> • Jedan zaposlenik zaposlen je u točno jednoj podružnici |
+| `mjesto` ⬅️ `zaposlenik`           | M:1 | • Iz jednog mjesta može dolaziti više zaposlenika                       <br/> • Jedan zaposlenik dolazi iz jednog mjesta |
+| `mjesto` ⬅️ `podruznica`           | M:1 | • U jednom mjestu može se nalaziti više podružnica                      <br/> • Jedna podružnica nalazi se u jednom mjestu |
+| `mjesto` ⬅️ `clan`                 | M:1 | • Iz jednog mjesta može dolaziti više članova                           <br/> • Jedan član dolazi iz točno jednog mjesta |
 
 # SHEME RELACIJSKOG MODELA
 
@@ -153,7 +155,15 @@
 
 # TRANSAKCIJE
 
-
 # ZAKLJUČAK
 
+> Ovdje dolazi tekst zaključka.
 
+### • ALATI KORIŠTENI PRI IZRADI PROJEKTA:
+
+&emsp;&emsp; • **Discord** *(komunikacija)* <br/>
+&emsp;&emsp; • **Github** *(dijeljenje i verzioniranje)* <br/>
+&emsp;&emsp; • **Lucidchart** *(ER dijagram)* <br/>
+&emsp;&emsp; • **ChatGPT** *(generiranje podataka)* <br/>
+&emsp;&emsp; • **Python** *(generiranje podataka)* <br/>
+&emsp;&emsp; • **MySQL Workbench** *(pisanje i provjera SQL koda)*
