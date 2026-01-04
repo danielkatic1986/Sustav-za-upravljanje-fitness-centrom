@@ -48,11 +48,6 @@ FOREIGN KEY (id_clan) REFERENCES clan (id),
 FOREIGN KEY (id_racun) REFERENCES racun (id)
 );
 
-
-
-
-
-
 CREATE TABLE racun (
 id INT AUTO_INCREMENT PRIMARY KEY,
 broj_racuna INT,

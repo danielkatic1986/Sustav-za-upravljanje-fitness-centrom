@@ -118,8 +118,6 @@ INSERT INTO mjesto (naziv, postanski_broj, drzava) VALUES
 
 
 
-
-
 -- moje tablice
 INSERT INTO placanje (id, id_clan, id_racun, opis_placanja, status_placanja) VALUES
 (54987, 1, 100487596, 'mj_clanarina', 'placeno'),
