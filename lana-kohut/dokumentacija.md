@@ -27,8 +27,8 @@ Svrha je omogućiti praćenje statusa plaćanja, iznosa računa, načine plaćan
 | `id` | INT | PK | Jedinstveni identifikator plaćanja |
 | `id_clan` | INT | FK | Strani ključ, jedinstveni identifikator člana |
 | `id_racun` | INT | FK | Strani ključ, jedinstveni identifikator računa |
-| `opis_placanja` | VARCHAR(100) | Opis svakog plaćanja|
-| `status_placanja` | VARCHAR(50) | Status svakog plaćanja |
+| `opis_placanja` | VARCHAR(100) | | Opis svakog plaćanja|
+| `status_placanja` | VARCHAR(50) | | Status svakog plaćanja |
 
 ---
 
@@ -41,14 +41,14 @@ Svrha je omogućiti praćenje statusa plaćanja, iznosa računa, načine plaćan
 | Atribut | Tip | Ključ | Opis |
 |----------|-----|-------|------|
 | `id` | INT | PK | Jedinstveni identifikator računa |
-| `broj_racuna` | INT | Broj računa |
+| `broj_racuna` | INT | | Broj računa |
 | `id_popusta` | INT | FK | Jedinstveni identifikator popusta |
-| `nacin_placanja` | VARCHAR(50) | Tekstualni opis načina plaćanja |
-| `datum_izdavanja` | DATE | Datum izdavanja računa |
-| `vrijeme_izdavanja` | TIME | Vrijeme izdavanja računa |
-| `iznos_prije_popusta` | INT | Iznos računa prije dodanog popusta |
-| `popust_check` | VARCHAR(1) | Provjera da li račun ima popust ili ne |
-| `ukupan_iznos` | INT | Ukupan iznos računa |
+| `nacin_placanja` | VARCHAR(50) | | Tekstualni opis načina plaćanja |
+| `datum_izdavanja` | DATE | | Datum izdavanja računa |
+| `vrijeme_izdavanja` | TIME | | Vrijeme izdavanja računa |
+| `iznos_prije_popusta` | INT | | Iznos računa prije dodanog popusta |
+| `popust_check` | VARCHAR(1) | | Provjera da li račun ima popust ili ne |
+| `ukupan_iznos` | INT | | Ukupan iznos računa |
 
 
 ---
@@ -61,4 +61,4 @@ Svrha je omogućiti praćenje statusa plaćanja, iznosa računa, načine plaćan
 |----------|-----|-------|------|
 | `id` | INT | PK | Jedinstveni identifikator popusta |
 | `naziv_popusta` | VARCHAR(50) |  | Naziv popusta |
-| `iznos_popusta` | INT |  Iznos popusta |
+| `iznos_popusta` | INT | | Iznos popusta |
