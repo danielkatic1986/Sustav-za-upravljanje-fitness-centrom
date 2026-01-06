@@ -1,16 +1,14 @@
 <div align="center">
 <br/><br/><br/>
     <img src="./slike/unipu_fipu_logo_white.png" alt="UNIPU/FIPU_logo" width="50%" height="50%">
-
 <br/><br/><br/>
-
-<h4>Sveučilište Jurja Dobrile u Puli<br/>Fakultet informatike u Puli</h4>
-
+<h4>Sveučilište Jurja Dobrile u Puli
+<br/>Fakultet informatike u Puli</h4>
 <br/>
-
-<h2>Dokumentacija projektnog zadatka<br/><br/>SUSTAV ZA UPRAVLJANJE FITNESS CENTROM – TIM 1</h2>
-
-</div><br/>
+<h2>Dokumentacija projektnog zadatka<br/>
+<br/>SUSTAV ZA UPRAVLJANJE FITNESS CENTROM – TIM 1</h2>
+</div>
+<br/>
 
 **O kolegiju:**
 - Smjer: Informatika – online studij
@@ -20,12 +18,12 @@
 
 
 **Članovi:**
-- Daniel Katić, voditelj + programer
-- Lana Kohut, osoba za komunikaciju + programer
-- Anja Svećarovski, programer
-- Maja Kovačević, programer
-- Mikel Milohanić, dokumentacija + programer
-- Vladan Krivokapić, QA tester + programer
+- Daniel Katić&emsp;&emsp;&emsp;&ensp;(voditelj + programer)
+- Lana Kohut&emsp;&emsp;&emsp;&ensp;&nbsp;(komunikacija + programer)
+- Anja Svećarovski&emsp;&ensp;(programer)
+- Maja Kovačević&emsp;&emsp;(programer)
+- Mikel Milohanić&emsp;&ensp;&nbsp;(dokumentacija + programer)
+- Vladan Krivokapić&emsp;(QA tester + programer)
 
 ### SADRŽAJ
 
@@ -65,7 +63,7 @@
 
 &emsp;Budući da sustav obuhvaća više poslovnica, ključnu ulogu ima tablica `podruznica` pri čemu se za svaku podružnicu definira naziv, mjesto u kojem se nalazi i adresa. Unutar svake podružnice nalaze se prostorije koje se evidentiraju u tablici `prostorija`, a za svaku prostoriju evidentirani su oznaka, lokacija i maksimalni kapacitet prostorije, podruznica, te tip prostorije preko tablice `tip_prostorije` za koji se dodatno bilježi naziv tipa i kratki opis. Navedeno omogućuje planiranje termina treninga u skladu s kapacitetom i tipom prostora u kojem se održava. Kako neke prostorije sadrže opremu, unutar tablice `oprema` prati se sva oprema smještena u pojedinim prostorijama bilježenjem podatka o nazivu opreme, datumu nabave, trenutnom stanju opreme, prostorija u kojoj se nalazi, te o dobavljaču evidentiranom unutar tablice `dobavljac` za kojeg se bilježe naziv, OIB, kontakt i adresa. Održavanje pojedine opreme evidentira se kroz tablicu `odrzavanje` gdje se bilježi koja je oprema servisirana, datum održavanja, zaposlenik koji je obavio održavanje te kratki opis samog održavanja, čime se osigurava kvaliteta usluge i sigurnost članova. Treba napomenuti kako se sva evidentirana oprema nalazi u nekoj prostoriji što je razlika od neke stvarne primjene gdje bi možda bila evidentirana oprema ali joj nebi bila definirana prostorija u kojoj se nalazi jer se ista možda koristi u više prostorija ili centara. 
 
-&emsp;Kako bi se rad svih poslovnica odvijao prema planu bitni su zaposlenici, njima se upravlja putem tablica `zaposlenik`, `radno_mjesto` i `odjel`. Za svakog zaposlenika prate se podaci kao što su ime, prezime, OIB, datum rođenja, spol, adresa, kontakt telefon, e-mail adresa, datum zapošljavanja i prestanka rada (ako zaposlenik više nije zaposlen), visina plaće, status zaposlenika, radno mjesto, podružnica u kojoj radi te mjesto iz kojeg dolazi. Radna mjesta grupirana su u odjele uz informacije o nazivu odjela, je li odjel aktivan, kratkom opisu odjela i ukupnom broju zaposlenih unutar tog odjela. Tablica `radno_mjesto` dodatno opisuje pojedina radna mjesta atributima naziv, aktivno i opis, te povezuje radno mjesto s odgovarajućim odjelom. Također, unutar tablice `trener_program` evidentirani su treneri s programima koje su ovlašteni voditi, na taj način sustav može kontrolirati koji trener može voditi koje programe, što se primjenjuje i u planiranju termina treninga.
+&emsp;Kako bi se rad svih poslovnica odvijao prema planu bitni su zaposlenici, njima se upravlja putem tablica `zaposlenik`, `radno_mjesto` i `odjel`. Za svakog zaposlenika prate se podaci kao što su ime, prezime, OIB, datum rođenja, spol, adresa, kontakt telefon, e-mail adresa, datum zapošljavanja i prestanka rada (ako zaposlenik više nije zaposlen), visina plaće, status zaposlenika, radno mjesto, podružnica u kojoj radi te mjesto iz kojeg dolazi. Radna mjesta grupirana su u odjele uz informacije o nazivu odjela, je li odjel aktivan, kratkom opisu odjela i ukupnom broju zaposlenih unutar tog odjela. Tablica `radno_mjesto` dodatno opisuje pojedina radna mjesta atributima naziv, aktivno i opis, te povezuje radno mjesto s odgovarajućim odjelom. Također, unutar tablice `trener_program` evidentirani su treneri s programima koje su ovlašteni voditi, na taj način sustav može kontrolirati koji trener može voditi koje programe, što se primjenjuje i u planiranju termina treninga. Iznimka koju valja napomenuti je ta da svaki trener odžava treninge samo unutar podružnice u kojoj je zaposlen što se može razlikovati od neke stvarne situacije gdje trener možda održava treninge u više podružnica ili ide na zamjenu i slično.
 
 &emsp;Cjelokupni poslovni proces sustava za upravljanje fitness centrom tako obuhvaća tijek od samog učlanjenja člana te definiranja i naplate članarine, preko rezervacije i pohađanja treninga, do upravljanja zaposlenicima, prostorima i inventarom. Baza podataka omogućuje transparentno praćenje svih ključnih aktivnosti i olakšava analizu poslovanja, pružajući stabilnu podlogu za daljnji razvoj usluga i optimizaciju poslovanja fitness centra.
 
@@ -154,6 +152,8 @@ Sljedeći ER dijagram detaljno i pregledno prikazuje sve skupove-entiteta (zajed
 # AUTENTIFIKACIJA I AUTORIZACIJA
 
 # TRANSAKCIJE
+
+# EVENTI
 
 # ZAKLJUČAK
 
