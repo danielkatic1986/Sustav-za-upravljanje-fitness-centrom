@@ -2,6 +2,8 @@ DROP DATABASE IF EXISTS fitness_centar;
 CREATE DATABASE fitness_centar;
 USE fitness_centar;
 
+DROP TABLES IF EXISTS tip_prostorije, prostorija, termin_treninga, rezervacija;
+
 CREATE TABLE tip_prostorije (
 	id INTEGER AUTO_INCREMENT,
     naziv VARCHAR(50) NOT NULL,
@@ -69,7 +71,9 @@ CREATE TABLE termin_treninga (
 		FOREIGN KEY (trener_id)
         REFERENCES zaposlenik (id)
         ON DELETE RESTRICT
-        ON UPDATE CASCADE
+        ON UPDATE CASCADE,
+	
+    INDEX idx_termin_treninga_vrijeme_pocetka (vrijeme_pocetka)
 );
 
 CREATE TABLE rezervacija (
