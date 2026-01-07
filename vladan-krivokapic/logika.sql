@@ -227,6 +227,44 @@ DELIMITER ;
 DELIMITER //
 
 
+/* PROCEDURA 3: sp_azuriraj_opremu
+   – omogućuje izmjenu podataka o postojećoj opremi
+   – opcionalno ažurira naziv, prostoriju, dobavljača i stanje opreme
+   – ako je neki parametar NULL, odgovarajući podatak se ne mijenja     */
+
+DELIMITER //
+
+CREATE PROCEDURE sp_azuriraj_opremu (
+    IN p_oprema_id INT,
+    IN p_naziv VARCHAR(150),
+    IN p_prostorija_id INT,
+    IN p_dobavljac_id INT,
+    IN p_stanje ENUM('ispravno','neispravno','u servisu','otpisano')
+)
+BEGIN
+    UPDATE oprema
+    SET
+        naziv = COALESCE(p_naziv, naziv),
+        prostorija_id = COALESCE(p_prostorija_id, prostorija_id),
+        dobavljac_id = COALESCE(p_dobavljac_id, dobavljac_id),
+        stanje = COALESCE(p_stanje, stanje)
+    WHERE id = p_oprema_id;
+END;
+//
+
+CREATE PROCEDURE sp_obrisi_odrzavanje (
+    IN p_odrzavanje_id INT
+)
+BEGIN
+    DELETE FROM odrzavanje
+    WHERE id = p_odrzavanje_id;
+END;
+//
+
+DELIMITER ;
+
+
+
 /*________________________________________________________
   TRIGGERI
   ________________________________________________________               */
