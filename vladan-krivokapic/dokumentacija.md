@@ -382,6 +382,43 @@ Filtrira opremu po dobavljaču, spaja s prostorijama, te koristi funkcije za doh
 
 ---
 
+### 6.3 Procedura: `sp_azuriraj_opremu`
+
+```sql
+DELIMITER //
+
+CREATE PROCEDURE sp_azuriraj_opremu (
+    IN p_oprema_id INT,
+    IN p_naziv VARCHAR(150),
+    IN p_prostorija_id INT,
+    IN p_dobavljac_id INT,
+    IN p_stanje ENUM('ispravno','neispravno','u servisu','otpisano')
+)
+BEGIN
+    UPDATE oprema
+    SET
+        naziv = COALESCE(p_naziv, naziv),
+        prostorija_id = COALESCE(p_prostorija_id, prostorija_id),
+        dobavljac_id = COALESCE(p_dobavljac_id, dobavljac_id),
+        stanje = COALESCE(p_stanje, stanje)
+    WHERE id = p_oprema_id;
+END;
+//
+
+DELIMITER ;
+```
+
+**Svrha procedure:**  
+Procedura služi za izmjenu postojećih podataka o opremi u sustavu. Omogućuje ažuriranje naziva opreme, promjenu prostorije u kojoj se oprema nalazi, promjenu dobavljača te ažuriranje stanja opreme. Namijenjena je administrativnim ispravcima podataka, premještanju opreme između prostorija te promjenama stanja opreme nakon servisa, kvara ili otpisa.
+
+**Opis procedure:**  
+Procedura prima identifikator opreme (`p_oprema_id`) i parametre koji predstavljaju nove vrijednosti atributa opreme. Parametri za izmjenu su opcionalni, što znači da se za atribute koji se ne žele mijenjati može proslijediti vrijednost `NULL`.  
+Unutar `UPDATE` naredbe koristi se funkcija `COALESCE` kako bi se zadržala postojeća vrijednost atributa u slučaju da nije proslijeđena nova vrijednost. Na ovaj način jedna procedura omogućuje fleksibilnu izmjenu više atributa opreme u jednom pozivu, bez potrebe za pisanjem više zasebnih `UPDATE` upita.
+
+---
+
+
+
 ## 7. Triggeri
 
 ### 7.1 Trigger: trg_odrzavanje_bi_datum_kontrola
