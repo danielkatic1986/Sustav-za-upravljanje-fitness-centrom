@@ -280,6 +280,7 @@ DELIMITER ;
 /*
     PROCEDURA: azuriraj_status_clanarina()
     - Ažurira status članarina.
+    - Koristim transakciju.
     - Imam i event 'event_azuriraj_status_clanarina' gdje će se ovo izvršavati 
       jednom dnevno, što je i realno za poslovnu aplikaciju.
 */
@@ -291,6 +292,16 @@ BEGIN
     DECLARE id_aktivna INT;
     DECLARE id_istekla INT;
     DECLARE id_zamrznuta INT;
+
+    -- handler za rollback
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SELECT 'Greška tijekom ažuriranja statusa članarina.';
+    END;
+
+    -- Automatski isključuje autocommit, rollback i commit ga vraćaju
+    START TRANSACTION;
 
     -- dohvaćanje ID-ova statusa
     SELECT id INTO id_aktivna FROM status_clanarine WHERE naziv = 'aktivna' LIMIT 1;
@@ -311,6 +322,8 @@ BEGIN
       AND datum_zavrsetka >= CURDATE()
       AND id_status != id_aktivna
       AND id_status != id_zamrznuta; -- opet, zamrznutu ne mijenjamo
+    
+    COMMIT;
 END //
 
 DELIMITER ;
