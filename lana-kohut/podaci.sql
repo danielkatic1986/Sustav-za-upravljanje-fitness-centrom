@@ -53,7 +53,7 @@ INSERT INTO clan (ime, prezime, oib, spol, datum_rodenja, id_mjesto, adresa, ema
 ('Ana', 'Šarić', '68442862995', 'Ž', STR_TO_DATE('31.05.1994.', '%d.%m.%Y.'), 58, 'Radnička 95', 'ana.saric48@gmail.com', '0924647607', STR_TO_DATE('08.06.2022.', '%d.%m.%Y.'), STR_TO_DATE('23.02.2024.', '%d.%m.%Y.'), FALSE),
 ('Ivan', 'Kralj', '84267571635', 'M', STR_TO_DATE('28.03.1987.', '%d.%m.%Y.'), 5, 'Ilica 7', 'ivan.kralj49@gmail.com', '0978017850', STR_TO_DATE('11.01.2023.', '%d.%m.%Y.'), STR_TO_DATE('26.01.2026.', '%d.%m.%Y.'), FALSE);
 
-
+SELECT * FROM clan;
 INSERT INTO mjesto (naziv, postanski_broj, drzava) VALUES
 ('Zagreb', '10000', 'Hrvatska'),
 ('Split', '21000', 'Hrvatska'),
