@@ -483,6 +483,30 @@ END$$
 
 DELIMITER ;
 
+
+-- trigger za dodavanje novog izvršenog plaćanja koji je vezan za članarinu
+DELIMITER $$
+
+CREATE TRIGGER tg_izvrseno_placanje_clanarina
+AFTER INSERT ON placanje
+FOR EACH ROW
+BEGIN
+    INSERT INTO izvrsena_placanja (id_placanje, id_clanarine, status_tf)
+    SELECT
+        NEW.id,
+        c.id,
+        CASE
+            WHEN NEW.status_placanja = 'placeno' THEN TRUE
+            ELSE FALSE
+        END
+    FROM racun_stavka rs
+    JOIN clanarina c ON c.id_clan = NEW.id_clan
+    WHERE rs.id_racun = NEW.id_racun
+      AND rs.id_tip_clanarine IS NOT NULL;
+END$$
+
+DELIMITER ;
+
 -- transakcije
 DELIMITER $$
 
