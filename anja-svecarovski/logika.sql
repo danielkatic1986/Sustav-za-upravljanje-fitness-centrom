@@ -44,7 +44,7 @@ CREATE VIEW view_zaposlenici_treneri AS
 		INNER JOIN radno_mjesto rm ON z.id_radno_mjesto = rm.id
         INNER JOIN podruznica p ON z.id_podruznica = p.id
     WHERE status_zaposlenika = 'aktivan'
-    AND z.id_radno_mjesto = 1;
+    AND rm.naziv = 'Trener';
 
 SELECT *
 FROM view_zaposlenici_treneri;
