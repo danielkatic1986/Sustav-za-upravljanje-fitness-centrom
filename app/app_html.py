@@ -81,6 +81,87 @@ def clan_novi():
 
     return render_template("clan_novi.html", mjesta=mjesta)
 
+@app.route("/clanovi/uredi/<int:id>", methods=["GET", "POST"])
+def clan_uredi(id):
+
+    # dohvat mjesta (za dropdown)
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT id, naziv, postanski_broj, drzava FROM mjesto ORDER BY naziv")
+    mjesta = cur.fetchall()
+
+    # dohvat postojećeg člana
+    cur.execute("""
+        SELECT
+            ime, prezime, oib, spol, datum_rodenja,
+            id_mjesto, adresa, email, telefon, aktivan
+        FROM clan
+        WHERE id = %s
+    """, (id,))
+    clan = cur.fetchone()
+
+    if clan is None:
+        cur.close()
+        return redirect(url_for("clanovi"))
+
+    if request.method == "POST":
+        ime = request.form["ime"]
+        prezime = request.form["prezime"]
+        oib = request.form["oib"]
+        spol = request.form["spol"]
+        datum_rodenja = request.form["datum_rodenja"]
+        id_mjesto = request.form["id_mjesto"]
+        adresa = request.form["adresa"]
+        email = request.form["email"]
+        telefon = request.form["telefon"]
+        aktivan = request.form.get("aktivan", 0)
+
+        cur.execute("""
+            UPDATE clan SET
+                ime = %s,
+                prezime = %s,
+                oib = %s,
+                spol = %s,
+                datum_rodenja = %s,
+                id_mjesto = %s,
+                adresa = %s,
+                email = %s,
+                telefon = %s,
+                aktivan = %s
+            WHERE id = %s
+        """, (
+            ime, prezime, oib, spol, datum_rodenja,
+            id_mjesto, adresa, email, telefon, aktivan, id
+        ))
+
+        mysql.connection.commit()
+        cur.close()
+
+        return redirect(url_for("clanovi"))
+
+    cur.close()
+    return render_template(
+        "clan_uredi.html",
+        clan=clan,
+        mjesta=mjesta,
+        id=id
+    )
+
+@app.route("/clanovi/obrisi/<int:id>")
+def clan_obrisi(id):
+
+    cur = mysql.connection.cursor()
+
+    # opcionalno: provjera postoji li član
+    cur.execute("SELECT id FROM clan WHERE id = %s", (id,))
+    clan = cur.fetchone()
+
+    if clan:
+        cur.execute("DELETE FROM clan WHERE id = %s", (id,))
+        mysql.connection.commit()
+
+    cur.close()
+    return redirect(url_for("clanovi"))
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)

@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Uredi člana{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">✏️ Uredi člana</h2>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        <form method="post">
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Ime</label>
+                    <input type="text" name="ime" class="form-control"
+                           value="{{ clan[0] }}" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Prezime</label>
+                    <input type="text" name="prezime" class="form-control"
+                           value="{{ clan[1] }}" required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">OIB</label>
+                <input type="text" name="oib" class="form-control"
+                       value="{{ clan[2] }}" maxlength="11" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Spol</label>
+                <select name="spol" class="form-select" required>
+                    <option value="M" {% if clan[3] == 'M' %}selected{% endif %}>Muški</option>
+                    <option value="Ž" {% if clan[3] == 'Ž' %}selected{% endif %}>Ženski</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Datum rođenja</label>
+                <input type="date" name="datum_rodenja" class="form-control"
+                       value="{{ clan[4] }}">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Mjesto</label>
+                <select name="id_mjesto" class="form-select" required>
+                    {% for m in mjesta %}
+                    <option value="{{ m[0] }}"
+                        {% if m[0] == clan[5] %}selected{% endif %}>
+                        {{ m[1] }} ({{ m[2] }}, {{ m[3] }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Adresa</label>
+                <input type="text" name="adresa" class="form-control"
+                       value="{{ clan[6] }}">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control"
+                       value="{{ clan[7] }}">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Telefon</label>
+                <input type="text" name="telefon" class="form-control"
+                       value="{{ clan[8] }}">
+            </div>
+
+            <div class="form-check mb-4">
+                <input class="form-check-input"
+                       type="checkbox"
+                       name="aktivan"
+                       value="1"
+                       {% if clan[9] %}checked{% endif %}>
+                <label class="form-check-label">
+                    Aktivan član
+                </label>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('clanovi') }}" class="btn btn-secondary">
+                    ⬅️ Natrag
+                </a>
+                <button type="submit" class="btn btn-warning">
+                    💾 Spremi promjene
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}
