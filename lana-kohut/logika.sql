@@ -22,6 +22,8 @@ END$$
 
 DELIMITER ;
 
+SELECT broj_racuna_u_mjesecu(2025,12) FROM DUAL;
+
 -- broj računa izdanih u odabrano doba dana
 -- daje brojčani rezultat koliko računa je izdano u određeno doba dana
 -- služi za praćenje količine računa u određeno doba dana što može utjecati na neke nove poslovne odluke (npr posebne ponude za manje popularno doba dana)
@@ -43,7 +45,7 @@ BEGIN
 END$$
 
 DELIMITER ;
-
+SELECT fn_broj_racuna_u_doba_dana("08:00:00", "12:00:00") FROM DUAL;
 -- broj računa plaćenih sa odabranom metodom plaćanja
 -- daje brojčani rezultat koliko računa je plaćeno sa odabranom metodom plaćanja
 -- služi za praćenje popularnih i manje popularnih metoda plaćanja, može poslužiti za neke posebne ponude sa partnerima (npr Visa, American,...)
@@ -64,11 +66,12 @@ BEGIN
 END$$
 
 DELIMITER ;
-
+SELECT fn_broj_racuna_po_metodi ("Visa") FROM DUAL;
 -- provjera člana (da li je već postojeći član ili novi član)
 -- služi za provjeru u slučaju da član nije siguran da li se već učlanio ili ako su podaci koje dobivamo od člana krivi pa tražimo točne
 -- po OIB-u:
 DELIMITER $$
+
 
 CREATE FUNCTION fn_clan_postoji_oib(p_oib VARCHAR(20))
 RETURNS INT
@@ -85,7 +88,8 @@ BEGIN
 END$$
 
 DELIMITER ;
-
+SELECT fn_clan_postoji_oib ("96506066339") FROM DUAL;
+SELECT fn_clan_postoji_oib ("46217366479") FROM DUAL;
 -- po emailu:
 DELIMITER $$
 
@@ -104,7 +108,7 @@ BEGIN
 END$$
 
 DELIMITER ;
-
+SELECT fn_clan_postoji_email("marija.maric4@gmail.com") FROM DUAL;
 
 -- računanje ukupnog iznosa računa (bez ili sa popustom)
 DELIMITER $$
@@ -158,7 +162,7 @@ SELECT r.*
 FROM racun r
 WHERE r.popust_check = 'D'
   AND r.id_popusta IS NOT NULL;
-
+SELECT * FROM vw_racuni_sa_popustom;
 -- u kojem mjestu imamo najviše prihoda?
 -- praćenje najpopularnijih mjesta našeg poslovanja
 CREATE OR REPLACE VIEW vw_prihod_po_mjestu AS
@@ -175,6 +179,7 @@ JOIN mjesto m ON m.id = c.id_mjesto
 WHERE p.status_placanja = 'placeno'
 GROUP BY m.id, m.naziv, m.postanski_broj, m.drzava;
 
+SELECT * FROM vw_prihod_po_mjestu;
 -- svi neplaćeni računi s popustom
 CREATE OR REPLACE VIEW vw_neplaceni_racuni_sa_popustom AS
 SELECT DISTINCT r.*
@@ -184,6 +189,7 @@ WHERE r.popust_check = 'D'
   AND r.id_popusta IS NOT NULL
   AND p.status_placanja <> 'placeno';
 
+SELECT * FROM vw_neplaceni_racuni_sa_popustom;
 -- članovi bez uplata
 CREATE OR REPLACE VIEW vw_clanovi_bez_uplata AS
 SELECT c.*
@@ -191,6 +197,7 @@ FROM clan c
 LEFT JOIN placanje p ON p.id_clan = c.id
 WHERE p.id IS NULL;
 
+SELECT * FROM vw_clanovi_bez_uplata;
 -- ukupni iznos plaćen po članu za određeni mjesec
 CREATE OR REPLACE VIEW vw_placeno_po_clanu_po_mjesecu AS
 SELECT
@@ -206,6 +213,8 @@ JOIN clan c  ON c.id = p.id_clan
 WHERE p.status_placanja = 'placeno'
 GROUP BY c.id, c.ime, c.prezime, YEAR(r.datum_izdavanja), MONTH(r.datum_izdavanja);
 
+SELECT * FROM vw_placeno_po_clanu_po_mjesecu;
+
 -- novi korisnici od 10-12. mjeseca i koliko su platili
 CREATE OR REPLACE VIEW vw_novi_korisnici_10_12_i_placanja AS
 SELECT
@@ -220,6 +229,7 @@ LEFT JOIN racun r ON r.id = p.id_racun
 WHERE MONTH(c.datum_uclanjenja) IN (10,11,12)
 GROUP BY c.id, c.ime, c.prezime, c.datum_uclanjenja;
 
+SELECT * FROM vw_novi_korisnici_10_12_i_placanja;
 -- mjesečni prihodi po načinu plaćanja
 CREATE OR REPLACE VIEW vw_mjesecni_prihodi_po_nacinu_placanja AS
 SELECT
@@ -231,6 +241,8 @@ FROM placanje p
 JOIN racun r ON r.id = p.id_racun
 WHERE p.status_placanja = 'placeno'
 GROUP BY YEAR(r.datum_izdavanja), MONTH(r.datum_izdavanja), r.nacin_placanja;
+
+SELECT * FROM vw_mjesecni_prihodi_po_nacinu_placanja;
 
 -- top 10 članova po potrošnji
 CREATE OR REPLACE VIEW vw_top_10_clanova_po_potrosnji AS
@@ -247,6 +259,7 @@ GROUP BY c.id, c.ime, c.prezime
 ORDER BY ukupna_potrosnja DESC
 LIMIT 10;
 
+SELECT * FROM vw_top_10_clanova_po_potrosnji;
 -- članarina vs shop zarada
 -- praćenje zarade od članarina vs od shopa (merch)
 CREATE OR REPLACE VIEW vw_zarada_clanarina_vs_shop AS
@@ -263,7 +276,7 @@ FROM placanje p
 JOIN racun r ON r.id = p.id_racun
 WHERE p.status_placanja = 'placeno';
 
-
+SELECT * FROM vw_zarada_clanarina_vs_shop;
 
 -- PROCEDURE:
 
@@ -284,7 +297,7 @@ END$$
 
 DELIMITER ;
 
-
+CALL sp_promet_za_dan("2025-12-10");
 -- ažuriranje popusta
 DELIMITER $$
 
@@ -304,30 +317,6 @@ END$$
 
 DELIMITER ;
 
--- izvještaj prihoda po članu
-DELIMITER $$
-
-CREATE PROCEDURE pr_izvjestaj_prihoda_po_clanu(
-  IN p_godina INT,
-  IN p_mjesec INT
-)
-BEGIN
-  SELECT
-    c.id AS id_clan,
-    c.ime,
-    c.prezime,
-    SUM(r.ukupan_iznos) AS ukupno_placeno
-  FROM placanje p
-  JOIN racun r ON r.id = p.id_racun
-  JOIN clan c ON c.id = p.id_clan
-  WHERE p.status_placanja = 'placeno'
-    AND YEAR(r.datum_izdavanja) = p_godina
-    AND MONTH(r.datum_izdavanja) = p_mjesec
-  GROUP BY c.id, c.ime, c.prezime
-  ORDER BY ukupno_placeno DESC;
-END$$
-
-DELIMITER ;
 
 -- kreiraj račun
 DELIMITER $$
@@ -434,6 +423,8 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+CALL pr_statistika_popusta(2025,11);
 
 -- OKIDAČI:
 -- zabrana plaćanja za isti račun
