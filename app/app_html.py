@@ -162,6 +162,80 @@ def clan_obrisi(id):
     cur.close()
     return redirect(url_for("clanovi"))
 
+@app.route("/clanarine")
+def clanarine():
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT
+            cl.id,
+            c.ime,
+            c.prezime,
+            tc.naziv AS tip,
+            sc.naziv AS status,
+            cl.datum_pocetka,
+            cl.datum_zavrsetka
+        FROM clanarina cl
+        JOIN clan c ON cl.id_clan = c.id
+        JOIN tip_clanarine tc ON cl.id_tip = tc.id
+        JOIN status_clanarine sc ON cl.id_status = sc.id
+        ORDER BY cl.datum_pocetka DESC
+    """)
+    clanarine = cur.fetchall()
+    cur.close()
+
+    return render_template("clanarine.html", clanarine=clanarine)
+
+@app.route("/clanarine/nova", methods=["GET", "POST"])
+def clanarina_nova():
+    cur = mysql.connection.cursor()
+
+    if request.method == "POST":
+        id_clan = request.form["id_clan"]
+        id_tip = request.form["id_tip"]
+        id_status = request.form["id_status"]
+        datum_pocetka = request.form["datum_pocetka"]
+
+        # dohvat trajanja tipa članarine
+        cur.execute(
+            "SELECT trajanje_mjeseci FROM tip_clanarine WHERE id = %s",
+            (id_tip,)
+        )
+        trajanje = cur.fetchone()[0]
+
+        # INSERT s izračunom završetka
+        cur.execute("""
+            INSERT INTO clanarina
+            (id_clan, id_tip, id_status, datum_pocetka, datum_zavrsetka)
+            VALUES
+            (%s, %s, %s, %s, DATE_ADD(%s, INTERVAL %s MONTH))
+        """, (
+            id_clan, id_tip, id_status,
+            datum_pocetka, datum_pocetka, trajanje
+        ))
+
+        mysql.connection.commit()
+        cur.close()
+        return redirect(url_for("clanarine"))
+
+    # GET – dohvat podataka za forme
+    cur.execute("SELECT id, ime, prezime FROM clan ORDER BY prezime")
+    clanovi = cur.fetchall()
+
+    cur.execute("SELECT id, naziv FROM tip_clanarine ORDER BY naziv")
+    tipovi = cur.fetchall()
+
+    cur.execute("SELECT id, naziv FROM status_clanarine ORDER BY id")
+    statusi = cur.fetchall()
+
+    cur.close()
+
+    return render_template(
+        "clanarina_nova.html",
+        clanovi=clanovi,
+        tipovi=tipovi,
+        statusi=statusi
+    )
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)

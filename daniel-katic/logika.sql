@@ -589,6 +589,41 @@ END //
 
 DELIMITER ;
 
+/*
+	TRIGGER: tg_jedna_aktivna_clanarina
+    Opis: Sustav ne dopušta više aktivnih članarina u isto vrijeme
+*/
+
+DELIMITER //
+
+CREATE TRIGGER tg_jedna_aktivna_clanarina
+BEFORE INSERT ON clanarina
+FOR EACH ROW
+BEGIN
+    DECLARE m_aktivna_id INT;
+    DECLARE m_broj INT;
+
+    SELECT id INTO m_aktivna_id
+    FROM status_clanarine
+    WHERE naziv = 'aktivna'
+    LIMIT 1;
+
+    IF NEW.id_status = m_aktivna_id THEN
+        SELECT COUNT(*) INTO m_broj
+        FROM clanarina c
+        JOIN status_clanarine s ON s.id = c.id_status
+        WHERE c.id_clan = NEW.id_clan
+          AND s.naziv = 'aktivna';
+
+        IF m_broj > 0 THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Član već ima aktivnu članarinu';
+        END IF;
+    END IF;
+END //
+
+DELIMITER ;
+
 /* 
     ================================
                 EVENTI

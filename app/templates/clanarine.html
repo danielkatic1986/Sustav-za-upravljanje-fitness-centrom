@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Članarine{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">💳 Članarine</h1>
+
+<a href="/clanarine/nova" class="btn btn-success mb-3">
+    ➕ Nova članarina
+</a>
+
+<table class="table table-striped align-middle">
+    <thead>
+        <tr>
+            <th>Član</th>
+            <th>Tip</th>
+            <th>Početak</th>
+            <th>Završetak</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for c in clanarine %}
+        <tr>
+            <td>{{ c[1] }} {{ c[2] }}</td>
+            <td>{{ c[3] }}</td>
+            <td>{{ c[5] }}</td>
+            <td>{{ c[6] }}</td>
+            <td>
+                <span class="badge
+                    {% if c[4] == 'Aktivna' %}bg-success
+                    {% elif c[4] == 'Istekla' %}bg-secondary
+                    {% else %}bg-warning text-dark{% endif %}">
+                    {{ c[4] }}
+                </span>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

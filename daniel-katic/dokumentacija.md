@@ -129,6 +129,12 @@ Tablica je automatski popunjena pomoću procedure `statistika_potrosnje()` i eve
 
 Ovim odnosima moguće je pratiti svaku članarinu pojedinog člana, njezin tip i trenutačni status.
 
+Iako je relacija između entiteta *clan* i *clanarina* tipa 1—N
+(jedan član može imati više članarina kroz vrijeme),
+u sustavu je implementirano poslovno pravilo kojim se osigurava
+da član u jednom trenutku može imati najviše jednu aktivnu članarinu.
+To je ostvareno pomoću okidača (triggera) na razini baze podataka.
+
 ## 4. Složeni upiti
 
 Implementirao sam složene SQL upite koji služe za analizu poslovanja fitness centra i ponašanja članova.
@@ -228,6 +234,8 @@ Implementirani okidači služe za automatizaciju i održavanje integriteta podat
 - automatska deaktivacija člana ako više nema nijednu aktivnu članarinu
 
 - postavljanje zadane godine u tablici statistike potrošnje
+
+- ne dozvoljava se imati više aktivnih članarina
 
 Time se smanjuje mogućnost pogreške i potreba za ručnim ažuriranjem podataka
 

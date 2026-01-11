@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Nova članarina{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">➕ Nova članarina</h1>
+
+<form method="post">
+
+    <div class="mb-3">
+        <label class="form-label">Član</label>
+        <select name="id_clan" class="form-select" required>
+            {% for c in clanovi %}
+            <option value="{{ c[0] }}">{{ c[1] }} {{ c[2] }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Tip članarine</label>
+        <select name="id_tip" class="form-select" required>
+            {% for t in tipovi %}
+            <option value="{{ t[0] }}">{{ t[1] }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Status</label>
+        <select name="id_status" class="form-select" required>
+            {% for s in statusi %}
+            <option value="{{ s[0] }}">{{ s[1] }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Datum početka</label>
+        <input type="date" name="datum_pocetka" class="form-control" required>
+    </div>
+
+    <button class="btn btn-success">Spremi</button>
+    <a href="/clanarine" class="btn btn-secondary">Odustani</a>
+
+</form>
+{% endblock %}
