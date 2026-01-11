@@ -5,7 +5,7 @@
 Ovaj modul pokriva **vođenje članova i članarina fitness centra**.  
 Svrha je omogućiti praćenje statusa članova, vrsta članarina i njihovog trajanja.
 
-### Funkcionalnosti:
+### Funkcionalnosti
 
 - Evidencija osobnih podataka članova  
 - Definiranje tipova članarina (mjesečna, godišnja, premium...)  
