@@ -8,12 +8,12 @@ GRANT
     INSERT,
     UPDATE,
     DELETE
-ON teretana.*
+ON fitness_centar.*
 TO 'flask_user'@'localhost';
 
 -- Dozvola za korištenje procedura
 GRANT EXECUTE
-ON teretana.*
+ON fitness_centar.*
 TO 'flask_user'@'localhost';
 
 FLUSH PRIVILEGES;
