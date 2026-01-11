@@ -6,19 +6,17 @@
 
 /*
   Baza podataka: fitness_centar
-  Opis: pregledi (SELECT), VIEW-ovi, funkcije i procedure
+  Opis: pregledi (SELECT), VIEW-ovi, funkcije, procedure i eventi
 */
 
 USE fitness_centar;
 
 /* ============================================================
-   1. PREGLEDI (SELECT)
+   3. PREGLEDI (SELECT)
    ============================================================ */
 
 /* ------------------------------------------------------------
-   1.1 Pogled: Pregled sve opreme s dobavljačem i prostorijom
-       - prikazuje: opremu, stanje, dobavljača, prostoriju
-       - računa: broj održavanja, zadnje održavanje, dane od zadnjeg
+   3.1 Pogled: Pregled sve opreme s dobavljačem i prostorijom
    ------------------------------------------------------------ */
 SELECT
     o.id AS oprema_id,
@@ -39,10 +37,7 @@ ORDER BY dana_od_zadnjeg_odrzavanja DESC;
 
 
 /* ------------------------------------------------------------
-   1.2 Pogled: Statistika opreme po dobavljačima
-       - prikazuje: ukupno komada po dobavljaču
-       - računa: broj ispravnih / neispravnih / u servisu / otpisanih
-       - prikazuje: najstariju i najnoviju nabavu
+   3.2 Pogled: Statistika opreme po dobavljačima
    ------------------------------------------------------------ */
 SELECT
     d.id,
@@ -61,9 +56,7 @@ ORDER BY ukupno_komada DESC;
 
 
 /* ------------------------------------------------------------
-   1.3 Pogled: Oprema neispravna ili u servisu predugo bez održavanja
-       - filtrira: stanje ('neispravno', 'u servisu')
-       - uvjet: više od 180 dana bez servisa/održavanja
+   3.3 Pogled: Oprema neispravna ili u servisu predugo bez održavanja
    ------------------------------------------------------------ */
 SELECT
     o.id AS oprema_id,
@@ -81,13 +74,11 @@ ORDER BY dana_bez_servisa DESC;
 
 
 /* ============================================================
-   2. VIEW-OVI (POGLEDI U BAZI)
+   4. VIEW-OVI (POGLEDI U BAZI)
    ============================================================ */
 
 /* ------------------------------------------------------------
-   2.1 VIEW: v_oprema_zadnje_odrzavanje
-       - prikazuje: opremu + dobavljača + prostoriju
-       - računa: broj održavanja i zadnje održavanje po opremi
+   4.1 VIEW: v_oprema_zadnje_odrzavanje
    ------------------------------------------------------------ */
 CREATE OR REPLACE VIEW v_oprema_zadnje_odrzavanje AS
 SELECT
@@ -108,9 +99,7 @@ GROUP BY
 
 
 /* ------------------------------------------------------------
-   2.2 VIEW: v_dobavljac_statistika
-       - prikazuje: broj komada opreme po dobavljaču
-       - računa: prvu i zadnju isporuku (MIN/MAX datum nabave)
+   4.2 VIEW: v_dobavljac_statistika
    ------------------------------------------------------------ */
 CREATE OR REPLACE VIEW v_dobavljac_statistika AS
 SELECT
@@ -125,9 +114,7 @@ GROUP BY d.id, d.naziv;
 
 
 /* ------------------------------------------------------------
-   2.3 VIEW: v_neispravna_oprema
-       - prikazuje: samo opremu koja nije ispravna
-       - dodaje: zadnje održavanje i podatke o serviseru
+   4.3 VIEW: v_neispravna_oprema
    ------------------------------------------------------------ */
 CREATE OR REPLACE VIEW v_neispravna_oprema AS
 SELECT
@@ -154,15 +141,13 @@ WHERE o.stanje IN ('neispravno', 'u servisu', 'otpisano');
 
 
 /* ============================================================
-   3. FUNKCIJE I PROCEDURE
+   5. FUNKCIJE
    ============================================================ */
 
 DELIMITER //
 
 /* ------------------------------------------------------------
-   3.1 FUNKCIJA: fn_zadnje_odrzavanje(oprema_id)
-       - vraća: zadnji datum održavanja za opremu
-       - ako nema održavanja: vraća NULL
+   5.1 FUNKCIJA: fn_zadnje_odrzavanje(oprema_id)
    ------------------------------------------------------------ */
 CREATE FUNCTION fn_zadnje_odrzavanje (p_oprema_id INT)
 RETURNS DATE
@@ -180,9 +165,7 @@ END//
 
 
 /* ------------------------------------------------------------
-   3.2 FUNKCIJA: fn_dani_od_zadnjeg_odrzavanja(oprema_id)
-       - vraća: broj dana od zadnjeg održavanja
-       - ako nema održavanja: računa od datuma nabave
+   5.2 FUNKCIJA: fn_dani_od_zadnjeg_odrzavanja(oprema_id)
    ------------------------------------------------------------ */
 CREATE FUNCTION fn_dani_od_zadnjeg_odrzavanja (p_oprema_id INT)
 RETURNS INT
@@ -198,17 +181,18 @@ BEGIN
     WHERE id = p_oprema_id;
 
     SET v_zadnje = fn_zadnje_odrzavanje(p_oprema_id);
-
     SET v_rezultat = DATEDIFF(CURDATE(), COALESCE(v_zadnje, v_nabava));
 
     RETURN v_rezultat;
 END//
 
 
+/* ============================================================
+   6. PROCEDURE
+   ============================================================ */
+
 /* ------------------------------------------------------------
-   3.3 PROCEDURA: sp_evidentiraj_odrzavanje
-       - dodaje: novi zapis u tablicu odrzavanje
-       - opcionalno: ažurira stanje opreme (ako je poslano)
+   6.1 PROCEDURA: sp_evidentiraj_odrzavanje
    ------------------------------------------------------------ */
 CREATE PROCEDURE sp_evidentiraj_odrzavanje (
     IN p_oprema_id INT,
@@ -235,9 +219,7 @@ END//
 
 
 /* ------------------------------------------------------------
-   3.4 PROCEDURA: sp_izvjestaj_oprema_po_dobavljacu
-       - prikazuje: svu opremu za jednog dobavljača
-       - uključuje: prostoriju, zadnje održavanje i broj dana od zadnjeg
+   6.2 PROCEDURA: sp_izvjestaj_oprema_po_dobavljacu
    ------------------------------------------------------------ */
 CREATE PROCEDURE sp_izvjestaj_oprema_po_dobavljacu (
     IN p_dobavljac_id INT
@@ -259,9 +241,7 @@ END//
 
 
 /* ------------------------------------------------------------
-   3.5 PROCEDURA: sp_azuriraj_opremu
-       - ažurira: podatke o opremi
-       - COALESCE: ako je parametar NULL, podatak se ne mijenja
+   6.3 PROCEDURA: sp_azuriraj_opremu
    ------------------------------------------------------------ */
 CREATE PROCEDURE sp_azuriraj_opremu (
     IN p_oprema_id INT,
@@ -288,8 +268,7 @@ END//
 
 
 /* ------------------------------------------------------------
-   3.6 PROCEDURA: sp_obrisi_odrzavanje
-       - briše: zapis održavanja po ID-u
+   6.4 PROCEDURA: sp_obrisi_odrzavanje
    ------------------------------------------------------------ */
 CREATE PROCEDURE sp_obrisi_odrzavanje (
     IN p_odrzavanje_id INT
@@ -299,8 +278,65 @@ BEGIN
     WHERE id = p_odrzavanje_id;
 END//
 
-DELIMITER ;
+
+/* ============================================================
+   7. EVENTS
+   ============================================================ */
+
+/* -------------------------------------------------
+   7.1 EVENT: ev_oprema_predugo_u_servisu
+   ------------------------------------------------- */
+CREATE EVENT IF NOT EXISTS ev_oprema_predugo_u_servisu
+ON SCHEDULE EVERY 1 DAY
+STARTS (CURRENT_DATE + INTERVAL 1 DAY)
+DO
+BEGIN
+    UPDATE oprema o
+    LEFT JOIN (
+        SELECT oprema_id, MAX(datum) AS zadnje_odrzavanje
+        FROM odrzavanje
+        GROUP BY oprema_id
+    ) od ON od.oprema_id = o.id
+    SET o.stanje = 'neispravno'
+    WHERE o.stanje = 'u servisu'
+      AND DATEDIFF(
+            CURDATE(),
+            COALESCE(od.zadnje_odrzavanje, o.datum_nabave)
+          ) > 180;
+END//
+
+
+/* -------------------------------------------------
+   7.2 EVENT: ev_oprema_stara_bez_servisa
+   ------------------------------------------------- */
+CREATE EVENT IF NOT EXISTS ev_oprema_stara_bez_servisa
+ON SCHEDULE EVERY 1 WEEK
+STARTS (CURRENT_DATE + INTERVAL 7 DAY)
+DO
+BEGIN
+    SELECT
+        o.id AS oprema_id,
+        o.naziv,
+        o.stanje,
+        DATEDIFF(
+            CURDATE(),
+            COALESCE(
+                (SELECT MAX(od.datum)
+                 FROM odrzavanje od
+                 WHERE od.oprema_id = o.id),
+                o.datum_nabave
+            )
+        ) AS dana_bez_servisa
+    FROM oprema o
+    WHERE o.stanje = 'ispravno'
+    HAVING dana_bez_servisa > 365
+    ORDER BY dana_bez_servisa DESC;
+END//
 
 DELIMITER ;
+
+
+
+
 
 
