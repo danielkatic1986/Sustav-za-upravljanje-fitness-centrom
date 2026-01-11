@@ -1,6 +1,11 @@
 # 🏋️‍♀️ DOKUMENT ORGANIZACIJE
 
-**Trenutni zadatak:**
+** Trenutno zadatak:**
+- Do 18.01.2026:
+  - Implementirati Flask aplikaciju
+
+**Prijašnji zadaci:**
+
 - Do 23.11.2025: 
     - Svaki član osmisliti svoje upite (složene).
     - Svaki član osmisliti svoje poglede.
@@ -8,7 +13,6 @@
     - Svaki član osmisliti svoje procedure.
     - Svaki član osmisliti svoje triggere.
 
-**Prijašnji zadaci:**
 - Do 02.11.2025: Svaki član napraviti shemu i umetnuti smislene zapise u svoje tablice.
 - Do 26.10.2025: Svaki član napraviti svoj direktorij sa datotekama na Githubu.
 
