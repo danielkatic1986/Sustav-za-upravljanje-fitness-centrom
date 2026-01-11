@@ -335,6 +335,55 @@ END//
 
 DELIMITER ;
 
+/* ============================================================
+   8. TRANSAKCIJE
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   8.1 Transakcija: Evidentiranje održavanja + promjena stanja opreme
+   ------------------------------------------------------------ */
+START TRANSACTION;
+
+INSERT INTO odrzavanje (oprema_id, zaposlenik_id, datum, opis)
+VALUES (2, 5, CURDATE(), 'Unos održavanja kroz transakciju + promjena stanja.');
+
+UPDATE oprema
+SET stanje = 'ispravno'
+WHERE id = 2;
+
+COMMIT;
+
+
+/* ------------------------------------------------------------
+   8.2 Transakcija: Premještaj opreme u drugu prostoriju + zapis održavanja
+   ------------------------------------------------------------ */
+START TRANSACTION;
+
+UPDATE oprema
+SET prostorija_id = 1
+WHERE id = 3;
+
+INSERT INTO odrzavanje (oprema_id, zaposlenik_id, datum, opis)
+VALUES (3, 4, CURDATE(), 'Premještaj opreme nakon pregleda/servisa.');
+
+COMMIT;
+
+
+/* ------------------------------------------------------------
+   8.3 Transakcija: Primjer ROLLBACK-a (simulacija greške)
+   ------------------------------------------------------------ */
+START TRANSACTION;
+
+UPDATE oprema
+SET stanje = 'u servisu'
+WHERE id = 6;
+
+INSERT INTO odrzavanje (oprema_id, zaposlenik_id, datum, opis)
+VALUES (6, 5, CURDATE(), 'Zapis koji se neće spremiti jer radimo rollback.');
+
+ROLLBACK;
+
+
 
 
 
