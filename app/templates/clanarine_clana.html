@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Članarine člana{% endblock %}
+
+{% block content %}
+<h1 class="mb-3">
+    💳 Članarine – {{ clan[0] }} {{ clan[1] }}
+</h1>
+
+<a href="/clanarine/nova/{{ id_clan }}" class="btn btn-success mb-3">
+    ➕ Nova članarina
+</a>
+
+<a href="/clanarine" class="btn btn-secondary mb-3">
+    ⬅ Povratak
+</a>
+
+<table class="table table-striped align-middle">
+    <thead>
+        <tr>
+            <th>Tip</th>
+            <th>Početak</th>
+            <th>Završetak</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for c in clanarine %}
+        <tr>
+            <td>{{ c[0] }}</td>
+            <td>{{ c[2] }}</td>
+            <td>{{ c[3] }}</td>
+            <td>
+                <span class="badge
+                    {% if c[1] == 'aktivna' %}bg-success
+                    {% elif c[1] == 'istekla' %}bg-secondary
+                    {% else %}bg-warning text-dark{% endif %}">
+                    {{ c[1] }}
+                </span>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="4" class="text-muted text-center">
+                Član nema evidentiranih članarina.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

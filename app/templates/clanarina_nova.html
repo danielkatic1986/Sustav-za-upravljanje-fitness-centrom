@@ -4,13 +4,22 @@
 {% block content %}
 <h1 class="mb-4">➕ Nova članarina</h1>
 
+{% if greska %}
+<div class="alert alert-danger">
+    {{ greska }}
+</div>
+{% endif %}
+
 <form method="post">
 
     <div class="mb-3">
         <label class="form-label">Član</label>
         <select name="id_clan" class="form-select" required>
             {% for c in clanovi %}
-            <option value="{{ c[0] }}">{{ c[1] }} {{ c[2] }}</option>
+            <option value="{{ c[0] }}"
+                {% if id_clan and c[0] == id_clan %}selected{% endif %}>
+                {{ c[1] }} {{ c[2] }}
+            </option>
             {% endfor %}
         </select>
     </div>

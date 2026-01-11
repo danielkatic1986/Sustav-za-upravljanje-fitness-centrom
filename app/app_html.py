@@ -166,27 +166,58 @@ def clan_obrisi(id):
 def clanarine():
     cur = mysql.connection.cursor()
     cur.execute("""
-        SELECT
-            cl.id,
-            c.ime,
-            c.prezime,
-            tc.naziv AS tip,
-            sc.naziv AS status,
-            cl.datum_pocetka,
-            cl.datum_zavrsetka
-        FROM clanarina cl
-        JOIN clan c ON cl.id_clan = c.id
-        JOIN tip_clanarine tc ON cl.id_tip = tc.id
-        JOIN status_clanarine sc ON cl.id_status = sc.id
-        ORDER BY cl.datum_pocetka DESC
+        SELECT id, ime, prezime, aktivan
+        FROM clan
+        ORDER BY prezime, ime
     """)
-    clanarine = cur.fetchall()
+    clanovi = cur.fetchall()
     cur.close()
 
-    return render_template("clanarine.html", clanarine=clanarine)
+    return render_template("clanarine.html", clanovi=clanovi)
 
-@app.route("/clanarine/nova", methods=["GET", "POST"])
-def clanarina_nova():
+@app.route("/clanarine/<int:id_clan>")
+def clanarine_clana(id_clan):
+    cur = mysql.connection.cursor()
+
+    # Dohvati podatke o članu
+    cur.execute("""
+        SELECT ime, prezime
+        FROM clan
+        WHERE id = %s
+    """, (id_clan,))
+    clan = cur.fetchone()
+
+    if clan is None:
+        cur.close()
+        return redirect(url_for("clanarine"))
+
+    # Dohvati sve članarine tog člana
+    cur.execute("""
+        SELECT
+            tc.naziv,
+            sc.naziv,
+            c.datum_pocetka,
+            c.datum_zavrsetka
+        FROM clanarina c
+        JOIN tip_clanarine tc ON tc.id = c.id_tip
+        JOIN status_clanarine sc ON sc.id = c.id_status
+        WHERE c.id_clan = %s
+        ORDER BY c.datum_pocetka DESC
+    """, (id_clan,))
+    clanarine = cur.fetchall()
+
+    cur.close()
+
+    return render_template(
+        "clanarine_clana.html",
+        clan=clan,
+        clanarine=clanarine,
+        id_clan=id_clan
+    )
+
+@app.route("/clanarine/nova", defaults={"id_clan": None}, methods=["GET", "POST"])
+@app.route("/clanarine/nova/<int:id_clan>", methods=["GET", "POST"])
+def clanarina_nova(id_clan):
     cur = mysql.connection.cursor()
 
     if request.method == "POST":
@@ -195,31 +226,72 @@ def clanarina_nova():
         id_status = request.form["id_status"]
         datum_pocetka = request.form["datum_pocetka"]
 
-        # dohvat trajanja tipa članarine
+        # Dohvati trajanje tipa
         cur.execute(
             "SELECT trajanje_mjeseci FROM tip_clanarine WHERE id = %s",
             (id_tip,)
         )
         trajanje = cur.fetchone()[0]
 
-        # INSERT s izračunom završetka
-        cur.execute("""
-            INSERT INTO clanarina
-            (id_clan, id_tip, id_status, datum_pocetka, datum_zavrsetka)
-            VALUES
-            (%s, %s, %s, %s, DATE_ADD(%s, INTERVAL %s MONTH))
-        """, (
-            id_clan, id_tip, id_status,
-            datum_pocetka, datum_pocetka, trajanje
-        ))
+        try:
+            cur.execute("""
+                INSERT INTO clanarina
+                (id_clan, id_tip, id_status, datum_pocetka, datum_zavrsetka)
+                VALUES
+                (%s, %s, %s, %s, DATE_ADD(%s, INTERVAL %s MONTH))
+            """, (
+                id_clan, id_tip, id_status,
+                datum_pocetka, datum_pocetka, trajanje
+            ))
 
-        mysql.connection.commit()
-        cur.close()
-        return redirect(url_for("clanarine"))
+            mysql.connection.commit()
+            cur.close()
 
-    # GET – dohvat podataka za forme
-    cur.execute("SELECT id, ime, prezime FROM clan ORDER BY prezime")
-    clanovi = cur.fetchall()
+            return redirect(url_for("clanarine_clana", id_clan=id_clan))
+
+        except Exception as e:
+            mysql.connection.rollback()
+            cur.close()
+
+            poruka = "Greška prilikom dodavanja članarine."
+
+            if "aktivnu članarinu" in str(e):
+                poruka = "Član već ima aktivnu članarinu."
+
+            # ponovno učitaj podatke za formu
+            if id_clan:
+                cur = mysql.connection.cursor()
+                cur.execute("SELECT id, ime, prezime FROM clan WHERE id = %s", (id_clan,))
+                clanovi = [cur.fetchone()]
+            else:
+                cur = mysql.connection.cursor()
+                cur.execute("SELECT id, ime, prezime FROM clan ORDER BY prezime")
+                clanovi = cur.fetchall()
+
+            cur.execute("SELECT id, naziv FROM tip_clanarine ORDER BY naziv")
+            tipovi = cur.fetchall()
+
+            cur.execute("SELECT id, naziv FROM status_clanarine ORDER BY id")
+            statusi = cur.fetchall()
+            cur.close()
+
+            return render_template(
+                "clanarina_nova.html",
+                clanovi=clanovi,
+                tipovi=tipovi,
+                statusi=statusi,
+                id_clan=id_clan,
+                greska=poruka
+            )
+
+
+    # GET
+    if id_clan:
+        cur.execute("SELECT id, ime, prezime FROM clan WHERE id = %s", (id_clan,))
+        clanovi = [cur.fetchone()]
+    else:
+        cur.execute("SELECT id, ime, prezime FROM clan ORDER BY prezime")
+        clanovi = cur.fetchall()
 
     cur.execute("SELECT id, naziv FROM tip_clanarine ORDER BY naziv")
     tipovi = cur.fetchall()
@@ -233,9 +305,9 @@ def clanarina_nova():
         "clanarina_nova.html",
         clanovi=clanovi,
         tipovi=tipovi,
-        statusi=statusi
+        statusi=statusi,
+        id_clan=id_clan
     )
-
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)

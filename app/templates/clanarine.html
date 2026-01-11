@@ -4,37 +4,37 @@
 {% block content %}
 <h1 class="mb-4">💳 Članarine</h1>
 
-<a href="/clanarine/nova" class="btn btn-success mb-3">
-    ➕ Nova članarina
-</a>
+<p class="text-muted">
+    Odaberite člana za pregled njegovih članarina.
+</p>
 
-<table class="table table-striped align-middle">
+<table class="table table-hover align-middle">
     <thead>
         <tr>
             <th>Član</th>
-            <th>Tip</th>
-            <th>Početak</th>
-            <th>Završetak</th>
-            <th>Status</th>
+            <th>Status člana</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
-        {% for c in clanarine %}
+        {% for c in clanovi %}
         <tr>
             <td>{{ c[1] }} {{ c[2] }}</td>
-            <td>{{ c[3] }}</td>
-            <td>{{ c[5] }}</td>
-            <td>{{ c[6] }}</td>
             <td>
-                <span class="badge
-                    {% if c[4] == 'Aktivna' %}bg-success
-                    {% elif c[4] == 'Istekla' %}bg-secondary
-                    {% else %}bg-warning text-dark{% endif %}">
-                    {{ c[4] }}
-                </span>
+                {% if c[3] %}
+                    <span class="badge bg-success">Aktivan</span>
+                {% else %}
+                    <span class="badge bg-secondary">Neaktivan</span>
+                {% endif %}
+            </td>
+            <td class="text-end">
+                <a href="/clanarine/{{ c[0] }}" class="btn btn-sm btn-primary">
+                    Pregled članarina
+                </a>
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
 {% endblock %}
