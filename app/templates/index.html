@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Početna{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">📋 Glavni izbornik</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-3 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Članovi</h5>
+                <p class="card-text">
+                    Pregled, dodavanje, izmjena i brisanje članova fitness centra.
+                </p>
+                <a href="/clanovi" class="btn btn-primary">Upravljaj članovima</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card mb-3 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Članarine</h5>
+                <p class="card-text">
+                    Upravljanje vrstama članarina i njihovim trajanjem.
+                </p>
+                <a href="/clanarine" class="btn btn-primary">Upravljaj članarinama</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

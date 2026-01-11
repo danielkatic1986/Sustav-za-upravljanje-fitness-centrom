@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Racuni Table</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #a5a5a5;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #c7c7c7;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Racuni Table</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Zaposlenik</th>
+            <th>Kupac</th>
+            <th>Broj</th>
+            <th>Datum Izdavanja</th>
+            <th>Iznos</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in racuni %}
+            <tr>
+                <td>{{ row[0] }}</td>
+                <td>{{ row[1] }}</td>
+                <td>{{ row[2] }}</td>
+                <td>{{ row[3] }}</td>
+                <td>{{ row[4] }}</td>
+                <td>{{ row[5] }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</body>
+</html>

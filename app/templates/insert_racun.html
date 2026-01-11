@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insert Racun Form</title>
+</head>
+<body>
+
+<h2>Insert New Racun</h2>
+
+<form method="POST" action="{{ url_for('insert_racun') }}">
+
+    <label for="id">Id:</label>
+    <input type="number" name="id" required><br>
+
+    <label for="id_zaposlenik">Zaposlenik:</label>
+    <select name="id_zaposlenik" required>
+        <option disabled selected value> -- select an option -- </option>
+
+        {% for zaposlenik in zaposlenici %}
+            <option value="{{ zaposlenik[0] }}">{{ zaposlenik[1] }} {{ zaposlenik[2] }}</option>
+        {% endfor %}
+    </select><br>
+
+    <label for="id_kupac">Kupac:</label>
+    <select name="id_kupac" required>
+        <option disabled selected value> -- select an option -- </option>
+
+        {% for kupac in kupci %}
+            <option value="{{ kupac[0] }}">{{ kupac[1] }} {{ kupac[2] }}</option>
+        {% endfor %}
+    </select><br>
+
+    <label for="broj">Broj:</label>
+    <input type="text" name="broj" required><br>
+
+    <label for="datum_izdavanja">Datum Izdavanja:</label>
+    <input type="date" name="datum_izdavanja" required><br>
+
+    <input type="submit" value="Submit">
+</form>
+
+</body>
+</html>
