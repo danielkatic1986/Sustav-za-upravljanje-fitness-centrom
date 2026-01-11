@@ -16,18 +16,17 @@
    (veze na tablice: zaposlenik, prostorija)
    ============================================================ */
 
-DROP DATABASE IF EXISTS fitness_centar;
-CREATE DATABASE fitness_centar CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 USE fitness_centar;
 
 /* ================================================
-   DOBAVLJAC – evidencija dobavljača opreme
+   DOBAVLJAC
    ================================================ */
-CREATE TABLE dobavljac (
+CREATE TABLE IF NOT EXISTS dobavljac (
     id INT AUTO_INCREMENT,
     naziv VARCHAR(150) NOT NULL,
     oib CHAR(11) NOT NULL,
-    kontakt VARCHAR(150) NOT NULL,      -- email ili telefon
+    kontakt VARCHAR(150) NOT NULL,
     adresa VARCHAR(200) NOT NULL,
 
     CONSTRAINT pk_dobavljac PRIMARY KEY (id),
@@ -37,18 +36,16 @@ CREATE TABLE dobavljac (
 );
 
 /* ================================================
-   OPREMA – evidencija opreme u prostorijama
-   Veze:
-     - prostorija_id  -> prostorija(id)
-     - dobavljac_id   -> dobavljac(id)
+   OPREMA
+   FK: prostorija(id), dobavljac(id)
    ================================================ */
-CREATE TABLE oprema (
+CREATE TABLE IF NOT EXISTS oprema (
     id INT AUTO_INCREMENT,
     naziv VARCHAR(150) NOT NULL,
     prostorija_id INT NOT NULL,
     dobavljac_id INT NOT NULL,
     datum_nabave DATE NOT NULL,
-    stanje ENUM('ispravno','neispravno','u servisu','otpisano') 
+    stanje ENUM('ispravno','neispravno','u servisu','otpisano')
            NOT NULL DEFAULT 'ispravno',
 
     CONSTRAINT pk_oprema PRIMARY KEY (id),
@@ -70,12 +67,10 @@ CREATE INDEX idx_oprema_prostorija ON oprema (prostorija_id);
 CREATE INDEX idx_oprema_dobavljac ON oprema (dobavljac_id);
 
 /* ================================================
-   ODRZAVANJE – povijest održavanja opreme
-   Veze:
-     - oprema_id      -> oprema(id)
-     - zaposlenik_id  -> zaposlenik(id)
+   ODRZAVANJE
+   FK: oprema(id), zaposlenik(id)
    ================================================ */
-CREATE TABLE odrzavanje (
+CREATE TABLE IF NOT EXISTS odrzavanje (
     id INT AUTO_INCREMENT,
     oprema_id INT NOT NULL,
     zaposlenik_id INT NOT NULL,
@@ -99,3 +94,4 @@ CREATE TABLE odrzavanje (
 
 CREATE INDEX idx_odrzavanje_oprema ON odrzavanje (oprema_id);
 CREATE INDEX idx_odrzavanje_zaposlenik ON odrzavanje (zaposlenik_id);
+
