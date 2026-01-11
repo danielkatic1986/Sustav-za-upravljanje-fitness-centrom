@@ -38,35 +38,55 @@ CREATE TABLE mjesto (
 
 -- moje tablice
 
-CREATE TABLE placanje (
-id 	INT AUTO_INCREMENT PRIMARY KEY,
-id_clan INT ,
-id_racun INT,
-opis_placanja VARCHAR(100),
-status_placanja VARCHAR(50),
-FOREIGN KEY (id_clan) REFERENCES clan (id),
-FOREIGN KEY (id_racun) REFERENCES racun (id)
-);
-
-CREATE TABLE racun (
-id INT AUTO_INCREMENT PRIMARY KEY,
-broj_racuna INT,
-id_popusta INT,
-nacin_placanja VARCHAR(50),
-datum_izdavanja DATE,
-vrijeme_izdavanja TIME,
-iznos_prije_popusta INT,
-popust_check VARCHAR(1),
-ukupan_iznos INT,
-FOREIGN KEY (id_popusta) REFERENCES popust (id),
-CHECK (popust_check IN ("D", "N"))
-
-);
-
+-- POPUST
 CREATE TABLE popust (
-id INT AUTO_INCREMENT PRIMARY KEY,
-naziv_popusta VARCHAR(50),
-iznos_popusta INT
+    id INT AUTO_INCREMENT,
+    naziv_popusta VARCHAR(50) NOT NULL,
+    iznos_popusta INT NOT NULL,
+
+    CONSTRAINT pk_popust PRIMARY KEY (id)
+);
+
+-- RACUN
+CREATE TABLE racun (
+    id INT AUTO_INCREMENT,
+    broj_racuna INT NOT NULL,
+    id_popusta INT,
+    nacin_placanja VARCHAR(50) NOT NULL,
+    datum_izdavanja DATE NOT NULL,
+    vrijeme_izdavanja TIME NOT NULL,
+    iznos_prije_popusta INT NOT NULL,
+    popust_check CHAR(1) NOT NULL,
+    ukupan_iznos INT NOT NULL,
+
+    CONSTRAINT pk_racun PRIMARY KEY (id),
+    CONSTRAINT fk_racun_popust
+        FOREIGN KEY (id_popusta)
+        REFERENCES popust(id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE,
+    CONSTRAINT chk_popust CHECK (popust_check IN ('D', 'N'))
+);
+
+-- PLACANJE
+CREATE TABLE placanje (
+    id INT AUTO_INCREMENT,
+    id_clan INT NOT NULL,
+    id_racun INT NOT NULL,
+    opis_placanja VARCHAR(100),
+    status_placanja VARCHAR(50),
+
+    CONSTRAINT pk_placanje PRIMARY KEY (id),
+    CONSTRAINT fk_placanje_clan
+        FOREIGN KEY (id_clan)
+        REFERENCES clan(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    CONSTRAINT fk_placanje_racun
+        FOREIGN KEY (id_racun)
+        REFERENCES racun(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 
 

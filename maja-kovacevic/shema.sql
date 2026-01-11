@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS program (
+CREATE TABLE program (
   id         INT AUTO_INCREMENT PRIMARY KEY,
   naziv      VARCHAR(80)  NOT NULL,
   opis       TEXT,
@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS program (
 ) ENGINE=InnoDB;
 
 
-CREATE TABLE IF NOT EXISTS trening (
+CREATE TABLE trening (
   id                     INT AUTO_INCREMENT PRIMARY KEY,
   program_id             INT NOT NULL,
   razina                 ENUM('BEGINNER','INTERMEDIATE','ADVANCED') NOT NULL DEFAULT 'BEGINNER',
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS trening (
 
 
 
-CREATE TABLE IF NOT EXISTS trening_clan (
+CREATE TABLE trening_clan (
   id                 INT AUTO_INCREMENT PRIMARY KEY,
   termin_treninga_id INT NOT NULL,
   clan_id            INT NOT NULL,

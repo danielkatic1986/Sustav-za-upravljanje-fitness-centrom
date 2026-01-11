@@ -1,66 +1,78 @@
 -- FUNKCIJE:
 -- broj računa izdanih u odabranom mjesecu
+-- daje brojčani rezultat koliko računa je izdano u mjesecu
+-- služi za praćenje količine računa u određenim mjesecima što može utjecati na neke nove ponude ili opcije
+-- za određene mjesece, ovisno da li je broj računa manji ili veći
 DELIMITER $$
 
-CREATE FUNCTION fn_broj_racuna_u_mjesecu(p_godina INT, p_mjesec INT)
+CREATE FUNCTION broj_racuna_u_mjesecu(p_godina INT, p_mjesec INT)
 RETURNS INT
+DETERMINISTIC
 BEGIN
-  DECLARE v_cnt INT;
+  DECLARE broj_rac_mj INT;
 
   SELECT COUNT(*)
-    INTO v_cnt
+    INTO broj_rac_mj
   FROM racun r
   WHERE YEAR(r.datum_izdavanja) = p_godina
     AND MONTH(r.datum_izdavanja) = p_mjesec;
 
-  RETURN v_cnt;
+  RETURN broj_rac_mj;
 END$$
 
 DELIMITER ;
 
 -- broj računa izdanih u odabrano doba dana
+-- daje brojčani rezultat koliko računa je izdano u određeno doba dana
+-- služi za praćenje količine računa u određeno doba dana što može utjecati na neke nove poslovne odluke (npr posebne ponude za manje popularno doba dana)
 DELIMITER $$
 
 CREATE FUNCTION fn_broj_racuna_u_doba_dana(p_od TIME, p_do TIME)
 RETURNS INT
+DETERMINISTIC
 BEGIN
-  DECLARE v_cnt INT;
+  DECLARE broj_rac_dan INT;
 
   SELECT COUNT(*)
-    INTO v_cnt
+    INTO broj_rac_dan
   FROM racun r
   WHERE r.vrijeme_izdavanja >= p_od
     AND r.vrijeme_izdavanja <= p_do;
 
-  RETURN v_cnt;
+  RETURN broj_rac_dan;
 END$$
 
 DELIMITER ;
 
 -- broj računa plaćenih sa odabranom metodom plaćanja
+-- daje brojčani rezultat koliko računa je plaćeno sa odabranom metodom plaćanja
+-- služi za praćenje popularnih i manje popularnih metoda plaćanja, može poslužiti za neke posebne ponude sa partnerima (npr Visa, American,...)
 DELIMITER $$
 
 CREATE FUNCTION fn_broj_racuna_po_metodi(p_metoda VARCHAR(30))
 RETURNS INT
+DETERMINISTIC
 BEGIN
-  DECLARE v_cnt INT;
+  DECLARE broj_rac_met INT;
 
   SELECT COUNT(*)
-    INTO v_cnt
+    INTO broj_rac_met
   FROM racun r
   WHERE LOWER(r.nacin_placanja) = LOWER(p_metoda);
 
-  RETURN v_cnt;
+  RETURN broj_rac_met;
 END$$
 
 DELIMITER ;
 
 -- provjera člana (da li je već postojeći član ili novi član)
+-- služi za provjeru u slučaju da član nije siguran da li se već učlanio ili ako su podaci koje dobivamo od člana krivi pa tražimo točne
 -- po OIB-u:
 DELIMITER $$
 
 CREATE FUNCTION fn_clan_postoji_oib(p_oib VARCHAR(20))
 RETURNS INT
+DETERMINISTIC
 BEGIN
   DECLARE v_cnt INT;
 
@@ -79,6 +91,7 @@ DELIMITER $$
 
 CREATE FUNCTION fn_clan_postoji_email(p_email VARCHAR(255))
 RETURNS INT
+DETERMINISTIC
 BEGIN
   DECLARE v_cnt INT;
 
@@ -93,14 +106,14 @@ END$$
 DELIMITER ;
 
 
--- računanje ukupnog iznosa računa
+-- računanje ukupnog iznosa računa (bez ili sa popustom)
 DELIMITER $$
 
 CREATE FUNCTION fn_ukupan_iznos_racuna(p_id_racun INT)
 RETURNS DECIMAL(10,2)
-READS SQL DATA
+DETERMINISTIC
 BEGIN
-  DECLARE v_osnovica DECIMAL(10,2);
+  DECLARE v_osnovica DECIMAL(10,2); 
   DECLARE v_postotak INT;
   DECLARE v_popust_check CHAR(1);
   DECLARE v_id_popusta INT;
@@ -139,14 +152,16 @@ DELIMITER ;
 
 -- POGLEDI:
 -- svi izdani računi sa popustom
-CREATE OR REPLACE VIEW v_racuni_sa_popustom AS
+-- praćenje svih računa koji su uključivali popust
+CREATE OR REPLACE VIEW vw_racuni_sa_popustom AS
 SELECT r.*
 FROM racun r
 WHERE r.popust_check = 'D'
   AND r.id_popusta IS NOT NULL;
 
 -- u kojem mjestu imamo najviše prihoda?
-CREATE OR REPLACE VIEW v_prihod_po_mjestu AS
+-- praćenje najpopularnijih mjesta našeg poslovanja
+CREATE OR REPLACE VIEW vw_prihod_po_mjestu AS
 SELECT 
   m.id AS id_mjesto,
   m.naziv,
@@ -161,7 +176,7 @@ WHERE p.status_placanja = 'placeno'
 GROUP BY m.id, m.naziv, m.postanski_broj, m.drzava;
 
 -- svi neplaćeni računi s popustom
-CREATE OR REPLACE VIEW v_neplaceni_racuni_sa_popustom AS
+CREATE OR REPLACE VIEW vw_neplaceni_racuni_sa_popustom AS
 SELECT DISTINCT r.*
 FROM racun r
 JOIN placanje p ON p.id_racun = r.id
@@ -170,14 +185,14 @@ WHERE r.popust_check = 'D'
   AND p.status_placanja <> 'placeno';
 
 -- članovi bez uplata
-CREATE OR REPLACE VIEW v_clanovi_bez_uplata AS
+CREATE OR REPLACE VIEW vw_clanovi_bez_uplata AS
 SELECT c.*
 FROM clan c
 LEFT JOIN placanje p ON p.id_clan = c.id
 WHERE p.id IS NULL;
 
 -- ukupni iznos plaćen po članu za određeni mjesec
-CREATE OR REPLACE VIEW v_placeno_po_clanu_po_mjesecu AS
+CREATE OR REPLACE VIEW vw_placeno_po_clanu_po_mjesecu AS
 SELECT
   c.id AS id_clan,
   c.ime,
@@ -192,7 +207,7 @@ WHERE p.status_placanja = 'placeno'
 GROUP BY c.id, c.ime, c.prezime, YEAR(r.datum_izdavanja), MONTH(r.datum_izdavanja);
 
 -- novi korisnici od 10-12. mjeseca i koliko su platili
-CREATE OR REPLACE VIEW v_novi_korisnici_10_12_i_placanja AS
+CREATE OR REPLACE VIEW vw_novi_korisnici_10_12_i_placanja AS
 SELECT
   c.id AS id_clan,
   c.ime,
@@ -206,7 +221,7 @@ WHERE MONTH(c.datum_uclanjenja) IN (10,11,12)
 GROUP BY c.id, c.ime, c.prezime, c.datum_uclanjenja;
 
 -- mjesečni prihodi po načinu plaćanja
-CREATE OR REPLACE VIEW v_mjesecni_prihodi_po_nacinu_placanja AS
+CREATE OR REPLACE VIEW vw_mjesecni_prihodi_po_nacinu_placanja AS
 SELECT
   YEAR(r.datum_izdavanja) AS godina,
   MONTH(r.datum_izdavanja) AS mjesec,
@@ -218,7 +233,7 @@ WHERE p.status_placanja = 'placeno'
 GROUP BY YEAR(r.datum_izdavanja), MONTH(r.datum_izdavanja), r.nacin_placanja;
 
 -- top 10 članova po potrošnji
-CREATE OR REPLACE VIEW v_top_10_clanova_po_potrosnji AS
+CREATE OR REPLACE VIEW vw_top_10_clanova_po_potrosnji AS
 SELECT
   c.id AS id_clan,
   c.ime,
@@ -233,7 +248,8 @@ ORDER BY ukupna_potrosnja DESC
 LIMIT 10;
 
 -- članarina vs shop zarada
-CREATE OR REPLACE VIEW v_zarada_clanarina_vs_shop AS
+-- praćenje zarade od članarina vs od shopa (merch)
+CREATE OR REPLACE VIEW vw_zarada_clanarina_vs_shop AS
 SELECT
   SUM(CASE 
         WHEN p.opis_placanja IN ('mj_clanarina', 'god_clanarina') THEN r.ukupan_iznos
@@ -272,7 +288,7 @@ DELIMITER ;
 -- ažuriranje popusta
 DELIMITER $$
 
-CREATE PROCEDURE sp_azuriraj_popust(
+CREATE PROCEDURE pr_azuriraj_popust(
   IN p_id_popusta INT,
   IN p_postotak INT,
   IN p_naziv VARCHAR(100),
@@ -291,7 +307,7 @@ DELIMITER ;
 -- izvještaj prihoda po članu
 DELIMITER $$
 
-CREATE PROCEDURE sp_izvjestaj_prihoda_po_clanu(
+CREATE PROCEDURE pr_izvjestaj_prihoda_po_clanu(
   IN p_godina INT,
   IN p_mjesec INT
 )
@@ -316,7 +332,7 @@ DELIMITER ;
 -- kreiraj račun
 DELIMITER $$
 
-CREATE PROCEDURE sp_kreiraj_racun(
+CREATE PROCEDURE pr_kreiraj_racun(
   IN p_broj_racuna BIGINT,
   IN p_id_popusta INT,
   IN p_nacin_placanja VARCHAR(30),
@@ -342,7 +358,7 @@ DELIMITER ;
 -- označi račun kao plaćen
 DELIMITER $$
 
-CREATE PROCEDURE sp_oznaci_racun_kao_placen(IN p_id_racun INT)
+CREATE PROCEDURE pr_oznaci_racun_kao_placen(IN p_id_racun INT)
 BEGIN
   UPDATE placanje
   SET status_placanja = 'placeno'
@@ -354,42 +370,12 @@ DELIMITER ;
 -- povrat novca
 DELIMITER $$
 
-CREATE PROCEDURE sp_povrat_novca(
-  IN p_id_clan INT,
-  IN p_iznos DECIMAL(10,2),        -- positive input (we'll store negative)
-  IN p_nacin_placanja VARCHAR(30),
-  IN p_datum DATE,
-  IN p_vrijeme TIME,
-  IN p_broj_racuna BIGINT
-)
-BEGIN
-  DECLARE v_id_racun INT;
 
-  START TRANSACTION;
-
-  INSERT INTO racun
-    (id, broj_racuna, id_popusta, nacin_placanja, datum_izdavanja, vrijeme_izdavanja,
-     iznos_prije_popusta, popust_check, ukupan_iznos)
-  VALUES
-    (NULL, p_broj_racuna, NULL, p_nacin_placanja, p_datum, p_vrijeme,
-     -ABS(p_iznos), 'N', -ABS(p_iznos));
-
-  SET v_id_racun = LAST_INSERT_ID();
-
-  INSERT INTO placanje (id, id_clan, id_racun, opis_placanja, status_placanja)
-  VALUES (NULL, p_id_clan, v_id_racun, 'povrat_novca', 'placeno');
-
-  COMMIT;
-
-  SELECT v_id_racun AS refund_racun_id;
-END$$
-
-DELIMITER ;
 
 -- primijeni popust na račun
 DELIMITER $$
 
-CREATE PROCEDURE sp_primijeni_popust_na_racun(
+CREATE PROCEDURE pr_primijeni_popust_na_racun(
   IN p_id_racun INT,
   IN p_id_popusta INT
 )
@@ -409,7 +395,7 @@ DELIMITER ;
 -- izbriši popust sa računa
 DELIMITER $$
 
-CREATE PROCEDURE sp_ukloni_popust_sa_racuna(IN p_id_racun INT)
+CREATE PROCEDURE pr_ukloni_popust_sa_racuna(IN p_id_racun INT)
 BEGIN
   UPDATE racun
   SET id_popusta = NULL,
@@ -426,7 +412,7 @@ DELIMITER ;
 -- statistika popusta
 DELIMITER $$
 
-CREATE PROCEDURE sp_statistika_popusta(
+CREATE PROCEDURE pr_statistika_popusta(
   IN p_godina INT,
   IN p_mjesec INT
 )
@@ -505,3 +491,38 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+-- transakcije
+DELIMITER $$
+
+CREATE PROCEDURE pr_povrat_novca(
+  IN p_id_clan INT,
+  IN p_iznos DECIMAL(10,2),        -- positive input (we'll store negative)
+  IN p_nacin_placanja VARCHAR(30),
+  IN p_datum DATE,
+  IN p_vrijeme TIME,
+  IN p_broj_racuna BIGINT
+)
+BEGIN
+  DECLARE v_id_racun INT;
+
+  START TRANSACTION;
+
+  INSERT INTO racun
+    (broj_racuna, id_popusta, nacin_placanja, datum_izdavanja, vrijeme_izdavanja,
+     iznos_prije_popusta, popust_check, ukupan_iznos)
+  VALUES
+    (NULL, p_broj_racuna, NULL, p_nacin_placanja, p_datum, p_vrijeme,
+     -ABS(p_iznos), 'N', -ABS(p_iznos));
+
+  INSERT INTO placanje (id_clan, id_racun, opis_placanja, status_placanja)
+  VALUES (NULL, p_id_clan, v_id_racun, 'povrat_novca', 'placeno');
+
+  COMMIT;
+
+  SELECT v_id_racun AS refund_racun_id;
+END$$
+
+DELIMITER ;
+
+
