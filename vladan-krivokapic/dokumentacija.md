@@ -15,7 +15,9 @@ Modul je realiziran pomoću:
 - **pregleda (SELECT upita)** – “ad-hoc” analitika i operativni izvještaji,
 - **pogleda (VIEW)** – standardizirani izvještaji koje je lakše pozivati i koristiti u aplikaciji,
 - **funkcija** – ponovljivi izračuni (npr. zadnje održavanje),
-- **procedura** – kontrolirani unos/izmjene (npr. evidentiraj održavanje, ažuriraj opremu).
+- **procedura** – kontrolirani unos/izmjene (npr. evidentiraj održavanje, ažuriraj opremu),
+- **eventa** – periodične automatizirane provjere (scheduler),
+- **transakcija** – grupiranje više promjena u jednu logičku cjelinu (COMMIT/ROLLBACK).
 
 ---
 
@@ -34,13 +36,8 @@ Modul je realiziran pomoću:
 
 **Svrha tablice:**
 - Ova tablica je “centralna” jer se sve ostalo u modulu veže na nju.
-- Omogućuje da svaka sprava ima:
-  - identitet (`id`),
-  - naziv radi prepoznavanja (`naziv`),
-  - lokaciju gdje fizički stoji (`prostorija_id`),
-  - dobavljača radi odgovornosti i statistike (`dobavljac_id`),
-  - datum nabave radi starosti i računanja “koliko dugo nije servisirano” kad nema zapisa održavanja (`datum_nabave`),
-  - trenutno stanje (`stanje`) radi filtriranja problematične opreme i praćenja statusa.
+- Omogućuje da svaka sprava ima identitet, naziv, lokaciju, dobavljača, datum nabave i stanje.
+- `datum_nabave` je bitan kao “rezervni datum” za izračune kad oprema nema niti jedan zapis održavanja.
 
 **Zašto je `stanje` bitno:**
 - `ispravno` – normalno stanje (oprema radi i može se koristiti).
@@ -49,12 +46,12 @@ Modul je realiziran pomoću:
 - `otpisano` – oprema se više ne koristi (zastarjela, neisplativa za popravak).
 
 **Veze (FK) i njihov smisao:**
-- `prostorija_id → prostorija(id)`: osigurava da oprema uvijek ima validnu prostoriju. Ne može se upisati oprema s prostorijom koja ne postoji.
-- `dobavljac_id → dobavljac(id)`: osigurava da oprema uvijek ima validnog dobavljača i da se statistike po dobavljaču mogu raditi pouzdano.
+- `prostorija_id → prostorija(id)`: osigurava da oprema uvijek ima validnu prostoriju (nema “fantomskih” lokacija).
+- `dobavljac_id → dobavljac(id)`: osigurava da se oprema veže uz postojećeg dobavljača i da su statistike po dobavljaču pouzdane.
 
 **Indeksi:**
-- Index na `prostorija_id`: ubrzava upite tipa “prikaži svu opremu u prostoriji” i joinove s tablicom `prostorija`.
-- Index na `dobavljac_id`: ubrzava upite tipa “prikaži svu opremu dobavljača” i joinove s tablicom `dobavljac`.
+- Index na `prostorija_id`: ubrzava upite tipa “prikaži svu opremu u prostoriji” i JOIN na `prostorija`.
+- Index na `dobavljac_id`: ubrzava upite tipa “prikaži svu opremu dobavljača” i JOIN na `dobavljac`.
 
 ---
 
@@ -69,18 +66,14 @@ Modul je realiziran pomoću:
 | adresa | VARCHAR(200) | NOT NULL            | Adresa dobavljača. |
 
 **Svrha tablice:**
-- Čuva podatke o dobavljačima opreme kako bi se mogla:
-  - pratiti oprema po dobavljaču,
-  - raditi statistika (koliko opreme, kakva su stanja, raspon nabava),
-  - imati kontakt podatke za reklamacije / servis / nabavu dijelova.
+- Čuva podatke o dobavljačima opreme radi praćenja opreme po dobavljaču, analitike kvalitete isporuke i kontaktiranja u slučaju reklamacije/servisa.
 
 **Zašto `UNIQUE` na `naziv` i `oib`:**
-- `oib` je jedinstven identifikator tvrtke – sprječava duple dobavljače.
-- `naziv` sprječava da se ista tvrtka unese dvaput pod istim nazivom.
+- `oib` sprječava unos iste tvrtke više puta (jedinstveni identifikator).
+- `naziv` sprječava dupliciranje dobavljača kroz naziv (npr. isti dobavljač pod istim imenom dva puta).
 
 **CHECK za OIB (format):**
-- Provjera `^[0-9]{11}$` osigurava da OIB ima točno 11 znamenki.
-- U praksi pomaže da se ne unesu slova, razmaci ili kriva duljina.
+- Provjera `^[0-9]{11}$` osigurava da OIB ima točno 11 znamenki (bez slova i razmaka).
 
 ---
 
@@ -98,7 +91,7 @@ Modul je realiziran pomoću:
 **Svrha tablice:**
 - Prostorija predstavlja fizičku lokaciju unutar fitness centra.
 - U ovom modulu se koristi za vezu `oprema.prostorija_id` kako bi se znalo gdje se oprema nalazi.
-- U izvještajima se prostorija prikazuje kao `CONCAT(oznaka, ' - ', lokacija)` radi čitljivosti.
+- U pregledima i view-ovima prostorija se prikazuje kao `CONCAT(oznaka, ' - ', lokacija)` jer je to najčitljivije za korisnika.
 
 ---
 
@@ -113,20 +106,15 @@ Modul je realiziran pomoću:
 | opis          | VARCHAR(300) | NOT NULL                            | Opis intervencije/servisa. |
 
 **Svrha tablice:**
-- Ovo je “servisni dnevnik” za opremu.
-- Svaki zapis predstavlja jednu intervenciju ili servisni događaj.
-- Na temelju ove tablice se računaju:
-  - **broj održavanja** po opremi,
-  - **zadnje održavanje** (MAX datum),
-  - “koliko dana bez servisa” (DATEDIFF od zadnjeg datuma).
+- Ovo je “servisni dnevnik” za opremu (povijest intervencija).
+- Na temelju ove tablice se računaju broj održavanja, zadnji datum održavanja i “koliko dana bez servisa”.
 
 **Zašto se veže na zaposlenika:**
-- Omogućuje odgovornost i praćenje tko je radio održavanje.
-- U problematičnim situacijama može se brzo vidjeti “tko je zadnji servisirao” opremu.
+- Omogućuje odgovornost i provjeru tko je zadnji radio na opremi (korisno kod reklamacija i interne kontrole).
 
 **Indeksi:**
-- Index na `oprema_id`: ubrzava dohvat svih održavanja za određenu opremu i agregacije (COUNT/MAX).
-- Index na `zaposlenik_id`: ubrzava izvještaje i provjere po zaposleniku (npr. koliko održavanja je radio netko).
+- Index na `oprema_id`: ubrzava dohvat održavanja po opremi i agregacije (COUNT/MAX).
+- Index na `zaposlenik_id`: ubrzava upite po zaposleniku (npr. izvještaj tko je koliko održavanja radio).
 
 ---
 
@@ -141,20 +129,20 @@ Modul je realiziran pomoću:
 | datum_rodenja | DATE | (može biti NULL)    | Datum rođenja zaposlenika. |
 | spol   | ENUM('M','Ž','Drugo') | (može biti NULL) | Spol zaposlenika. |
 | adresa | VARCHAR(100) | (može biti NULL)    | Adresa zaposlenika. |
-| id_mjesto | INT       | FK → mjesto(id), NOT NULL | Mjesto (poveznica na tablicu mjesto). |
+| id_mjesto | INT       | FK → mjesto(id), NOT NULL | Mjesto. |
 | telefon | VARCHAR(20) | (može biti NULL)    | Kontakt telefon. |
 | email  | VARCHAR(100) | (može biti NULL)    | Email adresa. |
 | datum_zaposlenja | DATE | NOT NULL          | Datum zaposlenja. |
 | datum_prestanka | DATE | DEFAULT NULL       | Datum prestanka rada (ako postoji). |
 | status_zaposlenika | ENUM('aktivan','neaktivan') | NOT NULL | Status zaposlenika. |
 | placa  | DECIMAL(10,2) | CHECK (placa >= 0), DEFAULT 0 | Plaća zaposlenika. |
-| id_radno_mjesto | INT | FK → radno_mjesto(id), NOT NULL | Radno mjesto zaposlenika. |
-| id_podruznica | INT  | FK → podruznica(id), NOT NULL | Podružnica zaposlenika. |
+| id_radno_mjesto | INT | FK → radno_mjesto(id), NOT NULL | Radno mjesto. |
+| id_podruznica | INT  | FK → podruznica(id), NOT NULL | Podružnica. |
 
 **Svrha tablice:**
 - Tablica sadrži podatke o zaposlenicima sustava.
-- U ovom modulu se koristi preko veze `odrzavanje.zaposlenik_id` kako bi se znalo tko je evidentirao ili izvršio održavanje.
-- U izvještajima se prikazuje ime i prezime zadnjeg servisera radi lakše provjere odgovornosti i praćenja intervencija.
+- U ovom modulu se koristi preko veze `odrzavanje.zaposlenik_id` kako bi se znalo tko je evidentirao/izvršio održavanje.
+- U problematičnim slučajevima omogućuje brz odgovor na pitanje “tko je zadnji servisirao opremu”.
 
 ---
 
@@ -182,27 +170,8 @@ ORDER BY dana_od_zadnjeg_odrzavanja DESC;
 ```
 
 **Svrha upita:**
-- Ovo je “glavni pregled” koji spaja sve bitno za opremu na jednom mjestu.
-- Koristi se kad želiš brzo dobiti odgovor na pitanja:
-  - Koja oprema postoji?
-  - U kojoj prostoriji je?
-  - Od kojeg dobavljača je?
-  - Koliko puta je servisirana?
-  - Kada je zadnji put servisirana?
-  - Koliko je dana prošlo od zadnjeg servisa?
-
-**Kako radi:**
-- `JOIN dobavljac` i `JOIN prostorija` dodaju opisne informacije (naziv dobavljača, oznaka/lokacija prostorije).
-- `LEFT JOIN odrzavanje` omogućuje da se pokaže i oprema koja **nema održavanja** (tada COUNT/MAX budu 0/NULL).
-- `COUNT(od.id)` broji održavanja po opremi.
-- `MAX(od.datum)` dohvaća zadnje održavanje.
-- `COALESCE(MAX(od.datum), o.datum_nabave)` osigurava da se “dani od zadnjeg” računaju i kada nema održavanja (onda se računa od nabave).
-- `ORDER BY dana_od_zadnjeg_odrzavanja DESC` stavlja “najkritičnije” (najduže bez servisa) na vrh.
-
-**Praktična uporaba:**
-- planiranje preventivnog servisa,
-- prioritetni popis opreme koja dugo nije servisirana,
-- brzi uvid u stanje i lokaciju za osoblje u teretani.
+- Glavni pregled koji spaja sve bitno za opremu na jednom mjestu: oprema, dobavljač, prostorija i servisna statistika.
+- Koristi se za brzi operativni uvid i određivanje prioriteta servisa (sortirano po “najduže bez servisa”).
 
 ---
 
@@ -226,22 +195,8 @@ ORDER BY ukupno_komada DESC;
 ```
 
 **Svrha upita:**
-- Ovaj upit radi **analitiku dobavljača**: koliko opreme dolazi od kojeg dobavljača i kakvo je stanje te opreme.
-- Pomaže odgovoriti na pitanja:
-  - Koji dobavljač je isporučio najviše opreme?
-  - Kod kojeg dobavljača je najviše neispravne opreme?
-  - Je li neki dobavljač “problematičan” (puno servisa/neispravnosti)?
-  - Kada je krenula suradnja (najstarija nabava) i kada je zadnja nabava?
-
-**Kako radi:**
-- `LEFT JOIN oprema` osigurava da se pokažu i dobavljači koji trenutno nemaju opreme (tada COUNT bude 0).
-- `SUM(o.stanje = '...')` u MySQL-u radi kao brojanje “true” vrijednosti (true=1, false=0), pa dobiješ koliko je komada u određenom stanju.
-- `MIN/MAX datum_nabave` daje raspon nabava (od prve do zadnje isporuke).
-
-**Praktična uporaba:**
-- usporedba dobavljača,
-- donošenje odluka o budućim nabavama,
-- argumenti za reklamacije (ako se vidi trend problema).
+- Analitika dobavljača: koliko opreme dolazi od kojeg dobavljača i u kakvom je stanju ta oprema.
+- Pomaže usporediti dobavljače i uočiti eventualno “problematične” isporuke (puno kvarova ili servisa).
 
 ---
 
@@ -264,19 +219,8 @@ ORDER BY dana_bez_servisa DESC;
 ```
 
 **Svrha upita:**
-- Ovaj upit filtrira samo opremu koja je **problematična** (neispravna ili u servisu) i provjerava je li dugo bez intervencije.
-- Pomaže identificirati “zaboravljenu” opremu koja stoji mjesecima bez rješenja.
-
-**Kako radi:**
-- `WHERE o.stanje IN (...)` ograniči samo na problematična stanja.
-- `MAX(od.datum)` traži zadnji servisni zapis.
-- Ako nema održavanja, računa se od `datum_nabave` (da se ipak dobije broj dana).
-- `HAVING dana_bez_servisa > 180` filtrira tek nakon agregacije (jer je `dana_bez_servisa` izračun na temelju MAX).
-
-**Praktična uporaba:**
-- upozorenje menadžmentu da se oprema predugo ne rješava,
-- prioritizacija servisa i nabave dijelova,
-- evidencija za otpis (ako dugo stoji bez rješenja).
+- Izdvaja opremu koja je u problematičnom stanju (neispravno/u servisu) i “stoji” predugo bez intervencije.
+- Koristi se kao lista prioriteta za rješavanje kvarova ili odluku o otpisu.
 
 ---
 
@@ -304,16 +248,8 @@ GROUP BY
 ```
 
 **Svrha view-a:**
-- View je “spremanjeni izvještaj” – nema potrebe svaki put pisati dugi JOIN + agregacije.
-- Koristi se kao baza za:
-  - jednostavne SELECT upite (npr. `SELECT * FROM v_oprema_zadnje_odrzavanje;`),
-  - filtriranja (npr. oprema bez održavanja, oprema u servisu),
-  - aplikacijski prikaz liste opreme s osnovnim servisnim informacijama.
-
-**Zašto je korisno imati view:**
-- lakše održavanje koda (jednom se promijeni logika u view-u),
-- standardizacija (svi koriste isti izvještaj),
-- smanjuje šansu greške u JOIN-ovima i GROUP BY-u.
+- “Spremanjeni izvještaj” koji standardizira prikaz opreme s osnovnim servisnim informacijama.
+- Koristi se kao baza za jednostavne SELECT upite i filtriranja (npr. samo oprema u servisu).
 
 ---
 
@@ -333,11 +269,8 @@ GROUP BY d.id, d.naziv;
 ```
 
 **Svrha view-a:**
-- Sažima osnovnu sliku dobavljača:
-  - koliko komada opreme ima,
-  - od kada traje suradnja (prva isporuka),
-  - kada je zadnja nabava (zadnja isporuka).
-- Korisno za “dashboard” ili brzi pregled dobavljača bez detaljnih stanja.
+- Sažima osnovnu sliku dobavljača: broj komada opreme i raspon nabava (prva/zadnja isporuka).
+- Pogodno za dashboard i brzi pregled dobavljača bez detalja o stanjima.
 
 ---
 
@@ -369,21 +302,8 @@ WHERE o.stanje IN ('neispravno', 'u servisu', 'otpisano');
 ```
 
 **Svrha view-a:**
-- View izdvaja samo opremu koja nije u normalnom stanju.
-- Daje odmah kontekst:
-  - gdje je oprema (prostorija),
-  - od koga je došla (dobavljač),
-  - kada je zadnji put dirana (zadnje održavanje),
-  - tko je zadnji radio na njoj (ime i prezime servisera).
-
-**Zašto je query ovakav (subquery za zadnje održavanje):**
-- `LEFT JOIN odrzavanje` s podupitom bira **točno jedan** zapis održavanja – onaj najnoviji (zadnji datum, a ako su isti datumi, najveći id).
-- Time se izbjegne da se oprema pojavi više puta (jednom za svako održavanje).
-
-**Praktična uporaba:**
-- lista “kvarovi i servisi” za osoblje,
-- praćenje odgovornosti (tko je zadnji servisirao),
-- brža komunikacija s dobavljačem ili servisom.
+- Daje listu problematične opreme (neispravno/u servisu/otpisano) zajedno s kontekstom: prostorija, dobavljač i zadnji serviser.
+- Subquery osigurava da se za svaku opremu uzme točno jedan (najnoviji) zapis održavanja.
 
 ---
 
@@ -409,12 +329,8 @@ END;
 
 **Svrha funkcije:**
 - Vraća zadnji datum održavanja za određenu opremu.
-- Ako oprema nikada nije servisirana, vraća `NULL`.
-- Koristi se kao “building block” u drugim upitima/procedurama da se ne ponavlja logika.
-
-**Zašto je korisna:**
-- u procedurama i izvještajima samo pozoveš `fn_zadnje_odrzavanje(o.id)` umjesto pisanja `SELECT MAX(datum)...` svaki put,
-- smanjuje greške i ubrzava izradu upita u projektu.
+- Ako oprema nikada nije servisirana, funkcija vraća `NULL`.
+- Koristi se kao osnovni “komad logike” u procedurama i upitima.
 
 ---
 
@@ -435,7 +351,6 @@ BEGIN
     WHERE id = p_oprema_id;
 
     SET v_zadnje = fn_zadnje_odrzavanje(p_oprema_id);
-
     SET v_rezultat = DATEDIFF(CURDATE(), COALESCE(v_zadnje, v_nabava));
 
     RETURN v_rezultat;
@@ -443,14 +358,9 @@ END;
 ```
 
 **Svrha funkcije:**
-- Računa “koliko je dana prošlo” od zadnje servisne aktivnosti.
-- Ako nema održavanja, računa se od `datum_nabave` (jer se ipak želi dobiti neka starost).
-- Vraća cijeli broj (INT) koji se može direktno sortirati ili koristiti u uvjetima.
-
-**Tipični scenariji:**
-- prikaz u izvještajima (“dana bez servisa”),
-- logika za upozorenja (npr. ako > 365 dana, preporuči servis),
-- rangiranje opreme po prioritetu servisa.
+- Računa koliko je dana prošlo od zadnjeg održavanja.
+- Ako nema održavanja, računa od datuma nabave.
+- Korisno za rangiranje opreme po prioritetu servisa ili za upozorenja (npr. > 365 dana).
 
 ---
 
@@ -486,18 +396,8 @@ END;
 ```
 
 **Svrha procedure:**
-- Procedura služi da se unos održavanja radi na kontroliran način:
-  1) upiše se novi zapis u `odrzavanje` (tko, što, kada),
-  2) po potrebi se odmah promijeni stanje opreme (npr. nakon popravka postavi se `ispravno`, ili ako je kvar pronađen postavi se `neispravno`).
-
-**Zašto je korisno da je ovo procedura:**
-- U jednom pozivu napraviš dvije logičke radnje (dnevnik + stanje).
-- Smanjuje se mogućnost da netko upiše održavanje, a zaboravi ažurirati stanje (ili obrnuto).
-- Omogućuje provjeru da `p_novo_stanje` bude jedna od dozvoljenih vrijednosti.
-
-**Kako se tipično koristi:**
-- kad serviser završi posao i želi evidentirati što je napravljeno,
-- kad se oprema šalje u servis i želiš promijeniti stanje u `u servisu` uz zapis objašnjenja.
+- Kontrolirani unos održavanja (zapis u dnevnik) i opcionalna promjena stanja opreme u istom pozivu.
+- Smanjuje šansu da se napravi samo jedna polovica posla (npr. upiše održavanje, ali se ne promijeni stanje).
 
 ---
 
@@ -524,17 +424,8 @@ END;
 ```
 
 **Svrha procedure:**
-- Vraća detaljan izvještaj za jednog dobavljača.
-- Dobiva se popis opreme tog dobavljača zajedno s:
-  - trenutnim stanjem,
-  - prostorijom gdje se nalazi,
-  - zadnjim održavanjem,
-  - brojem dana od zadnjeg održavanja.
-
-**Zašto je korisno:**
-- kad želiš provjeriti kvalitetu opreme dobavljača,
-- kad pripremaš reklamaciju ili servisni upit dobavljaču,
-- kad trebaš analizirati starost i servisnu povijest opreme po dobavljaču.
+- Vraća detaljan izvještaj za jednog dobavljača: popis opreme, lokacija, stanje i servisne informacije.
+- Koristi se za analizu dobavljača i pripremu reklamacija ili nabave.
 
 ---
 
@@ -566,18 +457,8 @@ END;
 ```
 
 **Svrha procedure:**
-- Služi za uređivanje (update) podataka o opremi bez potrebe da se uvijek šalju svi podaci.
-- `COALESCE` znači: “ako je parametar NULL, ostavi staru vrijednost”.
-
-**Primjeri zašto je korisno:**
-- promjena prostorije (oprema je premještena),
-- promjena dobavljača (ako je pogrešno uneseno),
-- promjena naziva (standardizacija naziva),
-- promjena stanja (npr. ručno postavljanje na `otpisano`).
-
-**Prednost u odnosu na obični UPDATE:**
-- korisnik/projekt može pozvati proceduru i poslati samo ono što želi promijeniti,
-- manja šansa da se slučajno prepiše neki podatak.
+- Ažurira podatke o opremi bez obaveze slanja svih vrijednosti (NULL znači “ne mijenjaj”).
+- Korisno za premještaj opreme, ispravke dobavljača ili ručno ažuriranje statusa.
 
 ---
 
@@ -595,21 +476,154 @@ END;
 
 **Svrha procedure:**
 - Briše jedan zapis održavanja po ID-u.
-- Koristi se oprezno jer brisanje uklanja dio povijesti (audit), ali u projektima se zna koristiti kad je unos bio pogrešan.
-
-**Tipična uporaba:**
-- greškom upisan datum ili opis pa se želi ponovno unijeti ispravno,
-- duplicirani zapis održavanja.
+- Koristi se kad je zapis pogrešno unesen ili dupliciran (oprezno jer briše dio povijesti).
 
 ---
 
-## 7. Zaključak
+## 7. Events
 
-Ovim modulom dobiven je sustav za praćenje opreme i održavanja s pregledima, view-ovima, funkcijama i procedurama koji pomažu u upravljanju servisima i analizi dobavljača.
+Eventi u MySQL-u služe kao rasporednik (scheduler) koji automatski pokreće određene SQL radnje u zadanim intervalima. U ovom modulu eventi se koriste za periodične provjere opreme i automatizirano označavanje problema.
 
-Najvažniji doprinos modula:
-- operativni uvid u “što je gdje i u kakvom je stanju”,
-- servisna povijest (tko/kada/što),
-- analitika dobavljača,
-- standardizirani izvještaji kroz view-ove i funkcije,
-- sigurniji unos kroz procedure.
+### 7.1 EVENT: `ev_oprema_predugo_u_servisu`
+
+```sql
+CREATE EVENT IF NOT EXISTS ev_oprema_predugo_u_servisu
+ON SCHEDULE EVERY 1 DAY
+STARTS (CURRENT_DATE + INTERVAL 1 DAY)
+DO
+BEGIN
+    UPDATE oprema o
+    LEFT JOIN (
+        SELECT oprema_id, MAX(datum) AS zadnje_odrzavanje
+        FROM odrzavanje
+        GROUP BY oprema_id
+    ) od ON od.oprema_id = o.id
+    SET o.stanje = 'neispravno'
+    WHERE o.stanje = 'u servisu'
+      AND DATEDIFF(
+            CURDATE(),
+            COALESCE(od.zadnje_odrzavanje, o.datum_nabave)
+          ) > 180;
+END;
+```
+
+**Svrha eventa:**
+- Svaki dan provjerava opremu koja je u stanju `u servisu`.
+- Ako je oprema bez održavanja duže od 180 dana, automatski se prebacuje na `neispravno`.
+- Ako oprema nema održavanja, kao referenca se koristi `datum_nabave`.
+
+---
+
+### 7.2 EVENT: `ev_oprema_stara_bez_servisa`
+
+```sql
+CREATE EVENT IF NOT EXISTS ev_oprema_stara_bez_servisa
+ON SCHEDULE EVERY 1 WEEK
+STARTS (CURRENT_DATE + INTERVAL 7 DAY)
+DO
+BEGIN
+    SELECT
+        o.id AS oprema_id,
+        o.naziv,
+        o.stanje,
+        DATEDIFF(
+            CURDATE(),
+            COALESCE(
+                (SELECT MAX(od.datum)
+                 FROM odrzavanje od
+                 WHERE od.oprema_id = o.id),
+                o.datum_nabave
+            )
+        ) AS dana_bez_servisa
+    FROM oprema o
+    WHERE o.stanje = 'ispravno'
+    HAVING dana_bez_servisa > 365
+    ORDER BY dana_bez_servisa DESC;
+END;
+```
+
+**Svrha eventa:**
+- Jednom tjedno pronalazi opremu koja je `ispravno`, ali nije servisirana duže od 365 dana.
+- Event ne mijenja podatke, nego služi kao periodična provjera (lista za preventivni servis).
+
+---
+
+## 8. Transakcije
+
+Transakcije služe za grupiranje više SQL naredbi u jednu logičku cjelinu. Ako se radi više promjena odjednom, transakcija sprječava da baza ostane u “polovičnom” stanju (npr. upisano održavanje, ali stanje opreme nije promijenjeno).
+
+### 8.1 Transakcija: Evidentiranje održavanja + promjena stanja opreme
+
+```sql
+START TRANSACTION;
+
+INSERT INTO odrzavanje (oprema_id, zaposlenik_id, datum, opis)
+VALUES (2, 5, CURDATE(), 'Unos održavanja kroz transakciju + promjena stanja.');
+
+UPDATE oprema
+SET stanje = 'ispravno'
+WHERE id = 2;
+
+COMMIT;
+```
+
+**Svrha transakcije:**
+- Održavanje i promjena stanja se izvrše zajedno (ili se sve poništi).
+- Korisno kad serviser završi posao i odmah vraća opremu u upotrebu.
+
+---
+
+### 8.2 Transakcija: Premještaj opreme u drugu prostoriju + zapis održavanja
+
+```sql
+START TRANSACTION;
+
+UPDATE oprema
+SET prostorija_id = 1
+WHERE id = 3;
+
+INSERT INTO odrzavanje (oprema_id, zaposlenik_id, datum, opis)
+VALUES (3, 4, CURDATE(), 'Premještaj opreme nakon pregleda/servisa.');
+
+COMMIT;
+```
+
+**Svrha transakcije:**
+- Premještaj opreme i servisni zapis ostaju povezani kao jedan događaj.
+- Korisno kod reorganizacije teretane ili povrata opreme iz servisa u novu lokaciju.
+
+---
+
+### 8.3 Transakcija: Primjer ROLLBACK-a (simulacija greške)
+
+```sql
+START TRANSACTION;
+
+UPDATE oprema
+SET stanje = 'u servisu'
+WHERE id = 6;
+
+INSERT INTO odrzavanje (oprema_id, zaposlenik_id, datum, opis)
+VALUES (6, 5, CURDATE(), 'Zapis koji se neće spremiti jer radimo rollback.');
+
+ROLLBACK;
+```
+
+**Svrha transakcije:**
+- Pokazuje kako poništiti sve promjene ako se tijekom unosa primijeti greška ili se odustane od postupka.
+
+---
+
+## 9. Zaključak
+
+Ovim modulom dobiven je sustav za praćenje opreme i održavanja koji pokriva:
+- operativni uvid u opremu (što je gdje i u kakvom je stanju),
+- servisnu povijest (tko/kada/što),
+- analitiku dobavljača,
+- standardizirane izvještaje kroz view-ove,
+- ponovljive izračune kroz funkcije,
+- kontrolirane izmjene kroz procedure,
+- periodične provjere kroz evente,
+- sigurnije izvođenje složenijih promjena kroz transakcije.
+
+Kombinacija ovih objekata čini modul upotrebljivim i za administrativni dio (menadžment i analitika) i za operativni dio (serviseri i osoblje teretane).
