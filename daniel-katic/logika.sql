@@ -373,7 +373,7 @@ END //
 DELIMITER ;
 
 /*
-	PROCEDURA: statistika_potrosnje()
+	PROCEDURA: statistika_potrosnje
     - Ova procedura računa statistiku potrošnje pomoću cursora za svakog člana.
     - Procedura koristi ranije definiranu funkciju ukupna_potrosnja_clana.
     - Za statistiku stvoriti ću novu tablicu 
